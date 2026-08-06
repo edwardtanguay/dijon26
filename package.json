@@ -8,7 +8,7 @@
     "pd": "cd cli/commands && tsx cmd-parse-data.ts",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "prisma generate && nuxt prepare",
     "gh": "git log --pretty=format:\"%ad | %h | %s\" --date=format:\"%Y-%m-%d %H:%M:%S\"",
     "backup": "bash -c 'git archive --format=zip HEAD -o \"../BACKUP/showcase-nuxt-prisma-turso-$(date +%F-%H-%M-%S).zip\"'",
     "prisma:generate": "prisma generate",
