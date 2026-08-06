@@ -10,7 +10,7 @@
     "preview": "nuxt preview",
     "postinstall": "prisma generate && nuxt prepare",
     "gh": "git log --pretty=format:\"%ad | %h | %s\" --date=format:\"%Y-%m-%d %H:%M:%S\"",
-    "backup": "bash -c 'git archive --format=zip HEAD -o \"../BACKUP/showcase-nuxt-prisma-turso-$(date +%F-%H-%M-%S).zip\"'",
+    "backup": "bash -c 'git archive --format=zip HEAD -o \"../BACKUP/dijon26-$(date +%F-%H-%M-%S).zip\"'",
     "prisma:generate": "prisma generate",
     "prisma:push": "tsx scripts/db-init.ts",
     "prisma:seed": "prisma db seed",
