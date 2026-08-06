@@ -8,16 +8,23 @@
     "pd": "cd cli/commands && tsx cmd-parse-data.ts",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "prisma generate && nuxt prepare",
     "gh": "git log --pretty=format:\"%ad | %h | %s\" --date=format:\"%Y-%m-%d %H:%M:%S\"",
-    "backup": "bash -c 'git archive --format=zip HEAD -o \"../BACKUP/showcase-nuxt-prisma-turso-$(date +%F-%H-%M-%S).zip\"'"
+    "backup": "bash -c 'git archive --format=zip HEAD -o \"../BACKUP/dijon26-$(date +%F-%H-%M-%S).zip\"'",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "tsx scripts/db-init.ts",
+    "prisma:seed": "prisma db seed",
+    "prisma:reset": "tsx scripts/db-init.ts && prisma db seed",
+    "prisma:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
     "@libsql/client": "^0.17.3",
     "@nuxt/ui": "^4.4.0",
     "@nuxtjs/color-mode": "^4.0.0",
-    "@nuxtjs/kinde": "^0.4.0",
     "@prisma/adapter-libsql": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@types/js-yaml": "^4.0.9",
