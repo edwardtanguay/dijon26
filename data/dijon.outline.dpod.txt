@@ -1,0 +1,16 @@
+- marathon
+	- https://www.marathondesgrandscrus.com
+	- VIDEO: [Marathon des grands crus 17/10/2021 à Dijon](https://www.youtube.com/watch?v=qQCA4KLtdog)
+	- course à pied
+		- https://www.openrunner.com/route-details/23448723
+- concepts
+	- Grands Crus
+		- une célèbre route des vins située en Bourgogne
+		- traverse plusieurs villages viticoles réputés, notamment entre Dijon et Santenay
+		- on y trouve des vignobles produisant certains des vins les plus prestigieux de Bourgogne
+		- le terme « grand cru » désigne ici les vignobles bénéficiant de l’appellation la plus prestigieuse de la classification bourguignonne
+		- la Route des Grands Crus est aussi une destination touristique très appréciée pour ses paysages, ses villages et ses domaines viticoles
+		- un cru est, dans le domaine du vin, un vignoble ou un terroir particulier reconnu pour la qualité de ses vins
+			- le mot vient du verbe croître : un cru est littéralement quelque chose qui a « poussé », notamment ce qui est produit par une terre
+			- par exemple, Chambertin est un cru très célèbre en Bourgogne
+
