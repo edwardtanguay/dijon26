@@ -20,10 +20,12 @@ const { data: tasks, refresh, status } = await useFetch<Task[]>('/api/tasks')
 const newTaskTitle = ref('')
 const isAdding = ref(false)
 const deletingId = ref<string | null>(null)
+const errorMessage = ref<string | null>(null)
 
 async function handleAddTask() {
   if (!newTaskTitle.value.trim() || isAdding.value) return
   isAdding.value = true
+  errorMessage.value = null
   try {
     await $fetch('/api/tasks', {
       method: 'POST',
@@ -31,8 +33,9 @@ async function handleAddTask() {
     })
     newTaskTitle.value = ''
     await refresh()
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to add task:', error)
+    errorMessage.value = error.data?.statusMessage || error.statusMessage || error.message || 'Add limit reached: Maximum 10 tasks allowed'
   } finally {
     isAdding.value = false
   }
@@ -41,6 +44,7 @@ async function handleAddTask() {
 async function handleDeleteTask(id: string) {
   if (deletingId.value) return
   deletingId.value = id
+  errorMessage.value = null
   try {
     await $fetch(`/api/tasks/${id}`, {
       method: 'DELETE'
@@ -73,6 +77,7 @@ async function handleDeleteTask(id: string) {
         <form @submit.prevent="handleAddTask" class="flex gap-2">
           <input
             v-model="newTaskTitle"
+            @input="errorMessage = null"
             type="text"
             required
             placeholder="Add a new task..."
@@ -88,6 +93,21 @@ async function handleDeleteTask(id: string) {
             Add
           </button>
         </form>
+
+        <!-- Error Banner -->
+        <div v-if="errorMessage" class="p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 flex items-center justify-between text-red-700 dark:text-red-300 text-sm font-medium animate-fade-in">
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>{{ errorMessage }}</span>
+          </div>
+          <button @click="errorMessage = null" class="p-1 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-lg text-red-500 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
         <!-- Loading state -->
         <div v-if="status === 'pending' && (!tasks || tasks.length === 0)" class="py-12 flex flex-col items-center justify-center space-y-3">

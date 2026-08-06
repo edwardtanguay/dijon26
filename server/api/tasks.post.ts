@@ -10,6 +10,13 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Title is required and must be a string'
       })
     }
+    const count = await prisma.task.count()
+    if (count >= 10) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Add limit reached: Maximum 10 tasks allowed'
+      })
+    }
     return await prisma.task.create({
       data: {
         title: body.title
