@@ -383,20 +383,15 @@ onUnmounted(() => {
 
     <!-- French Regions & Capitals Flashcards Section (Post-2016) -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100 dark:border-gray-800 space-y-6">
-      <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
-        <div class="flex items-center space-x-3">
-          <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400">
-            <UIcon name="i-heroicons-academic-cap" class="w-6 h-6" />
-          </div>
-          <div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Flashcards des Régions Françaises</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Teste tes connaissances sur les 13 régions métropolitaines & leurs chefs-lieux (découpage 2016)</p>
-          </div>
-        </div>
+      <div class="border-b border-gray-100 dark:border-gray-800 pb-4 text-center space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Flashcards des Régions Françaises</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Teste tes connaissances sur les 13 régions métropolitaines & leurs chefs-lieux (découpage 2016)</p>
 
-        <!-- Progress Counter -->
-        <div v-if="currentCardIndex < flashcardDeck.length" class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-          Carte {{ currentCardIndex + 1 }} sur {{ flashcardDeck.length }}
+        <!-- Progress Counter Centered Below Subtitle -->
+        <div v-if="currentCardIndex < flashcardDeck.length" class="pt-1">
+          <span class="inline-block text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+            Carte {{ currentCardIndex + 1 }} sur {{ flashcardDeck.length }}
+          </span>
         </div>
       </div>
 
@@ -410,7 +405,10 @@ onUnmounted(() => {
 
       <!-- Flashcard Content Area -->
       <div v-if="currentCardIndex < flashcardDeck.length && flashcardDeck.length > 0" class="space-y-6">
-        <div class="bg-gradient-to-br from-gray-50 to-indigo-50/30 dark:from-gray-800/80 dark:to-indigo-950/20 rounded-2xl p-6 sm:p-10 border border-indigo-100/80 dark:border-gray-700/80 text-center space-y-4 shadow-inner">
+        <div
+          @click="isAnswerRevealed = !isAnswerRevealed"
+          class="bg-gradient-to-br from-gray-50 to-indigo-50/30 dark:from-gray-800/80 dark:to-indigo-950/20 rounded-2xl p-6 sm:p-10 border border-indigo-100/80 hover:border-indigo-300 dark:border-gray-700/80 dark:hover:border-indigo-700/80 text-center space-y-4 shadow-inner cursor-pointer select-none transition-all"
+        >
           <div class="inline-block px-3 py-1 rounded-md bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-300 text-xs font-semibold uppercase tracking-wider">
             {{ currentCard?.typeLabel }}
           </div>
@@ -425,8 +423,7 @@ onUnmounted(() => {
             enter-from-class="opacity-0 translate-y-2"
             enter-to-class="opacity-100 translate-y-0"
           >
-            <div v-if="isAnswerRevealed" class="mt-4 p-4 rounded-xl bg-white dark:bg-gray-900 border border-indigo-200 dark:border-indigo-800 shadow-md max-w-md mx-auto space-y-1">
-              <span class="text-xs uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-wider">Réponse</span>
+            <div v-if="isAnswerRevealed" class="mt-4 p-4 rounded-xl bg-white dark:bg-gray-900 border border-indigo-200 dark:border-indigo-800 shadow-md max-w-md mx-auto">
               <p class="text-2xl font-black text-indigo-950 dark:text-indigo-200">
                 {{ currentCard?.answer }}
               </p>
@@ -434,16 +431,8 @@ onUnmounted(() => {
           </Transition>
         </div>
 
-        <!-- Controls -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <button
-            @click="isAnswerRevealed = !isAnswerRevealed"
-            class="w-full sm:w-auto px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer text-sm border border-gray-200 dark:border-gray-700"
-          >
-            <UIcon :name="isAnswerRevealed ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'" class="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-            <span>{{ isAnswerRevealed ? 'Masquer la réponse' : 'Afficher la réponse' }}</span>
-          </button>
-
+        <!-- Controls (Centered Next Card Button) -->
+        <div class="flex justify-center">
           <button
             @click="nextCard"
             class="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm"
