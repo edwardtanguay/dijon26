@@ -125,6 +125,9 @@ const flashcardDeck = ref<Flashcard[]>([])
 const currentCardIndex = ref(0)
 const isAnswerRevealed = ref(false)
 
+const currentCard = computed(() => flashcardDeck.value[currentCardIndex.value])
+
+
 function shuffleAndBuildDeck() {
   const array = [...frenchRegions]
   // Fisher-Yates Shuffle
@@ -409,11 +412,11 @@ onUnmounted(() => {
       <div v-if="currentCardIndex < flashcardDeck.length && flashcardDeck.length > 0" class="space-y-6">
         <div class="bg-gradient-to-br from-gray-50 to-indigo-50/30 dark:from-gray-800/80 dark:to-indigo-950/20 rounded-2xl p-6 sm:p-10 border border-indigo-100/80 dark:border-gray-700/80 text-center space-y-4 shadow-inner">
           <div class="inline-block px-3 py-1 rounded-md bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-300 text-xs font-semibold uppercase tracking-wider">
-            {{ flashcardDeck[currentCardIndex].typeLabel }}
+            {{ currentCard?.typeLabel }}
           </div>
 
           <h3 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white max-w-xl mx-auto leading-snug">
-            {{ flashcardDeck[currentCardIndex].prompt }}
+            {{ currentCard?.prompt }}
           </h3>
 
           <!-- Revealed Answer Box -->
@@ -425,7 +428,7 @@ onUnmounted(() => {
             <div v-if="isAnswerRevealed" class="mt-4 p-4 rounded-xl bg-white dark:bg-gray-900 border border-indigo-200 dark:border-indigo-800 shadow-md max-w-md mx-auto space-y-1">
               <span class="text-xs uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-wider">Answer</span>
               <p class="text-2xl font-black text-indigo-950 dark:text-indigo-200">
-                {{ flashcardDeck[currentCardIndex].answer }}
+                {{ currentCard?.answer }}
               </p>
             </div>
           </Transition>
