@@ -2,9 +2,9 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 useHead({
-  title: 'Dijon 26 - Discover Dijon, Burgundy & Region Maps',
+  title: 'Dijon 26 - Découvrir Dijon, la Bourgogne & les Cartes Régionales',
   meta: [
-    { name: 'description', content: 'Explore Dijon Wikipedia articles, historic landmarks, regional map downloads (KMZ), and high-resolution geography maps of Burgundy, France.' }
+    { name: 'description', content: 'Explore les articles Wikipédia de Dijon, les monuments historiques, les cartes régionales à télécharger (KMZ) et les cartes géographiques haute résolution de Bourgogne, France.' }
   ]
 })
 
@@ -29,77 +29,77 @@ interface Flashcard {
 
 const wikiArticles = [
   {
-    title: 'Dijon (Overview)',
-    url: 'https://en.wikipedia.org/wiki/Dijon',
-    description: 'Capital city of the Côte-d’Or department and of the Bourgogne-Franche-Comté region.'
+    title: 'Dijon (Vue d’ensemble)',
+    url: 'https://fr.wikipedia.org/wiki/Dijon',
+    description: 'Chef-lieu du département de la Côte-d’Or et préfecture de la région Bourgogne-Franche-Comté.'
   },
   {
-    title: 'History of Dijon',
-    url: 'https://en.wikipedia.org/wiki/History_of_Dijon',
-    description: 'From ancient Roman settlement of Divio to the historic capital of the Duchy of Burgundy.'
+    title: 'Histoire de Dijon',
+    url: 'https://fr.wikipedia.org/wiki/Histoire_de_Dijon',
+    description: 'De l’antique cité romaine de Divio à la capitale historique du duché de Bourgogne.'
   },
   {
-    title: 'Palace of the Dukes of Burgundy',
-    url: 'https://en.wikipedia.org/wiki/Palace_of_the_Dukes_of_Burgundy',
-    description: 'Remarkably preserved architectural complex housing Dijon’s city hall and fine arts museum.'
+    title: 'Palais des Ducs de Bourgogne',
+    url: 'https://fr.wikipedia.org/wiki/Palais_des_ducs_de_Bourgogne',
+    description: 'Ensemble architectural remarquablement conservé abritant l’hôtel de ville et le musée des Beaux-Arts de Dijon.'
   },
   {
-    title: 'Dijon Mustard',
-    url: 'https://en.wikipedia.org/wiki/Dijon_mustard',
-    description: 'Traditional mustard of France named after the city of Dijon.'
+    title: 'Moutarde de Dijon',
+    url: 'https://fr.wikipedia.org/wiki/Moutarde_de_Dijon',
+    description: 'Moutarde traditionnelle française originaire de la ville de Dijon.'
   },
   {
     title: 'Route des Grands Crus',
-    url: 'https://en.wikipedia.org/wiki/Route_des_Grands_Crus',
-    description: 'Prestigious Burgundy wine route running south from Dijon to Santenay.'
+    url: 'https://fr.wikipedia.org/wiki/Route_des_Grands_Crus',
+    description: 'Prestigieuse route des vins de Bourgogne s’étendant au sud de Dijon jusqu’à Santenay.'
   },
   {
-    title: 'Dijon Cathedral',
-    url: 'https://en.wikipedia.org/wiki/Dijon_Cathedral',
-    description: 'Roman Catholic church dedicated to Saint Benignus of Dijon, built between 1280 and 1325.'
+    title: 'Cathédrale Saint-Bénigne de Dijon',
+    url: 'https://fr.wikipedia.org/wiki/Cath%C3%A9drale_Saint-B%C3%A9nigne_de_Dijon',
+    description: 'Église catholique romaine dédiée à Saint Bénigne de Dijon, construite entre 1280 et 1325.'
   },
   {
-    title: 'University of Burgundy',
-    url: 'https://en.wikipedia.org/wiki/University_of_Burgundy',
-    description: 'Major French public university based in Dijon, founded in 1722.'
+    title: 'Université de Bourgogne',
+    url: 'https://fr.wikipedia.org/wiki/Universit%C3%A9_de_Bourgogne',
+    description: 'Grande université publique française basée à Dijon, fondée en 1722.'
   },
   {
     title: 'Gare de Dijon-Ville',
-    url: 'https://en.wikipedia.org/wiki/Gare_de_Dijon-Ville',
-    description: 'Principal railway station serving Dijon with high-speed TGV connections.'
+    url: 'https://fr.wikipedia.org/wiki/Gare_de_Dijon-Ville',
+    description: 'Principale gare ferroviaire desservant Dijon avec des liaisons TGV à grande vitesse.'
   },
   {
     title: "Jardin de l'Arquebuse",
-    url: 'https://en.wikipedia.org/wiki/Jardin_de_l%27Arquebuse',
-    description: 'Botanical garden, arboretum, and natural history museum complex in central Dijon.'
+    url: 'https://fr.wikipedia.org/wiki/Jardin_de_l%27Arquebuse',
+    description: 'Ensemble comprenant un jardin botanique, un arboretum et le musée d’histoire naturelle du centre de Dijon.'
   },
   {
     title: 'Musée des Beaux-Arts de Dijon',
-    url: 'https://en.wikipedia.org/wiki/Mus%C3%A9e_des_Beaux-Arts_de_Dijon',
-    description: 'One of the oldest and largest museums in France located inside the Palace of the Dukes.'
+    url: 'https://fr.wikipedia.org/wiki/Mus%C3%A9e_des_Beaux-Arts_de_Dijon',
+    description: 'L’un des plus anciens et plus grands musées de France, situé au sein du palais des Ducs.'
   }
 ]
 
 const galleryImages: GalleryImage[] = [
   {
     src: '/images/bourgfranch.png',
-    title: 'Bourgogne-Franche-Comté Region',
-    caption: 'Map of the administrative region in eastern France formed by the 2016 territorial reform.'
+    title: 'Région Bourgogne-Franche-Comté',
+    caption: 'Carte de la région administrative de l’est de la France issue de la réforme territoriale de 2016.'
   },
   {
     src: '/images/francerelief.png',
-    title: 'France Physical & Relief Map',
-    caption: 'Topographical map of France displaying mountain ranges, rivers, and regional elevations.'
+    title: 'Carte Physique & Relief de la France',
+    caption: 'Carte topographique de la France présentant les massifs montagneux, fleuves et reliefs régionaux.'
   },
   {
     src: '/images/regionsAfter2016.png',
-    title: 'French Regions (Post-2016)',
-    caption: 'Modern map of France showing the 18 reorganized region boundaries established in 2016.'
+    title: 'Régions Françaises (Après 2016)',
+    caption: 'Carte moderne de la France montrant le découpage en 18 régions réorganisées en 2016.'
   },
   {
     src: '/images/regionsBefore2016.png',
-    title: 'French Regions (Pre-2016)',
-    caption: 'Historical map of the 27 French administrative regions prior to the 2016 consolidation.'
+    title: 'Régions Françaises (Avant 2016)',
+    caption: 'Carte historique des 27 régions administratives françaises avant le regroupement de 2016.'
   }
 ]
 
@@ -109,7 +109,7 @@ const frenchRegions: RegionCapital[] = [
   { region: 'Auvergne-Rhône-Alpes', capital: 'Lyon' },
   { region: 'Bretagne', capital: 'Rennes' },
   { region: 'Centre-Val de Loire', capital: 'Orléans' },
-  { region: 'Corse (Corsica)', capital: 'Ajaccio' },
+  { region: 'Corse', capital: 'Ajaccio' },
   { region: 'Grand Est', capital: 'Strasbourg' },
   { region: 'Hauts-de-France', capital: 'Lille' },
   { region: 'Île-de-France', capital: 'Paris' },
@@ -145,17 +145,17 @@ function shuffleAndBuildDeck() {
       return {
         region: item.region,
         capital: item.capital,
-        prompt: `What is the capital city of ${item.region}?`,
+        prompt: `Quelle est la capitale de la région ${item.region} ?`,
         answer: item.capital,
-        typeLabel: 'Find the Capital'
+        typeLabel: 'Trouver la Capitale'
       }
     } else {
       return {
         region: item.region,
         capital: item.capital,
-        prompt: `Which region has the capital city ${item.capital}?`,
+        prompt: `Quelle région a pour préfecture / capitale ${item.capital} ?`,
         answer: item.region,
-        typeLabel: 'Find the Region'
+        typeLabel: 'Trouver la Région'
       }
     }
   })
@@ -255,10 +255,10 @@ onUnmounted(() => {
         <span>Bourgogne-Franche-Comté, France</span>
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-        Discover Dijon
+        Découvre Dijon
       </h1>
       <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-        Explore key Wikipedia articles, map data downloads, and regional geographic maps of Dijon and Burgundy.
+        Explore les articles Wikipédia essentiels, télécharge les données cartographiques et découvre les cartes géographiques de Dijon et de la Bourgogne.
       </p>
     </div>
 
@@ -267,11 +267,11 @@ onUnmounted(() => {
       <div class="space-y-2">
         <div class="flex items-center space-x-2 text-indigo-300 font-semibold text-sm">
           <UIcon name="i-heroicons-map-pin" class="w-5 h-5 shrink-0" />
-          <span>GEOGRAPHIC MAP DATA</span>
+          <span>DONNÉES CARTOGRAPHIQUES</span>
         </div>
-        <h2 class="text-2xl font-bold text-white">Dijon Map File (KMZ)</h2>
+        <h2 class="text-2xl font-bold text-white">Fichier de Carte de Dijon (KMZ)</h2>
         <p class="text-indigo-200 text-sm max-w-lg">
-          Download or view the official Dijon map overlay file (<code class="bg-indigo-950/80 px-2 py-0.5 rounded text-indigo-300">dijon-001.kmz</code>) for Google Earth and GIS viewers.
+          Télécharge ou visualise le fichier officiel de superposition de carte de Dijon (<code class="bg-indigo-950/80 px-2 py-0.5 rounded text-indigo-300">dijon-001.kmz</code>) pour Google Earth et logiciels SIG.
         </p>
       </div>
       <a
@@ -281,7 +281,7 @@ onUnmounted(() => {
         class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-slate-950 hover:bg-black !text-white font-bold rounded-xl shadow-xl border border-slate-700/80 hover:border-slate-500 transition-all shrink-0 cursor-pointer text-sm"
       >
         <UIcon name="i-heroicons-arrow-down-tray" class="w-5 h-5 !text-white shrink-0" />
-        <span class="!text-white font-bold">Open KMZ File</span>
+        <span class="!text-white font-bold">Ouvre le fichier KMZ</span>
         <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4 !text-white opacity-90 shrink-0" />
       </a>
     </div>
@@ -294,8 +294,8 @@ onUnmounted(() => {
             <UIcon name="i-heroicons-bookmark" class="w-6 h-6" />
           </div>
           <div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Relevant Wikipedia Articles</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Essential resources for discovering the culture, history, and landmarks of Dijon</p>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Articles Wikipédia Pertinents</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Ressources essentielles pour découvrir la culture, l'histoire et le patrimoine de Dijon</p>
           </div>
         </div>
       </div>
@@ -339,9 +339,9 @@ onUnmounted(() => {
           <UIcon name="i-heroicons-photo" class="w-6 h-6" />
         </div>
         <div>
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Region & Map Gallery</h2>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Galerie de Cartes & Régions</h2>
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            High-resolution maps of Burgundy and France (click to view full size on desktop, pinch to zoom on mobile)
+            Cartes haute résolution de Bourgogne et de France (clique pour agrandir sur ordinateur)
           </p>
         </div>
       </div>
@@ -389,14 +389,14 @@ onUnmounted(() => {
             <UIcon name="i-heroicons-academic-cap" class="w-6 h-6" />
           </div>
           <div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">French Regions Flashcards</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Test your knowledge of the 13 Metropolitan French regions & capitals (established 2016)</p>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Flashcards des Régions Françaises</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Teste tes connaissances sur les 13 régions métropolitaines & leurs chefs-lieux (découpage 2016)</p>
           </div>
         </div>
 
         <!-- Progress Counter -->
         <div v-if="currentCardIndex < flashcardDeck.length" class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-          Card {{ currentCardIndex + 1 }} of {{ flashcardDeck.length }}
+          Carte {{ currentCardIndex + 1 }} sur {{ flashcardDeck.length }}
         </div>
       </div>
 
@@ -426,7 +426,7 @@ onUnmounted(() => {
             enter-to-class="opacity-100 translate-y-0"
           >
             <div v-if="isAnswerRevealed" class="mt-4 p-4 rounded-xl bg-white dark:bg-gray-900 border border-indigo-200 dark:border-indigo-800 shadow-md max-w-md mx-auto space-y-1">
-              <span class="text-xs uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-wider">Answer</span>
+              <span class="text-xs uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-wider">Réponse</span>
               <p class="text-2xl font-black text-indigo-950 dark:text-indigo-200">
                 {{ currentCard?.answer }}
               </p>
@@ -441,14 +441,14 @@ onUnmounted(() => {
             class="w-full sm:w-auto px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer text-sm border border-gray-200 dark:border-gray-700"
           >
             <UIcon :name="isAnswerRevealed ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'" class="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-            <span>{{ isAnswerRevealed ? 'Hide Answer' : 'Show Answer' }}</span>
+            <span>{{ isAnswerRevealed ? 'Masquer la réponse' : 'Afficher la réponse' }}</span>
           </button>
 
           <button
             @click="nextCard"
             class="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm"
           >
-            <span>Next Card</span>
+            <span>Carte suivante</span>
             <UIcon name="i-heroicons-arrow-right" class="w-5 h-5" />
           </button>
         </div>
@@ -461,9 +461,9 @@ onUnmounted(() => {
         </div>
 
         <div class="space-y-2">
-          <h3 class="text-3xl font-black text-gray-900 dark:text-white">🎉 Félicitations!</h3>
+          <h3 class="text-3xl font-black text-gray-900 dark:text-white">🎉 Félicitations !</h3>
           <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto text-base">
-            You have successfully completed all 13 French region and capital flashcards!
+            Tu as réussi les 13 flashcards des régions de France et de leurs chefs-lieux !
           </p>
         </div>
 
@@ -473,7 +473,7 @@ onUnmounted(() => {
             class="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all inline-flex items-center gap-2.5 cursor-pointer text-sm"
           >
             <UIcon name="i-heroicons-arrow-path" class="w-5 h-5" />
-            <span>Start Over (Shuffle Deck)</span>
+            <span>Recommencer (Mélanger les cartes)</span>
           </button>
         </div>
       </div>

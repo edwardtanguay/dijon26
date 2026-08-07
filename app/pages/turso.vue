@@ -2,9 +2,9 @@
 import { ref } from 'vue'
 
 useHead({
-  title: 'Turso Todo Manager - Dijon 26',
+  title: 'Gestionnaire de tâches Turso - Dijon 26',
   meta: [
-    { name: 'description', content: 'A showcase web application built with Nuxt 3, Prisma ORM, and Turso (SQLite on the edge)' }
+    { name: 'description', content: 'Une démonstration d’application web construite avec Nuxt 3, Prisma ORM et Turso (SQLite sur le réseau)' }
   ]
 })
 
@@ -35,7 +35,7 @@ async function handleAddTask() {
     await refresh()
   } catch (error: any) {
     console.error('Failed to add task:', error)
-    errorMessage.value = error.data?.statusMessage || error.statusMessage || error.message || 'Add limit reached: Maximum 10 tasks allowed'
+    errorMessage.value = error.data?.statusMessage || error.statusMessage || error.message || 'Limite atteinte : 10 tâches maximum autorisées'
   } finally {
     isAdding.value = false
   }
@@ -64,10 +64,10 @@ async function handleDeleteTask(id: string) {
       <!-- Header Section -->
       <div class="text-center space-y-2">
         <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-          Turso Todo Manager
+          Gestionnaire de tâches Turso
         </h1>
         <p class="text-lg text-gray-500 dark:text-gray-400">
-          A real-time reactive task list powered by Nuxt 3, Prisma ORM, and Turso.
+          Une liste de tâches réactive propulsée par Nuxt 3, Prisma ORM et Turso.
         </p>
       </div>
 
@@ -80,7 +80,7 @@ async function handleDeleteTask(id: string) {
             @input="errorMessage = null"
             type="text"
             required
-            placeholder="Add a new task..."
+            placeholder="Ajouter une nouvelle tâche..."
             class="flex-1 min-w-0 px-3 sm:px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-950 dark:text-gray-50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             :disabled="isAdding"
           />
@@ -90,7 +90,7 @@ async function handleDeleteTask(id: string) {
             class="px-4 sm:px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer"
           >
             <span v-if="isAdding" class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            Add
+            Ajouter
           </button>
         </form>
 
@@ -112,7 +112,7 @@ async function handleDeleteTask(id: string) {
         <!-- Loading state -->
         <div v-if="status === 'pending' && (!tasks || tasks.length === 0)" class="py-12 flex flex-col items-center justify-center space-y-3">
           <div class="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p class="text-sm text-gray-500">Retrieving tasks...</p>
+          <p class="text-sm text-gray-500">Chargement des tâches...</p>
         </div>
 
         <!-- Task List -->
@@ -133,7 +133,7 @@ async function handleDeleteTask(id: string) {
               @click="handleDeleteTask(task.id)"
               :disabled="deletingId === task.id"
               class="p-2 text-gray-400 hover:text-red-500 disabled:opacity-50 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all cursor-pointer"
-              aria-label="Delete task"
+              aria-label="Supprimer la tâche"
             >
               <svg v-if="deletingId === task.id" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -148,8 +148,8 @@ async function handleDeleteTask(id: string) {
 
         <!-- Empty state -->
         <div v-else-if="status !== 'pending'" class="text-center py-12 space-y-2">
-          <p class="text-gray-400 dark:text-gray-500 font-medium">No tasks found</p>
-          <p class="text-sm text-gray-400">Add some above to verify your Turso database integration!</p>
+          <p class="text-gray-400 dark:text-gray-500 font-medium">Aucune tâche trouvée</p>
+          <p class="text-sm text-gray-400">Ajoute une tâche ci-dessus pour tester ta base de données Turso !</p>
         </div>
       </div>
     </div>

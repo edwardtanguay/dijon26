@@ -25,9 +25,9 @@ const toggleColorMode = () => {
 }
 
 const navItems = [
-  { name: 'Home', path: '/', icon: 'i-heroicons-home' },
+  { name: 'Accueil', path: '/', icon: 'i-heroicons-home' },
   { name: 'Turso', path: '/turso', icon: 'i-heroicons-circle-stack' },
-  { name: 'About', path: '/about', icon: 'i-heroicons-document-text' },
+  { name: 'À propos', path: '/about', icon: 'i-heroicons-document-text' },
 ]
 </script>
 
