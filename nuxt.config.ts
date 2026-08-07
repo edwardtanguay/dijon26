@@ -15,9 +15,9 @@ export default defineNuxtConfig({
 	},
 	app: {
 		head: {
-			title: 'Turso Showcase',
+			title: 'Dijon 26 - Discover Dijon, Burgundy & Region Maps',
 			meta: [
-				{ name: 'description', content: 'A Nuxt 3, Prisma, and Turso database showcase application' }
+				{ name: 'description', content: 'Explore Dijon Wikipedia articles, historic landmarks, regional map downloads (KMZ), and high-resolution geography maps of Burgundy, France.' }
 			],
 			link: [
 				{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
