@@ -431,8 +431,8 @@ onUnmounted(() => {
           </Transition>
         </div>
 
-        <!-- Controls (Centered Next Card Button) -->
-        <div class="flex justify-center">
+        <!-- Controls (Centered Next Card Button - Only shown when answer is revealed) -->
+        <div v-if="isAnswerRevealed" class="flex justify-center">
           <button
             @click="nextCard"
             class="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm"
