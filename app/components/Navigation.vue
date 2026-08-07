@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { HomeIcon, Bars3Icon, XMarkIcon, SunIcon, MoonIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'
 
 const mobileMenuOpen = ref(false)
 const navRef = ref<HTMLElement | null>(null)
@@ -26,8 +25,9 @@ const toggleColorMode = () => {
 }
 
 const navItems = [
-  { name: 'Home', path: '/', icon: HomeIcon },
-  { name: 'About', path: '/about', icon: DocumentTextIcon },
+  { name: 'Home', path: '/', icon: 'i-heroicons-home' },
+  { name: 'Turso', path: '/turso', icon: 'i-heroicons-circle-stack' },
+  { name: 'About', path: '/about', icon: 'i-heroicons-document-text' },
 ]
 </script>
 
@@ -55,41 +55,34 @@ const navItems = [
                     :to="item.path"
                     class="flex items-center space-x-2 !text-gray-600 hover:!text-black transition-colors font-medium dark:!text-gray-300 dark:hover:!text-white"
                     active-class="!text-black dark:!text-white font-semibold">
-            <component :is="item.icon"
-                       class="h-5 w-5" />
+            <UIcon :name="item.icon" class="h-5 w-5" />
             <span>{{ item.name }}</span>
           </NuxtLink>
 
           <!-- Desktop Color Mode Toggle -->
           <button @click="toggleColorMode"
-                  class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
+                  class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-300 dark:hover:bg-gray-800 cursor-pointer"
                   aria-label="Toggle dark mode">
-            <SunIcon v-if="colorMode.value === 'dark'"
-                     class="h-5 w-5" />
-            <MoonIcon v-else
-                      class="h-5 w-5" />
+            <UIcon v-if="colorMode.value === 'dark'" name="i-heroicons-sun" class="h-5 w-5" />
+            <UIcon v-else name="i-heroicons-moon" class="h-5 w-5" />
           </button>
         </div>
 
         <div class="flex items-center space-x-2 md:hidden">
           <!-- Mobile Color Mode Toggle -->
           <button @click.stop="toggleColorMode"
-                  class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
+                  class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-300 dark:hover:bg-gray-800 cursor-pointer"
                   aria-label="Toggle dark mode">
-            <SunIcon v-if="colorMode.value === 'dark'"
-                     class="h-5 w-5" />
-            <MoonIcon v-else
-                      class="h-5 w-5" />
+            <UIcon v-if="colorMode.value === 'dark'" name="i-heroicons-sun" class="h-5 w-5" />
+            <UIcon v-else name="i-heroicons-moon" class="h-5 w-5" />
           </button>
 
           <!-- Mobile Menu Button -->
           <button @click.stop="mobileMenuOpen = !mobileMenuOpen"
-                  class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
+                  class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-300 dark:hover:bg-gray-800 cursor-pointer"
                   aria-label="Toggle menu">
-            <Bars3Icon v-if="!mobileMenuOpen"
-                       class="h-6 w-6" />
-            <XMarkIcon v-else
-                       class="h-6 w-6" />
+            <UIcon v-if="!mobileMenuOpen" name="i-heroicons-bars-3" class="h-6 w-6" />
+            <UIcon v-else name="i-heroicons-x-mark" class="h-6 w-6" />
           </button>
         </div>
       </div>
@@ -111,8 +104,7 @@ const navItems = [
                     @click="mobileMenuOpen = false"
                     class="flex items-center space-x-3 px-4 py-3 rounded-lg !text-gray-600 hover:bg-gray-100 hover:!text-black transition-colors font-medium dark:!text-gray-300 dark:hover:bg-gray-800 dark:hover:!text-white"
                     active-class="bg-gray-100 !text-black dark:bg-gray-800 dark:!text-white">
-            <component :is="item.icon"
-                       class="h-5 w-5" />
+            <UIcon :name="item.icon" class="h-5 w-5" />
             <span>{{ item.name }}</span>
           </NuxtLink>
         </div>
