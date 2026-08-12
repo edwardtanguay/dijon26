@@ -1,3 +1,7 @@
-import { DpodParser } from "../dpod/dpod-parser";
+import { OutlineParser } from "../dpod/outline-parser";
 
-DpodParser.execute();
+export const execute = () => {
+	OutlineParser.execute();
+};
+
+execute();
