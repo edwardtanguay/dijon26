@@ -1,14 +1,14 @@
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-2 sm:py-4">
-    <ul class="space-y-0.5 list-disc list-inside text-gray-800 dark:text-gray-200">
+  <div class="max-w-4xl mx-auto px-4 pt-2 pb-2 sm:py-4">
+    <ul class="space-y-0.5 list-disc text-gray-800 dark:text-gray-200 pl-5">
       <li
         v-for="item in notes"
         :key="item.id"
         class="py-0.5 leading-snug break-words"
-        :style="{ paddingLeft: getPaddingLeft(item.indent) }"
+        :style="{ marginLeft: `${item.indent * 1.5}rem` }"
       >
         <span
-          class="inline-block"
+          class="inline"
           v-html="renderFormattedContent(item.body)"
         />
       </li>
@@ -33,13 +33,6 @@ useHead({
     { name: 'description', content: 'Notes et outline de préparation pour Dijon' }
   ]
 })
-
-const getPaddingLeft = (indent: number) => {
-  if (typeof window !== 'undefined' && window.innerWidth < 640) {
-    return `${indent * 0.85}rem`
-  }
-  return `${indent * 1.25}rem`
-}
 
 // Function to escape HTML special characters to prevent XSS
 const escapeHtml = (str: string): string => {
