@@ -27,6 +27,8 @@
 			- lire-le rapidement, noter les lieux et les noms
 		- Dijon - Guide de Voyage 
 			- lire-le rapidement, noter les lieux et les noms
+- Airbnb
+	- moins de 330 euros pour 9 nuits
 - site
 	- créer des quiz
 		- géographie
