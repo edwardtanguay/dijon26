@@ -4,11 +4,11 @@
       <li
         v-for="item in notes"
         :key="item.id"
-        class="py-0.5 leading-snug break-words"
+        class="py-0.5 leading-snug break-words outline-item-li"
         :style="{ marginLeft: `${item.indent * 1.5}rem` }"
       >
         <span
-          class="inline"
+          class="inline-flex items-center flex-wrap align-middle"
           v-html="renderFormattedContent(item.body)"
         />
         <div v-if="item.image" class="mt-1">
@@ -80,10 +80,10 @@ const createFormattedLinkHtml = (url: string, linkText?: string): string => {
     displayText = escapeHtml(simplifyUrl(url))
   }
 
-  // Lucide Youtube SVG icon with clean rounded rect & play button (27x19px landscape ratio)
-  const youtubeIcon = `<svg class="inline-block w-[27px] h-[19px] mr-1 text-red-600 fill-none stroke-current align-middle flex-shrink-0" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: translateY(1px);"><rect width="20" height="14" x="2" y="5" rx="4" fill="currentColor" stroke="none"/><polygon points="10 9 15 12 10 15 10 9" fill="white" stroke="none"/></svg>`
+  // Lucide Youtube SVG icon fitted to line height (22x15px landscape ratio)
+  const youtubeIcon = `<svg class="inline-block w-[22px] h-[15px] mr-1 text-red-600 fill-none stroke-current align-middle flex-shrink-0" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="4" fill="currentColor" stroke="none"/><polygon points="10 9 15 12 10 15 10 9" fill="white" stroke="none"/></svg>`
   
-  const externalLinkIcon = `<svg class="inline-block w-3.5 h-3.5 mr-1 text-indigo-500 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 1px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
+  const externalLinkIcon = `<svg class="inline-block w-3.5 h-3.5 mr-1 text-indigo-500 stroke-current fill-none align-middle flex-shrink-0" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 
   const icon = isYoutube ? youtubeIcon : externalLinkIcon
 
@@ -126,5 +126,9 @@ const renderFormattedContent = (text: string): string => {
 /* Font stack prioritizing WhatsApp / Apple emoji rendering */
 .font-emoji {
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+}
+
+.outline-item-li::marker {
+  vertical-align: middle;
 }
 </style>
