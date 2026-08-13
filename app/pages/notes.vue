@@ -8,10 +8,10 @@
         :style="{ marginLeft: `${item.indent * 1.5}rem` }"
       >
         <span
-          class="inline-flex items-center flex-wrap align-middle"
+          class="inline"
           v-html="renderFormattedContent(item.body)"
         />
-        <div v-if="item.image" class="mt-1">
+        <div v-if="item.image" class="mt-1 w-full">
           <div
             v-if="item.image.startsWith('NOT_FOUND:')"
             class="bg-black text-yellow-400 font-mono text-base font-semibold w-[300px] h-[200px] flex flex-col items-center justify-center text-center rounded p-4 shadow-md my-2"
@@ -80,14 +80,14 @@ const createFormattedLinkHtml = (url: string, linkText?: string): string => {
     displayText = escapeHtml(simplifyUrl(url))
   }
 
-  // Lucide Youtube SVG icon fitted to line height (22x15px landscape ratio)
-  const youtubeIcon = `<svg class="inline-block w-[22px] h-[15px] mr-1 text-red-600 fill-none stroke-current align-middle flex-shrink-0" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="4" fill="currentColor" stroke="none"/><polygon points="10 9 15 12 10 15 10 9" fill="white" stroke="none"/></svg>`
+  // 18x12px matches the height of lowercase letters (x-height)
+  const youtubeIcon = `<svg class="inline-block w-[18px] h-[12px] mr-1 text-red-600 fill-none stroke-current align-middle flex-shrink-0" viewBox="1.5 4.5 21 15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 2px;"><rect width="20" height="14" x="2" y="5" rx="4" fill="currentColor" stroke="none"/><polygon points="10 9 15 12 10 15 10 9" fill="white" stroke="none"/></svg>`
   
-  const externalLinkIcon = `<svg class="inline-block w-3.5 h-3.5 mr-1 text-indigo-500 stroke-current fill-none align-middle flex-shrink-0" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
+  const externalLinkIcon = `<svg class="inline-block w-3.5 h-3.5 mr-1 text-indigo-500 stroke-current fill-none align-middle flex-shrink-0" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 
   const icon = isYoutube ? youtubeIcon : externalLinkIcon
 
-  return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-indigo-600 dark:text-indigo-400 no-underline hover:underline hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors">${icon}<span>${displayText}</span></a>`
+  return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="inline text-indigo-600 dark:text-indigo-400 no-underline hover:underline hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors">${icon}<span>${displayText}</span></a>`
 }
 
 // Render markdown & emoticons
@@ -97,19 +97,25 @@ const renderFormattedContent = (text: string): string => {
   let html = escapeHtml(text)
 
   // Emoticons: :thinking: -> WhatsApp style thinking face emoji
-  const whatsappThinkingEmoji = `<span class="inline-inline font-emoji text-lg align-middle" title=":thinking:">🤔</span>`
+  const whatsappThinkingEmoji = `<span class="inline font-emoji text-lg align-middle" title=":thinking:">🤔</span>`
   html = html.replace(/:thinking:/g, whatsappThinkingEmoji)
 
   // Markdown links: [title](url)
   html = html.replace(
-    /\[([^\]]+)\]\(([^)]+)\)/g,
-    (_match, title, url) => createFormattedLinkHtml(url, title)
+    /(^|[\s(]|[^>\s])\[([^\]]+)\]\(([^)]+)\)/g,
+    (_match, prefix, title, url) => {
+      const space = (prefix && prefix !== ' ' && prefix !== '(' && !prefix.endsWith(' ')) ? ' ' : ''
+      return `${prefix || ''}${space}${createFormattedLinkHtml(url, title)}`
+    }
   )
 
-  // Bare URLs (http:// or https://)
+  // Bare URLs (http:// or https://) - skip already converted links inside <a href="...">
   html = html.replace(
-    /(^|[\s(])(https?:\/\/[^\s<)]+)/g,
-    (_match, prefix, url) => `${prefix}${createFormattedLinkHtml(url)}`
+    /(^|[\s(]|[^>\s])(https?:\/\/[^\s<)]+)/g,
+    (_match, prefix, url) => {
+      const space = (prefix && prefix !== ' ' && prefix !== '(' && !prefix.endsWith(' ')) ? ' ' : ''
+      return `${prefix}${space}${createFormattedLinkHtml(url)}`
+    }
   )
 
   // Bold: **text**
@@ -128,7 +134,12 @@ const renderFormattedContent = (text: string): string => {
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
 }
 
+.outline-item-li {
+  display: list-item;
+}
+
 .outline-item-li::marker {
-  vertical-align: middle;
+  font-size: 0.8em;
+  vertical-align: 0.1em;
 }
 </style>
