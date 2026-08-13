@@ -70,13 +70,19 @@ const simplifyUrl = (rawUrl: string): string => {
 }
 
 // Generate link HTML with icon and simplified URL text
-const createFormattedLinkHtml = (url: string): string => {
+const createFormattedLinkHtml = (url: string, linkText?: string): string => {
   const isYoutube = url.toLowerCase().includes('youtube.com') || url.toLowerCase().includes('youtu.be')
-  const displayText = escapeHtml(simplifyUrl(url))
-
-  const youtubeIcon = `<svg class="inline-block w-4 h-4 mr-1 text-red-600 fill-current align-text-bottom" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`
   
-  const externalLinkIcon = `<svg class="inline-block w-3.5 h-3.5 mr-1 text-indigo-500 align-text-bottom stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
+  let displayText = ''
+  if (isYoutube) {
+    displayText = (linkText && linkText.trim()) ? escapeHtml(linkText.trim()) : 'youtube.com'
+  } else {
+    displayText = escapeHtml(simplifyUrl(url))
+  }
+
+  const youtubeIcon = `<svg class="inline-block w-4 h-4 mr-1 text-red-600 fill-current align-middle" viewBox="0 0 24 24" style="margin-bottom: 2px;"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`
+  
+  const externalLinkIcon = `<svg class="inline-block w-3.5 h-3.5 mr-1 text-indigo-500 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 1px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 
   const icon = isYoutube ? youtubeIcon : externalLinkIcon
 
@@ -96,7 +102,7 @@ const renderFormattedContent = (text: string): string => {
   // Markdown links: [title](url)
   html = html.replace(
     /\[([^\]]+)\]\(([^)]+)\)/g,
-    (_match, _title, url) => createFormattedLinkHtml(url)
+    (_match, title, url) => createFormattedLinkHtml(url, title)
   )
 
   // Bare URLs (http:// or https://)
