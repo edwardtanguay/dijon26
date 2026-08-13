@@ -118,6 +118,12 @@ const renderFormattedContent = (text: string): string => {
   // Italic: *text*
   html = html.replace(/\*([^*]+)\*/g, '<em class="italic text-gray-800 dark:text-gray-200">$1</em>')
 
+  // Pronunciation: [text] at end of line (subdued gray-yellow color, font-mono / courier)
+  html = html.replace(
+    /\s*\[([^\]]+)\]\s*$/,
+    ' <span class="font-mono text-sm text-[#b8a862] dark:text-[#d3c578] font-normal font-courier">[$1]</span>'
+  )
+
   return html
 }
 </script>
@@ -126,6 +132,10 @@ const renderFormattedContent = (text: string): string => {
 /* Font stack prioritizing WhatsApp / Apple emoji rendering */
 .font-emoji {
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+}
+
+.font-courier {
+  font-family: "Courier New", Courier, monospace;
 }
 
 .outline-item-li {
