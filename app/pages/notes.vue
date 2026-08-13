@@ -100,22 +100,16 @@ const renderFormattedContent = (text: string): string => {
   const whatsappThinkingEmoji = `<span class="inline font-emoji text-lg align-middle" title=":thinking:">🤔</span>`
   html = html.replace(/:thinking:/g, whatsappThinkingEmoji)
 
-  // Markdown links: [title](url)
+  // 1. Markdown links: [title](url)
   html = html.replace(
-    /(^|[\s(]|[^>\s])\[([^\]]+)\]\(([^)]+)\)/g,
-    (_match, prefix, title, url) => {
-      const space = (prefix && prefix !== ' ' && prefix !== '(' && !prefix.endsWith(' ')) ? ' ' : ''
-      return `${prefix || ''}${space}${createFormattedLinkHtml(url, title)}`
-    }
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (_match, title, url) => createFormattedLinkHtml(url, title)
   )
 
-  // Bare URLs (http:// or https://) - skip already converted links inside <a href="...">
+  // 2. Bare URLs (http:// or https://) - matching only URLs not already in HTML attributes
   html = html.replace(
-    /(^|[\s(]|[^>\s])(https?:\/\/[^\s<)]+)/g,
-    (_match, prefix, url) => {
-      const space = (prefix && prefix !== ' ' && prefix !== '(' && !prefix.endsWith(' ')) ? ' ' : ''
-      return `${prefix}${space}${createFormattedLinkHtml(url)}`
-    }
+    /(^|[\s(])(https?:\/\/[^\s<)]+)/g,
+    (_match, prefix, url) => `${prefix}${createFormattedLinkHtml(url)}`
   )
 
   // Bold: **text**
