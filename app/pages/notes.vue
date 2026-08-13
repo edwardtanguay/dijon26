@@ -11,6 +11,20 @@
           class="inline"
           v-html="renderFormattedContent(item.body)"
         />
+        <div v-if="item.image" class="mt-1">
+          <div
+            v-if="item.image.startsWith('NOT_FOUND:')"
+            class="bg-black text-yellow-400 font-mono text-xs p-2 text-center rounded max-w-full inline-block"
+          >
+            no image "{{ item.image.replace('NOT_FOUND:', '') }}" found
+          </div>
+          <img
+            v-else
+            :src="`/images/outline/${item.image}`"
+            :alt="item.image"
+            class="max-w-full h-auto rounded shadow-sm my-1 block"
+          />
+        </div>
       </li>
     </ul>
   </div>
@@ -23,6 +37,7 @@ interface OutlineItem {
   id: string
   body: string
   indent: number
+  image?: string
 }
 
 const notes: OutlineItem[] = notesData

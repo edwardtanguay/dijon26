@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import * as path from "path";
 import * as qfil from "../qtools/qfil";
 import * as qstr from "../qtools/qstr";
 import * as qcli from "../qtools/qcli";
@@ -6,6 +8,7 @@ export interface OutlineItem {
 	id: string;
 	body: string;
 	indent: number;
+	image: string;
 }
 
 export class OutlineParser {
@@ -48,11 +51,44 @@ export class OutlineParser {
 				content = content.substring(1);
 			}
 
+			let image = "";
+			const tagMatch = content.match(/##([a-zA-Z0-9_\-]+)\s*$/);
+			if (tagMatch) {
+				const tag = tagMatch[1];
+				// Remove tag from content
+				content = content.replace(/##[a-zA-Z0-9_\-]+\s*$/, "").trimEnd();
+
+				// Search in public/images/outline for file with matching name and extension
+				const outlineImgDir = "public/images/outline";
+				let foundFileName = "";
+				if (qfil.directoryExists(outlineImgDir)) {
+					const files = fs.readdirSync(outlineImgDir);
+					const matchedFile = files.find((f) => {
+						const ext = path.extname(f).toLowerCase();
+						const base = path.basename(f, path.extname(f)).toLowerCase();
+						return (
+							base === tag.toLowerCase() &&
+							[".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(ext)
+						);
+					});
+					if (matchedFile) {
+						foundFileName = matchedFile;
+					}
+				}
+
+				if (foundFileName) {
+					image = foundFileName;
+				} else {
+					image = `NOT_FOUND:${tag}`;
+				}
+			}
+
 			const id = qstr.generateSuuid();
 			items.push({
 				id,
 				body: content,
-				indent
+				indent,
+				image
 			});
 		}
 
