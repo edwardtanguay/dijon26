@@ -14,7 +14,7 @@
         <div v-if="item.image" class="mt-1">
           <div
             v-if="item.image.startsWith('NOT_FOUND:')"
-            class="bg-black text-yellow-400 font-mono text-xs p-2 text-center rounded max-w-full inline-block"
+            class="bg-black text-yellow-400 font-mono text-base font-semibold w-[300px] h-[200px] flex flex-col items-center justify-center text-center rounded p-4 shadow-md my-2"
           >
             no image "{{ item.image.replace('NOT_FOUND:', '') }}" found
           </div>
@@ -59,6 +59,30 @@ const escapeHtml = (str: string): string => {
     .replace(/'/g, '&#039;')
 }
 
+// Clean URL hostname (e.g. https://www.openrunner.com/route-details/23448723 -> openrunner.com)
+const simplifyUrl = (rawUrl: string): string => {
+  try {
+    const urlObj = new URL(rawUrl)
+    return urlObj.hostname.replace(/^www\./, '')
+  } catch {
+    return rawUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0] || rawUrl
+  }
+}
+
+// Generate link HTML with icon and simplified URL text
+const createFormattedLinkHtml = (url: string): string => {
+  const isYoutube = url.toLowerCase().includes('youtube.com') || url.toLowerCase().includes('youtu.be')
+  const displayText = escapeHtml(simplifyUrl(url))
+
+  const youtubeIcon = `<svg class="inline-block w-4 h-4 mr-1 text-red-600 fill-current align-text-bottom" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`
+  
+  const externalLinkIcon = `<svg class="inline-block w-3.5 h-3.5 mr-1 text-indigo-500 align-text-bottom stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
+
+  const icon = isYoutube ? youtubeIcon : externalLinkIcon
+
+  return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-indigo-600 dark:text-indigo-400 underline hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors">${icon}<span>${displayText}</span></a>`
+}
+
 // Render markdown & emoticons
 const renderFormattedContent = (text: string): string => {
   if (!text) return ''
@@ -72,13 +96,13 @@ const renderFormattedContent = (text: string): string => {
   // Markdown links: [title](url)
   html = html.replace(
     /\[([^\]]+)\]\(([^)]+)\)/g,
-    '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-indigo-600 dark:text-indigo-400 underline hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors">$1</a>'
+    (_match, _title, url) => createFormattedLinkHtml(url)
   )
 
   // Bare URLs (http:// or https://)
   html = html.replace(
     /(^|[\s(])(https?:\/\/[^\s<)]+)/g,
-    '$1<a href="$2" target="_blank" rel="noopener noreferrer" class="text-indigo-600 dark:text-indigo-400 underline hover:text-indigo-800 dark:hover:text-indigo-300 break-all transition-colors">$2</a>'
+    (_match, prefix, url) => `${prefix}${createFormattedLinkHtml(url)}`
   )
 
   // Bold: **text**
