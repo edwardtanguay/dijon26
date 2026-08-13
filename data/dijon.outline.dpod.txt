@@ -10,6 +10,8 @@
 	- les gels
 - liste de tâches à accomplir
 	- enregistrer tous les événements Airbnb
+	- écrire à http://cafe-polyglotte-dijon.fr/
+		- existe-t-il d'autres groupes de ce genre pour pratiquer le français ?
 	- réserver un appartement Airbnb pour la semaine
 	- lire les deux Topo Guides
 	- commander des gels sur Amazon
@@ -85,6 +87,7 @@
 	- Café Polyglotte de Dijon
 		- les rencontres ont lieu le mardi et le mercredi, de 18 h à 20 h 30
 		- à l'Alhambra, 3 rue Marceau##cafelalhambra
+		- https://cafe-polyglotte-dijon.fr
 - tous les jours
 	- 10 défis oratoires
 - objectifs
