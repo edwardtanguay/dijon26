@@ -94,6 +94,28 @@
 	- je pèse 78 kilos
 	- j'ai un niveau B2 en français
 	- j'ai rencontré dix personnes avec qui je suis resté en contact
+- villes
+	- Ahuy [ah-EE]
+	- Bressey-sur-Tille [tee]
+	- Bretenière [bruh]
+	- Chenôve [shuh-NOHV]
+	- Chevigny-Saint-Sauveur [nee]
+	- Crimolois
+	- Daix [deh]
+	- Fénay [fee]
+	- Fontaine-lès-Dijon [f(on)-ten-ah]
+	- Hauteville-lès-Dijon [oh-tuh-vee-luh-lay]
+	- Longvic [l(on)-veek]
+	- Magny-sur-Tille [mah-nee, tee]
+	- Marsannay-la-Côte
+	- Neuilly-lès-Dijon [noo-ee-lay]
+	- Ouges [oozh]
+	- Perrigny-lès-Dijon
+	- Plombières-lès-Dijon [bee-air]
+	- Quetigny [kuh-tee-nee]
+	- Saint-Apollinaire
+	- Sennecey-lès-Dijon [sen-eh-say]
+	- Talant [tah-l(an)]##dijontowns
 - personnalités importantes de Dijon
 	- 1404 Philippe II de Bourgogne (Philippe le Hardi)
 		- il a fondé la puissance de la maison de Bourgogne et a été le premier duc de Bourgogne de la dynastie des Valois
