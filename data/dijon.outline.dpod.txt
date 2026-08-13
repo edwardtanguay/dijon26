@@ -1,6 +1,6 @@
 - marathon
 	- https://www.marathondesgrandscrus.com
-	- VIDEO: [Marathon des grands crus 17/10/2021 à Dijon](https://www.youtube.com/watch?v=qQCA4KLtdog)
+	- [Marathon des grands crus 17/10/2021 à Dijon](https://www.youtube.com/watch?v=qQCA4KLtdog)
 	- course à pied
 		- https://www.openrunner.com/route-details/23448723
 - quoi emporter
@@ -10,6 +10,8 @@
 	- les gels
 - liste de tâches à accomplir
 	- enregistrer tous les événements Airbnb
+	- écrire à http://cafe-polyglotte-dijon.fr/
+		- existe-t-il d'autres groupes de ce genre pour pratiquer le français ?
 	- réserver un appartement Airbnb pour la semaine
 	- lire les deux Topo Guides
 	- commander des gels sur Amazon
@@ -27,28 +29,78 @@
 			- lire-le rapidement, noter les lieux et les noms
 		- Dijon - Guide de Voyage 
 			- lire-le rapidement, noter les lieux et les noms
-- site
+- Airbnb
+	- moins de 330 euros pour 9 nuits
+- videos about Dijon
+	- [Histoire et gastronomie](https://www.youtube.com/watch?v=jMpkd1bWFyw) - 12:10
+- lieux à visiter
+	- Musée des Beaux-Arts
+	- Palais des Ducs
+	- Tour Philippe le Bon
+		- montez les 316 marches pour une vue panoramique exceptionnelle sur les toits colorés de Dijon, la ville et les vignobles alentour
+	- Église Notre-Dame
+		- chef-d'oeuvre gothique bourguignon avec ses gargouilles et son célèbre horloge Jacquemart
+	- Cathédrale Saint-Bénigne
+		- avec sa crypte romane du XIe siècle
+	- Les Halles centrales
+		- Marché couvert
+	- Musée archéologique de Dijon
+		- il présente des objets archéologiques qui permettent de découvrir l’histoire de la Bourgogne, de la Préhistoire au Moyen Âge
+	- Le 1204
+		- explique l’histoire, l’architecture et le développement de Dijon à travers les siècles
+	- Musée de la Vie Bourguignonne
+		- immersif et gratuit, sur la vie quotidienne d’autrefois
+		- il présente la vie en Bourgogne (surtout aux 18e, 19e et début 20e siècles)
+	- Musée Magnin
+		- il présente une importante collection de peintures et de meubles dans un élégant hôtel particulier du XVIIᵉ siècle
+- les rues médiévales
+	- rue de la Chouette
+	- 
+- appli
 	- créer des quiz
 		- géographie
+- aliments
+	- pain d’épices
 - calendrier
 	- mercredi 7 octobre
 		- préparer tout pour le voyage
 		- assurez d'avoir suffisamment d'argent pour payer votre compte Google ce mois-ci
 	- jeudi 8 octobre
 		- voyager en train de Berlin à Dijon
+		
 	- vendredi 9 octobre
 	- samedi 10 octobre
 	- dimanche 11 octobre 
 	- lundi 12 octobre
 	- mardi 13 octobre
+		- 18:00 Café Polyglotte de Dijon
 	- mercredi 14 octobre
+		- 18:00 Café Polyglotte de Dijon
 	- jeudi 15 octobre
 	- vendredi 16 octobre
 	- samedi 17 octobre
 		- voyager en train de Dijon à Berlin
+- activités linguistiques
+	- visite guidée
+		- https://www.withlocals.com/de/s/france/dijon/tours/walking/
+		- tous les musées et lieux d'intérêt
+	- Café Polyglotte de Dijon
+		- les rencontres ont lieu le mardi et le mercredi, de 18 h à 20 h 30
+		- à l'Alhambra, 3 rue Marceau##cafelalhambra
+		- https://cafe-polyglotte-dijon.fr
 - tous les jours
 	- 10 défis oratoires
+- objectifs
+	- je pèse 78 kilos
+	- j'ai un niveau B2 en français
+	- j'ai rencontré dix personnes avec qui je suis resté en contact
 - personnalités importantes de Dijon
+	- 1404 Philippe II de Bourgogne (Philippe le Hardi)
+		- il a fondé la puissance de la maison de Bourgogne et a été le premier duc de Bourgogne de la dynastie des Valois
+	- 1419 Jean sans Peur
+		- il a renforcé la puissance de la Bourgogne et joué un rôle majeur dans la guerre civile entre les Armagnacs et les Bourguignons au début du XVe siècle
+	- 1467 Philippe le Bon
+		- il a considérablement agrandi et renforcé l’État bourguignon au XVe siècle
 - concepts
 	- Grands Crus
 		- une célèbre route des vins située en Bourgogne
