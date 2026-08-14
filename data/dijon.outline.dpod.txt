@@ -9,25 +9,6 @@
 	- tous les vêtements de course
 	- les gels
 	- tous les mots de passe
-- objectif
-- défis d'écriture avant le voyage
-	- à faire
-		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes
-		- appeler l'office de tourisme et demander des visites guidées
-		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
-		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
-		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours/
-		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
-	- en attente d'une réponse
-		- 2026-08-13 19:54:05 j'ai écrit Laurent		
-- défis oratoires avant le voyage
-	- à faire
-		- Appeler l'office de tourisme et demander des visites guidées
-		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
-		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
-		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours
-		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
-	- accompli
 - liste de tâches à accomplir
 	- demander ia pour meetups
 	- lancer les défis dès maintenant : 3 appels par jour, avec journal de bord
@@ -230,4 +211,27 @@
 		- un cru est, dans le domaine du vin, un vignoble ou un terroir particulier reconnu pour la qualité de ses vins
 			- le mot vient du verbe croître : un cru est littéralement quelque chose qui a « poussé », notamment ce qui est produit par une terre
 			- par exemple, Chambertin est un cru très célèbre en Bourgogne
+- contacts
+	- Laurent
+		- CHALLENGE: 2026-08-13 19:54:05 j'ai écrit Laurent
+		
+		
+- défis d'écriture avant le voyage
+	- à faire
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes
+		- appeler l'office de tourisme et demander des visites guidées
+		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
+		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
+		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours/
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
+		
+- défis oratoires avant le voyage
+	- à faire
+		- Appeler l'office de tourisme et demander des visites guidées
+		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
+		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
+		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
+	- accompli
 
+	
