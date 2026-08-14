@@ -365,28 +365,34 @@ const filteredFinishedChallenges = computed(() => {
 const activeContactChallenges = computed(() => {
   if (!activeContactForChallenges.value) return []
   const cId = activeContactForChallenges.value.id
-  const list = challenges.value.filter((c) => c.contactId === cId)
+  const list = [...challenges.value.filter((c) => c.contactId === cId)]
   return list.sort((a, b) => {
-    if (a.completedAt && b.completedAt) {
-      return new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime()
+    // Non terminés d'abord
+    if (!a.completedAt && b.completedAt) return -1
+    if (a.completedAt && !b.completedAt) return 1
+    // Si tous deux non terminés : rang décroissant
+    if (!a.completedAt && !b.completedAt) {
+      return (b.rank ?? 2.5) - (a.rank ?? 2.5)
     }
-    if (a.completedAt && !b.completedAt) return -1
-    if (!a.completedAt && b.completedAt) return 1
-    return (b.rank ?? 2.5) - (a.rank ?? 2.5)
+    // Si tous deux terminés : date d'accomplissement décroissante
+    return new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime()
   })
 })
 
 const selectedContactDetailChallenges = computed(() => {
   if (!selectedContactForDetail.value) return []
   const cId = selectedContactForDetail.value.id
-  const list = challenges.value.filter((c) => c.contactId === cId)
+  const list = [...challenges.value.filter((c) => c.contactId === cId)]
   return list.sort((a, b) => {
-    if (a.completedAt && b.completedAt) {
-      return new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime()
+    // Non terminés d'abord
+    if (!a.completedAt && b.completedAt) return -1
+    if (a.completedAt && !b.completedAt) return 1
+    // Si tous deux non terminés : rang décroissant
+    if (!a.completedAt && !b.completedAt) {
+      return (b.rank ?? 2.5) - (a.rank ?? 2.5)
     }
-    if (a.completedAt && !b.completedAt) return -1
-    if (!a.completedAt && b.completedAt) return 1
-    return (b.rank ?? 2.5) - (a.rank ?? 2.5)
+    // Si tous deux terminés : date d'accomplissement décroissante
+    return new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime()
   })
 })
 
@@ -671,14 +677,14 @@ const getSlotCardBorderClass = (status: 'finished' | 'doing' | 'empty') => {
   return 'border-gray-300 dark:border-gray-700/80 shadow-[0_0_15px_rgba(0,0,0,0.05)] bg-gray-50/50 dark:bg-gray-900/30'
 }
 
-// Format Type & Rank: e.g. "oral (3.8)", "écrit" (if rank is 2.5, don't show it)
+// Format Type & Rank: e.g. "oral 3.8", "écrit" (if rank is 2.5, don't show it)
 const formatTypeAndRank = (type: string, rank?: number) => {
   const typeLabel = type === 'written' ? 'écrit' : 'oral'
   const rankNum = Number(rank ?? 2.5)
   if (Math.abs(rankNum - 2.5) < 0.01) {
     return typeLabel
   }
-  return `${typeLabel} (${rankNum.toFixed(1)})`
+  return `${typeLabel} ${rankNum.toFixed(1)}`
 }
 </script>
 
@@ -713,15 +719,18 @@ const formatTypeAndRank = (type: string, rank?: number) => {
             <h2 class="text-lg font-bold text-gray-900 dark:text-white !mb-0 !leading-none text-center sm:text-left">
               Tes défis pour aujourd'hui
             </h2>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center sm:text-left">
+            <p v-if="!loading" class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center sm:text-left">
               Complète tes {{ dailyTarget }} défis pour atteindre ton objectif du jour
+            </p>
+            <p v-else class="text-xs text-transparent select-none mt-1 text-center sm:text-left aria-hidden">
+              Chargement...
             </p>
           </div>
         </div>
 
         <!-- Target Setting (Centered on mobile) -->
         <div class="flex items-center justify-center gap-3">
-          <div v-if="!isEditingTarget" class="flex items-center gap-2">
+          <div v-if="!loading && !isEditingTarget" class="flex items-center gap-2">
             <div class="flex flex-col items-center">
               <span class="text-4xl sm:text-5xl font-black text-indigo-600 dark:text-indigo-400 leading-none tracking-tight">
                 {{ dailyTarget }}
@@ -738,7 +747,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <UIcon name="i-heroicons-pencil-square" class="w-5 h-5" />
             </button>
           </div>
-          <div v-else class="flex items-center gap-1.5 p-2 bg-gray-50 dark:bg-gray-900/60 rounded-xl border border-indigo-200 dark:border-indigo-800">
+          <div v-else-if="!loading && isEditingTarget" class="flex items-center gap-1.5 p-2 bg-gray-50 dark:bg-gray-900/60 rounded-xl border border-indigo-200 dark:border-indigo-800">
             <input
               v-model.number="targetInput"
               type="number"
@@ -788,7 +797,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 </span>
                 <div class="flex items-center gap-2">
                   <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                    Rang {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
+                    {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }} {{ slot.challenge.type === 'written' ? 'écrit' : 'oral' }}
                   </span>
                   <button
                     @click="openEditChallengeModal(slot.challenge)"
@@ -863,7 +872,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 </span>
                 <div class="flex items-center gap-2">
                   <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">
-                    Rang {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
+                    {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }} {{ slot.challenge.type === 'written' ? 'écrit' : 'oral' }}
                   </span>
                   <button
                     @click="openEditChallengeModal(slot.challenge)"
@@ -886,7 +895,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 <div v-if="swapCandidateChallenges.length === 0" class="flex justify-center">
                   <button
                     @click="openCreateChallengeModal(slot.challenge?.contactId, false)"
-                    class="px-4 py-1.5 rounded-lg bg-amber-200/90 hover:bg-amber-300 dark:bg-amber-900/60 dark:hover:bg-amber-800/80 text-amber-950 dark:text-amber-100 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105 border border-amber-400/80 dark:border-amber-700/80"
+                    class="px-4 py-1.5 rounded-lg bg-amber-200/90 hover:bg-amber-300 dark:bg-amber-900/60 dark:hover:bg-amber-800/80 text-amber-950 dark:text-amber-100 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer border border-amber-400/80 dark:border-amber-700/80"
                   >
                     <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-amber-700 dark:text-amber-300" />
                     <span>Créer un défi</span>
@@ -912,7 +921,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                       :value="alt.id"
                       class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 py-1"
                     >
-                      Rang {{ Number(alt.rank ?? 2.5).toFixed(1) }} - {{ alt.contact?.name ? alt.contact.name + ': ' : '' }}{{ alt.challengeText.slice(0, 45) }}...
+                      {{ Number(alt.rank ?? 2.5).toFixed(1) }} {{ alt.type === 'written' ? 'écrit' : 'oral' }} - {{ alt.contact?.name ? alt.contact.name + ': ' : '' }}{{ alt.challengeText.slice(0, 45) }}...
                     </option>
                   </select>
                   <UIcon name="i-heroicons-chevron-up-down" class="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-amber-700 dark:text-amber-300" />
@@ -1346,7 +1355,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               </span>
               <div class="flex items-center gap-2">
                 <span class="text-xs text-gray-500 dark:text-gray-400 font-mono">
-                  Rang {{ Number(challenge.rank ?? 2.5).toFixed(1) }}
+                  {{ Number(challenge.rank ?? 2.5).toFixed(1) }} {{ challenge.type === 'written' ? 'écrit' : 'oral' }}
                 </span>
                 <button
                   @click="openChallengeDetailModal(challenge)"
@@ -1503,7 +1512,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
       <!-- TAB 3 : CHALLENGES TODO (no search, ordered by rank desc)    -->
       <!-- ============================================================ -->
       <div v-if="activeTab === 'todo'" class="space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <p class="text-xs text-gray-500 dark:text-gray-400">
             Défis en attente d'accomplissement, ordonnés par rang de priorité décroissant.
           </p>
@@ -1527,15 +1536,10 @@ const formatTypeAndRank = (type: string, rank?: number) => {
             class="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-amber-300 dark:border-amber-800/60 shadow-xs space-y-3"
           >
             <div class="flex items-center justify-between">
-              <div class="flex flex-col">
-                <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                  <UIcon name="i-heroicons-sparkles" class="w-4 h-4" />
-                  <span>Rang {{ Number(challenge.rank ?? 2.5).toFixed(1) }}</span>
-                </span>
-                <span class="text-[11px] text-amber-600/80 dark:text-amber-400/80 font-normal pl-5">
-                  {{ challenge.type === 'written' ? 'écrit' : 'oral' }}
-                </span>
-              </div>
+              <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                <UIcon name="i-heroicons-sparkles" class="w-4 h-4" />
+                <span>{{ Number(challenge.rank ?? 2.5).toFixed(1) }} {{ challenge.type === 'written' ? 'écrit' : 'oral' }}</span>
+              </span>
               <button
                 @click="openChallengeDetailModal(challenge)"
                 class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-100 transition-colors flex items-center gap-1 cursor-pointer"
@@ -1719,7 +1723,6 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 <tr>
                   <th class="px-5 py-3.5">Jour</th>
                   <th class="px-5 py-3.5">Défis accomplis</th>
-                  <th class="px-5 py-3.5 text-right">Progression</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
@@ -1753,25 +1756,6 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                       >
                         <UIcon v-if="item.targetReached" name="i-heroicons-check" class="w-3.5 h-3.5 mr-1 text-emerald-600 dark:text-emerald-400" />
                         {{ item.count }} {{ item.count > 1 ? 'défis accomplis' : 'défi accompli' }}
-                      </span>
-                    </div>
-                  </td>
-
-                  <!-- Progress Bar / Target Reached -->
-                  <td class="px-5 py-4 text-right whitespace-nowrap text-xs">
-                    <div class="flex items-center justify-end gap-3">
-                      <div class="w-24 sm:w-32 bg-gray-100 dark:bg-gray-700 h-2 rounded-full overflow-hidden hidden sm:block">
-                        <div
-                          class="h-full rounded-full transition-all duration-300"
-                          :class="item.targetReached ? 'bg-emerald-500' : 'bg-indigo-600'"
-                          :style="{ width: `${Math.min(100, (item.count / (dailyTarget || 1)) * 100)}%` }"
-                        ></div>
-                      </div>
-                      <span
-                        class="font-mono font-bold"
-                        :class="item.targetReached ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'"
-                      >
-                        {{ Math.round((item.count / (dailyTarget || 1)) * 100) }}%
                       </span>
                     </div>
                   </td>
@@ -2515,11 +2499,8 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 <span class="font-bold text-gray-900 dark:text-white">{{ selectedChallengeForDetail.contact?.name || 'Contact' }}</span>
               </div>
               <div class="flex items-center gap-2 text-xs">
-                <span class="font-mono px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-semibold">
-                  Rang {{ Number(selectedChallengeForDetail.rank ?? 2.5).toFixed(1) }}
-                </span>
-                <span class="capitalize px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold">
-                  {{ selectedChallengeForDetail.type === 'written' ? 'Écrit ✍️' : 'Oral 🗣️' }}
+                <span class="font-mono px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-semibold text-gray-800 dark:text-gray-200">
+                  {{ Number(selectedChallengeForDetail.rank ?? 2.5).toFixed(1) }} {{ selectedChallengeForDetail.type === 'written' ? 'écrit ✍️' : 'oral 🗣️' }}
                 </span>
               </div>
             </div>
