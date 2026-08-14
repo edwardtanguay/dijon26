@@ -209,11 +209,36 @@ const sortedTodoChallenges = computed(() => {
   })
 })
 
+// Active chosen challenge ID for the Doing card (supports swapping)
+const activeDoingChallengeId = ref<string | null>(null)
+
+// Current Doing challenge computed
+const currentDoingChallenge = computed(() => {
+  if (sortedTodoChallenges.value.length === 0) return null
+  if (activeDoingChallengeId.value) {
+    const found = sortedTodoChallenges.value.find((c) => c.id === activeDoingChallengeId.value)
+    if (found) return found
+  }
+  return sortedTodoChallenges.value[0]
+})
+
+// Other available challenges for swap dropdown
+const swapCandidateChallenges = computed(() => {
+  if (!currentDoingChallenge.value) return []
+  return sortedTodoChallenges.value.filter((c) => c.id !== currentDoingChallenge.value?.id)
+})
+
 // Top Panel: 5 daily goal slots
+// If all 5 completed => all 5 green
+// If not all 5 completed:
+//   - finished challenges today => green
+//   - if no todo challenges available => remaining are red ("Créer un défi")
+//   - if 1 or more available => exactly 1 slot is yellow ("En cours" / Doing)
+//   - remaining slots => red ("Créer un défi")
 const dailyGoalSlots = computed(() => {
   const goalCount = 5
   const slots: Array<{
-    status: 'finished' | 'available' | 'empty'
+    status: 'finished' | 'doing' | 'empty'
     challenge?: Challenge
   }> = []
 
@@ -225,18 +250,15 @@ const dailyGoalSlots = computed(() => {
     })
   }
 
-  // 2. Available todo challenges (sorted by rank desc)
-  const remainingTodo = sortedTodoChallenges.value
-  let todoIndex = 0
-  while (slots.length < goalCount && todoIndex < remainingTodo.length) {
+  // 2. If slots left and todo challenges available, add exactly 1 doing challenge (yellow)
+  if (slots.length < goalCount && currentDoingChallenge.value) {
     slots.push({
-      status: 'available',
-      challenge: remainingTodo[todoIndex],
+      status: 'doing',
+      challenge: currentDoingChallenge.value,
     })
-    todoIndex++
   }
 
-  // 3. Missing slots
+  // 3. All remaining slots are empty (red)
   while (slots.length < goalCount) {
     slots.push({
       status: 'empty',
@@ -245,6 +267,26 @@ const dailyGoalSlots = computed(() => {
 
   return slots
 })
+
+// Relative date formatter (in French)
+const formatRelativeDate = (d: string | null | undefined) => {
+  if (!d) return '—'
+  const dateObj = new Date(d)
+  if (isNaN(dateObj.getTime())) return d
+
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const targetDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate())
+  
+  const diffTime = today.getTime() - targetDate.getTime()
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return "Aujourd'hui"
+  if (diffDays === 1) return 'Hier'
+  if (diffDays > 1 && diffDays < 30) return `Il y a ${diffDays} jours`
+
+  return dateObj.toLocaleDateString('fr-FR')
+}
 
 // Filtered Lists
 const filteredContacts = computed(() => {
@@ -505,6 +547,9 @@ const deleteChallenge = async (challenge: Challenge) => {
   if (!confirm(`Es-tu sûr(e) de vouloir supprimer ce défi ?`)) return
   try {
     await $fetch(`/api/challenges/${challenge.id}`, { method: 'DELETE' })
+    if (activeDoingChallengeId.value === challenge.id) {
+      activeDoingChallengeId.value = null
+    }
     await fetchData()
   } catch (err) {
     console.error('Erreur lors de la suppression du défi:', err)
@@ -535,6 +580,9 @@ const submitReflection = async () => {
     )
     if (res.success) {
       isReflectModalOpen.value = false
+      if (activeDoingChallengeId.value === selectedChallengeForReflect.value.id) {
+        activeDoingChallengeId.value = null
+      }
       await fetchData()
     }
   } catch (err) {
@@ -546,22 +594,16 @@ const submitReflection = async () => {
 
 // Border & Color algorithm:
 // completed = green
-// available but not complete = yellow / amber
-// not available = subtle red
-const getSlotCardBorderClass = (status: 'finished' | 'available' | 'empty') => {
+// doing / available = yellow / amber
+// empty = red
+const getSlotCardBorderClass = (status: 'finished' | 'doing' | 'empty') => {
   if (status === 'finished') {
     return 'border-emerald-500/80 dark:border-emerald-500/70 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-emerald-50/20 dark:bg-emerald-950/10'
   }
-  if (status === 'available') {
+  if (status === 'doing') {
     return 'border-amber-400/90 dark:border-amber-500/80 shadow-[0_0_15px_rgba(245,158,11,0.15)] bg-amber-50/20 dark:bg-amber-950/10'
   }
   return 'border-rose-400/70 dark:border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.10)] bg-rose-50/10 dark:bg-rose-950/10'
-}
-
-const getSlotAccentTextColor = (status: 'finished' | 'available' | 'empty') => {
-  if (status === 'finished') return 'text-emerald-600 dark:text-emerald-400'
-  if (status === 'available') return 'text-amber-600 dark:text-amber-400'
-  return 'text-rose-600 dark:text-rose-400'
 }
 
 // Format Type & Rank: e.g. "oral (3.8)", "écrit" (if rank is 2.5, don't show it)
@@ -611,7 +653,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
           </div>
         </div>
 
-        <!-- Target Setting: Super large 5, "par jour", edit icon on the right -->
+        <!-- Target Setting -->
         <div class="flex items-center gap-3">
           <div v-if="!isEditingTarget" class="flex items-center gap-2">
             <div class="flex flex-col items-center">
@@ -654,9 +696,9 @@ const formatTypeAndRank = (type: string, rank?: number) => {
         </div>
       </div>
 
-      <!-- 2 Flex Columns Maximum Grid for Challenges Cards (with slow spinner during loading) -->
+      <!-- 2 Flex Columns Maximum Grid for Challenges Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-        <!-- Loading State: 5 cards with SLOW moving spinner -->
+        <!-- Loading State -->
         <template v-if="loading">
           <div
             v-for="i in 5"
@@ -718,7 +760,15 @@ const formatTypeAndRank = (type: string, rank?: number) => {
 
             <div class="pt-3 mt-4 border-t border-emerald-200/50 dark:border-emerald-900/50 flex items-center justify-between text-xs">
               <div class="flex items-center gap-2">
-                <span class="font-bold text-emerald-700 dark:text-emerald-300">{{ slot.challenge.contact?.name || 'Contact' }}</span>
+                <button
+                  v-if="slot.challenge.contact"
+                  @click="openContactDetailModal(slot.challenge.contact)"
+                  class="font-bold text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors cursor-pointer text-left"
+                  title="Afficher les détails du contact"
+                >
+                  {{ slot.challenge.contact.name }}
+                </button>
+                <span v-else class="font-bold text-emerald-700 dark:text-emerald-300">Contact</span>
                 <a
                   v-if="slot.challenge.contact?.mapUrl"
                   :href="slot.challenge.contact.mapUrl"
@@ -731,17 +781,17 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 </a>
               </div>
               <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
-                <UIcon name="i-heroicons-check" class="w-3.5 h-3.5" />
+                <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 Terminé
               </span>
             </div>
           </div>
 
-          <!-- 2. Available Todo Challenge Card (Yellow / Amber) -->
+          <!-- 2. Doing / Active Available Todo Challenge Card (Yellow / Amber) -->
           <div
-            v-else-if="slot.status === 'available' && slot.challenge"
+            v-else-if="slot.status === 'doing' && slot.challenge"
             class="relative rounded-2xl p-5 border-2 transition-all flex flex-col justify-between min-h-[170px]"
-            :class="getSlotCardBorderClass('available')"
+            :class="getSlotCardBorderClass('doing')"
           >
             <div class="space-y-3">
               <div class="flex items-center justify-between gap-2">
@@ -750,6 +800,27 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   Défi #{{ index + 1 }}
                 </span>
                 <div class="flex items-center gap-2">
+                  <!-- Swap dropdown if more available -->
+                  <div v-if="swapCandidateChallenges.length > 0" class="relative">
+                    <select
+                      :value="slot.challenge.id"
+                      @change="(e: any) => { activeDoingChallengeId = e.target.value }"
+                      class="text-xs py-1 pl-2 pr-6 rounded-lg bg-amber-100/70 hover:bg-amber-200/80 dark:bg-amber-950/70 dark:hover:bg-amber-900/80 text-amber-800 dark:text-amber-200 font-medium border border-amber-300 dark:border-amber-700/80 cursor-pointer appearance-none focus:outline-none"
+                    >
+                      <option :value="slot.challenge.id">
+                        Changer ({{ swapCandidateChallenges.length }} dispo)
+                      </option>
+                      <option
+                        v-for="alt in swapCandidateChallenges"
+                        :key="alt.id"
+                        :value="alt.id"
+                      >
+                        Rang {{ Number(alt.rank ?? 2.5).toFixed(1) }} - {{ alt.contact?.name ? alt.contact.name + ': ' : '' }}{{ alt.challengeText.slice(0, 30) }}...
+                      </option>
+                    </select>
+                    <UIcon name="i-heroicons-chevron-up-down" class="w-3.5 h-3.5 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none text-amber-700 dark:text-amber-300" />
+                  </div>
+
                   <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">
                     Rang {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
                   </span>
@@ -771,7 +842,15 @@ const formatTypeAndRank = (type: string, rank?: number) => {
 
             <div class="pt-3 mt-4 border-t border-amber-200/60 dark:border-amber-900/50 flex items-center justify-between text-xs">
               <div class="flex items-center gap-2">
-                <span class="font-bold text-amber-700 dark:text-amber-300">{{ slot.challenge.contact?.name || 'Contact' }}</span>
+                <button
+                  v-if="slot.challenge.contact"
+                  @click="openContactDetailModal(slot.challenge.contact)"
+                  class="font-bold text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors cursor-pointer text-left"
+                  title="Afficher les détails du contact"
+                >
+                  {{ slot.challenge.contact.name }}
+                </button>
+                <span v-else class="font-bold text-amber-700 dark:text-amber-300">Contact</span>
                 <a
                   v-if="slot.challenge.contact?.mapUrl"
                   :href="slot.challenge.contact.mapUrl"
@@ -783,14 +862,20 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
                 </a>
               </div>
-              <button
-                @click="openReflectModal(slot.challenge)"
-                class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1"
-                title="Valider et faire le bilan"
-              >
-                <UIcon name="i-heroicons-check" class="w-3.5 h-3.5" />
-                <span>Accomplir</span>
-              </button>
+              <div class="flex items-center gap-2.5">
+                <span class="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                  <UIcon name="i-heroicons-arrow-path" class="w-3.5 h-3.5" />
+                  En cours
+                </span>
+                <button
+                  @click="openReflectModal(slot.challenge)"
+                  class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
+                  title="Valider et faire le bilan"
+                >
+                  <UIcon name="i-heroicons-check" class="w-4 h-4 text-white stroke-2" />
+                  <span>Terminer</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -808,7 +893,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               class="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105"
             >
               <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-rose-600 dark:text-rose-400" />
-              <span>Ajouter un défi</span>
+              <span>Créer un défi</span>
             </button>
           </div>
         </template>
@@ -900,17 +985,24 @@ const formatTypeAndRank = (type: string, rank?: number) => {
           >
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center text-xs">
+                <div class="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center text-sm">
                   {{ contact.name.charAt(0).toUpperCase() }}
                 </div>
-                <span class="font-bold text-gray-900 dark:text-white">{{ contact.name }}</span>
+                <div>
+                  <button
+                    @click="openContactDetailModal(contact)"
+                    class="font-bold text-gray-900 dark:text-white text-left hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                  >
+                    {{ contact.name }}
+                  </button>
+                </div>
               </div>
               <button
-                @click="openContactDetailModal(contact)"
+                @click="openContactChallengesModal(contact)"
                 class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors flex items-center gap-1 cursor-pointer"
               >
-                <UIcon name="i-heroicons-eye" class="w-3.5 h-3.5" />
-                <span>Afficher</span>
+                <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5" />
+                <span>{{ challenges.filter(c => c.contactId === contact.id).length }} défis</span>
               </button>
             </div>
 
@@ -926,14 +1018,14 @@ const formatTypeAndRank = (type: string, rank?: number) => {
             </div>
 
             <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60 text-xs">
-              <button
-                @click="openContactChallengesModal(contact)"
-                class="text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1 cursor-pointer"
-              >
-                <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5" />
-                <span>{{ challenges.filter(c => c.contactId === contact.id).length }} défis</span>
-              </button>
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-2">
+                <button
+                  @click="openContactDetailModal(contact)"
+                  class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  title="Afficher les détails"
+                >
+                  <UIcon name="i-heroicons-eye" class="w-4 h-4" />
+                </button>
                 <button
                   @click="openEditContactModal(contact)"
                   class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
@@ -960,16 +1052,14 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <thead class="bg-gray-50 dark:bg-gray-900/60 text-xs uppercase text-gray-500 dark:text-gray-400 font-bold border-b border-gray-200 dark:border-gray-700">
                 <tr>
                   <th class="px-5 py-3.5">Contact</th>
+                  <th class="px-5 py-3.5">Défis</th>
                   <th class="px-5 py-3.5">Coordonnées</th>
                   <th class="px-5 py-3.5">Description</th>
-                  <th class="px-5 py-3.5">Plan / Carte</th>
-                  <th class="px-5 py-3.5">Créé le</th>
-                  <th class="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
                 <tr v-if="filteredContacts.length === 0">
-                  <td colspan="6" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td colspan="4" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
                     Aucun contact trouvé.
                   </td>
                 </tr>
@@ -978,14 +1068,71 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   :key="contact.id"
                   class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                 >
-                  <!-- Contact Name -->
+                  <!-- Contact Name + Action icons under + Large initial letter -->
                   <td class="px-5 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">
-                    <div class="flex items-center gap-2.5">
-                      <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center text-xs">
+                    <div class="flex items-center gap-3">
+                      <!-- Expanded letter-icon matching 2 lines -->
+                      <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-black flex items-center justify-center text-base shrink-0 shadow-xs">
                         {{ contact.name.charAt(0).toUpperCase() }}
                       </div>
-                      <span>{{ contact.name }}</span>
+                      <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                          <button
+                            @click="openContactDetailModal(contact)"
+                            class="font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer text-left"
+                            title="Afficher les détails"
+                          >
+                            {{ contact.name }}
+                          </button>
+                          <a
+                            v-if="contact.mapUrl"
+                            :href="contact.mapUrl"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-gray-400 hover:text-indigo-600 inline-flex items-center"
+                            title="Google Maps"
+                          >
+                            <UIcon name="i-heroicons-map-pin" class="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                        <!-- 3 action icons right under the contact line -->
+                        <div class="flex items-center gap-1 text-gray-400">
+                          <button
+                            @click="openContactDetailModal(contact)"
+                            class="p-1 rounded-md hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                            title="Afficher les détails"
+                          >
+                            <UIcon name="i-heroicons-eye" class="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            @click="openEditContactModal(contact)"
+                            class="p-1 rounded-md hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                            title="Modifier le contact"
+                          >
+                            <UIcon name="i-heroicons-pencil-square" class="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            @click="deleteContact(contact)"
+                            class="p-1 rounded-md hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                            title="Supprimer le contact"
+                          >
+                            <UIcon name="i-heroicons-trash" class="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
+                  </td>
+
+                  <!-- Défis column directly to the right of Contact -->
+                  <td class="px-5 py-4 whitespace-nowrap">
+                    <button
+                      @click="openContactChallengesModal(contact)"
+                      class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      title="Voir la liste des défis de ce contact"
+                    >
+                      <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5" />
+                      <span>Défis ({{ challenges.filter(c => c.contactId === contact.id).length }})</span>
+                    </button>
                   </td>
 
                   <!-- Contact Info -->
@@ -1008,62 +1155,6 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   <!-- Description -->
                   <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 max-w-xs truncate">
                     {{ contact.description || '—' }}
-                  </td>
-
-                  <!-- Map URL -->
-                  <td class="px-5 py-4 text-xs whitespace-nowrap">
-                    <a
-                      v-if="contact.mapUrl"
-                      :href="contact.mapUrl"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 font-medium transition-colors"
-                    >
-                      <UIcon name="i-heroicons-map-pin" class="w-3.5 h-3.5" />
-                      <span>Google Maps</span>
-                      <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-3 h-3 opacity-70" />
-                    </a>
-                    <span v-else class="text-gray-400 italic">—</span>
-                  </td>
-
-                  <!-- Created At -->
-                  <td class="px-5 py-4 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                    {{ new Date(contact.createdAt).toLocaleDateString('fr-FR') }}
-                  </td>
-
-                  <!-- Actions -->
-                  <td class="px-5 py-4 text-right whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1.5">
-                      <button
-                        @click="openContactDetailModal(contact)"
-                        class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                        title="Afficher les détails"
-                      >
-                        <UIcon name="i-heroicons-eye" class="w-4 h-4" />
-                      </button>
-                      <button
-                        @click="openContactChallengesModal(contact)"
-                        class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 font-semibold text-xs transition-colors flex items-center gap-1 cursor-pointer"
-                        title="Voir la liste des défis de ce contact"
-                      >
-                        <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5" />
-                        <span>Défis ({{ challenges.filter(c => c.contactId === contact.id).length }})</span>
-                      </button>
-                      <button
-                        @click="openEditContactModal(contact)"
-                        class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                        title="Modifier le contact"
-                      >
-                        <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
-                      </button>
-                      <button
-                        @click="deleteContact(contact)"
-                        class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                        title="Supprimer le contact"
-                      >
-                        <UIcon name="i-heroicons-trash" class="w-4 h-4" />
-                      </button>
-                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -1130,12 +1221,21 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
             </div>
 
-            <div class="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
-              {{ challenge.contact?.name || 'Contact inconnu' }}
+            <div class="text-xs">
+              <button
+                v-if="challenge.contact"
+                @click="openContactDetailModal(challenge.contact)"
+                class="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors cursor-pointer text-left"
+              >
+                {{ challenge.contact.name }}
+              </button>
+              <span v-else class="text-gray-400">Contact inconnu</span>
             </div>
 
-            <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60 text-xs text-gray-500 dark:text-gray-400 font-mono">
-              <span>{{ formatDateForDisplay(challenge.completedAt) }}</span>
+            <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60 text-xs text-gray-500 dark:text-gray-400">
+              <span :title="formatDateForDisplay(challenge.completedAt)" class="font-medium">
+                {{ formatRelativeDate(challenge.completedAt) }}
+              </span>
               <div class="flex items-center gap-1">
                 <button
                   @click="openEditChallengeModal(challenge)"
@@ -1156,16 +1256,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
           </div>
         </div>
 
-        <!-- Desktop View: Finished Challenges Table -->
+        <!-- Desktop View: Finished Challenges Table (Date d'accomplissement first) -->
         <div class="hidden md:block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/80 shadow-xs overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
               <thead class="bg-gray-50 dark:bg-gray-900/60 text-xs uppercase text-gray-500 dark:text-gray-400 font-bold border-b border-gray-200 dark:border-gray-700">
                 <tr>
+                  <th class="px-5 py-3.5">Date d'accomplissement</th>
                   <th class="px-5 py-3.5">Défi & Contact</th>
                   <th class="px-5 py-3.5">Type & Rang</th>
                   <th class="px-5 py-3.5">Bilan / Réflexion</th>
-                  <th class="px-5 py-3.5">Date d'accomplissement</th>
                   <th class="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
@@ -1180,12 +1280,27 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   :key="challenge.id"
                   class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                 >
-                  <!-- Text & Contact (Outline content rendered without truncation) -->
+                  <!-- 1. Completed Date (relative with exact date tooltip) -->
+                  <td class="px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span :title="formatDateForDisplay(challenge.completedAt)" class="cursor-help underline decoration-dotted decoration-gray-300 dark:decoration-gray-600">
+                      {{ formatRelativeDate(challenge.completedAt) }}
+                    </span>
+                  </td>
+
+                  <!-- 2. Text & Contact (Contact link opens detail modal without underline) -->
                   <td class="px-5 py-4 max-w-md">
                     <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
                     <div class="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-2 flex items-center gap-1.5">
                       <UIcon name="i-heroicons-user" class="w-3.5 h-3.5" />
-                      <span>{{ challenge.contact?.name || 'Contact inconnu' }}</span>
+                      <button
+                        v-if="challenge.contact"
+                        @click="openContactDetailModal(challenge.contact)"
+                        class="hover:text-indigo-800 dark:hover:text-indigo-300 font-bold transition-colors cursor-pointer text-left"
+                        title="Afficher la fiche du contact"
+                      >
+                        {{ challenge.contact.name }}
+                      </button>
+                      <span v-else>Contact inconnu</span>
                       <a
                         v-if="challenge.contact?.mapUrl"
                         :href="challenge.contact.mapUrl"
@@ -1199,23 +1314,18 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                     </div>
                   </td>
 
-                  <!-- Type & Rank (Plain text without pills or icons) -->
+                  <!-- 3. Type & Rank -->
                   <td class="px-5 py-4 whitespace-nowrap text-xs text-gray-700 dark:text-gray-300 font-normal">
                     {{ formatTypeAndRank(challenge.type, challenge.rank) }}
                   </td>
 
-                  <!-- Notes (Outline content rendered without truncation) -->
+                  <!-- 4. Notes -->
                   <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-300 max-w-xs">
                     <OutlineContent v-if="challenge.afterChallengeNotes" :text="challenge.afterChallengeNotes" :available-images="availableImages" />
                     <span v-else class="text-gray-400 italic">Aucun bilan</span>
                   </td>
 
-                  <!-- Completed Date -->
-                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap font-mono">
-                    {{ formatDateForDisplay(challenge.completedAt) }}
-                  </td>
-
-                  <!-- Actions -->
+                  <!-- 5. Actions -->
                   <td class="px-5 py-4 text-right whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1.5">
                       <button
@@ -1276,10 +1386,15 @@ const formatTypeAndRank = (type: string, rank?: number) => {
             class="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-amber-300 dark:border-amber-800/60 shadow-xs space-y-3"
           >
             <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                <UIcon name="i-heroicons-sparkles" class="w-4 h-4" />
-                <span>Rang {{ Number(challenge.rank ?? 2.5).toFixed(1) }}</span>
-              </span>
+              <div class="flex flex-col">
+                <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                  <UIcon name="i-heroicons-sparkles" class="w-4 h-4" />
+                  <span>Rang {{ Number(challenge.rank ?? 2.5).toFixed(1) }}</span>
+                </span>
+                <span class="text-[11px] text-amber-600/80 dark:text-amber-400/80 font-normal pl-5">
+                  {{ challenge.type === 'written' ? 'écrit' : 'oral' }}
+                </span>
+              </div>
               <button
                 @click="openChallengeDetailModal(challenge)"
                 class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-100 transition-colors flex items-center gap-1 cursor-pointer"
@@ -1294,16 +1409,23 @@ const formatTypeAndRank = (type: string, rank?: number) => {
             </div>
 
             <div class="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
-              {{ challenge.contact?.name || 'Contact inconnu' }}
+              <button
+                v-if="challenge.contact"
+                @click="openContactDetailModal(challenge.contact)"
+                class="hover:text-indigo-800 dark:hover:text-indigo-300 font-bold transition-colors cursor-pointer text-left"
+              >
+                {{ challenge.contact.name }}
+              </button>
+              <span v-else>Contact inconnu</span>
             </div>
 
             <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60 text-xs">
               <button
                 @click="openReflectModal(challenge)"
-                class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1 cursor-pointer"
+                class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 title="Marquer comme accompli et rédiger un bilan"
               >
-                <UIcon name="i-heroicons-check-circle" class="w-4 h-4" />
+                <UIcon name="i-heroicons-check" class="w-4 h-4 text-white stroke-2" />
                 <span>Terminer</span>
               </button>
               <div class="flex items-center gap-1">
@@ -1326,7 +1448,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
           </div>
         </div>
 
-        <!-- Desktop View: Todo Table -->
+        <!-- Desktop View: Todo Table (No Type & Rang column, Rang with type under) -->
         <div class="hidden md:block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/80 shadow-xs overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
@@ -1335,13 +1457,12 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   <th class="px-5 py-3.5">Rang</th>
                   <th class="px-5 py-3.5">Défi</th>
                   <th class="px-5 py-3.5">Contact</th>
-                  <th class="px-5 py-3.5">Type & Rang</th>
                   <th class="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
                 <tr v-if="sortedTodoChallenges.length === 0">
-                  <td colspan="5" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td colspan="4" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
                     Aucun défi à faire dans la réserve. Crée un nouveau défi pour commencer !
                   </td>
                 </tr>
@@ -1350,13 +1471,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   :key="challenge.id"
                   class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                 >
-                  <!-- Rank (no bold, colored text) -->
+                  <!-- Rang column with 'écrit' or 'oral' under the rank in same color -->
                   <td class="px-5 py-4 whitespace-nowrap">
-                    <span
-                      class="text-xs font-normal font-mono text-amber-600 dark:text-amber-400"
-                    >
-                      {{ Number(challenge.rank ?? 2.5).toFixed(1) }}
-                    </span>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-medium font-mono text-amber-600 dark:text-amber-400">
+                        {{ Number(challenge.rank ?? 2.5).toFixed(1) }}
+                      </span>
+                      <span class="text-[11px] font-normal text-amber-600/80 dark:text-amber-400/80">
+                        {{ challenge.type === 'written' ? 'écrit' : 'oral' }}
+                      </span>
+                    </div>
                   </td>
 
                   <!-- Text (Outline content rendered without truncation) -->
@@ -1367,7 +1491,15 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   <!-- Contact -->
                   <td class="px-5 py-4 text-xs font-semibold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
                     <div class="flex items-center gap-1.5">
-                      <span>{{ challenge.contact?.name || '—' }}</span>
+                      <button
+                        v-if="challenge.contact"
+                        @click="openContactDetailModal(challenge.contact)"
+                        class="hover:text-indigo-800 dark:hover:text-indigo-300 font-bold transition-colors cursor-pointer text-left"
+                        title="Afficher la fiche du contact"
+                      >
+                        {{ challenge.contact.name }}
+                      </button>
+                      <span v-else>—</span>
                       <a
                         v-if="challenge.contact?.mapUrl"
                         :href="challenge.contact.mapUrl"
@@ -1381,12 +1513,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                     </div>
                   </td>
 
-                  <!-- Type & Rank (plain text) -->
-                  <td class="px-5 py-4 whitespace-nowrap text-xs text-gray-700 dark:text-gray-300 font-normal">
-                    {{ formatTypeAndRank(challenge.type, challenge.rank) }}
-                  </td>
-
-                  <!-- Actions -->
+                  <!-- Actions with large check icon on Terminer -->
                   <td class="px-5 py-4 text-right whitespace-nowrap">
                     <div class="flex items-center justify-end gap-2">
                       <button
@@ -1398,10 +1525,10 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                       </button>
                       <button
                         @click="openReflectModal(challenge)"
-                        class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1 cursor-pointer"
+                        class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                         title="Marquer comme accompli et rédiger un bilan"
                       >
-                        <UIcon name="i-heroicons-check-circle" class="w-4 h-4" />
+                        <UIcon name="i-heroicons-check" class="w-4 h-4 text-white stroke-2" />
                         <span>Terminer</span>
                       </button>
                       <button
