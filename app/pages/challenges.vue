@@ -791,17 +791,17 @@ const formatTypeAndRank = (type: string, rank?: number) => {
           >
             <div class="space-y-3">
               <div class="flex items-center justify-between gap-2">
-                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                  <UIcon name="i-heroicons-check-circle" class="w-4 h-4 text-emerald-500" />
+                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1.5 leading-none">
+                  <UIcon name="i-heroicons-check-circle" class="w-4 h-4 text-emerald-500 shrink-0" />
                   Défi #{{ index + 1 }} accompli
                 </span>
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                  <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 inline-flex items-center leading-none">
                     {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }} {{ slot.challenge.type === 'written' ? 'écrit' : 'oral' }}
                   </span>
                   <button
                     @click="openEditChallengeModal(slot.challenge)"
-                    class="p-1 rounded-md text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200 hover:bg-emerald-100/50 dark:hover:bg-emerald-950/60 transition-colors cursor-pointer"
+                    class="p-1 rounded-md text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200 hover:bg-emerald-100/50 dark:hover:bg-emerald-950/60 transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
                     title="Modifier le défi"
                   >
                     <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
@@ -866,17 +866,17 @@ const formatTypeAndRank = (type: string, rank?: number) => {
           >
             <div class="space-y-3">
               <div class="flex items-center justify-between gap-2">
-                <span class="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                  <UIcon name="i-heroicons-sparkles" class="w-4 h-4 text-amber-500" />
+                <span class="text-xs font-bold text-amber-600 dark:text-amber-400 inline-flex items-center gap-1.5 leading-none">
+                  <UIcon name="i-heroicons-sparkles" class="w-4 h-4 text-amber-500 shrink-0" />
                   Défi #{{ index + 1 }}
                 </span>
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                  <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 inline-flex items-center leading-none">
                     {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }} {{ slot.challenge.type === 'written' ? 'écrit' : 'oral' }}
                   </span>
                   <button
                     @click="openEditChallengeModal(slot.challenge)"
-                    class="p-1 rounded-md text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200 hover:bg-amber-100/50 dark:hover:bg-amber-950/60 transition-colors cursor-pointer"
+                    class="p-1 rounded-md text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200 hover:bg-amber-100/50 dark:hover:bg-amber-950/60 transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
                     title="Modifier le défi"
                   >
                     <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
