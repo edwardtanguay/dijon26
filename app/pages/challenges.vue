@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 
 useHead({
-  title: 'Défis & Contacts - Dijon 26',
+  title: 'Défis & Réseau - Dijon 26',
   meta: [
     { name: 'description', content: 'Gère tes défis quotidiens et ton réseau de contacts à Dijon' },
   ],
@@ -25,7 +25,7 @@ interface Challenge {
   contact?: Contact
   text: string
   type: 'written' | 'spoken'
-  scheduledFor: string | null
+  rank: number
   completedAt: string | null
   afterChallengeNotes: string | null
   createdAt: string
@@ -39,7 +39,9 @@ const dailyTarget = ref<number>(10)
 const isEditingTarget = ref(false)
 const targetInput = ref<number>(10)
 const loading = ref(true)
-const activeTab = ref<'today' | 'tomorrow' | 'all'>('today')
+
+// Tabs: default is "today"
+const activeTab = ref<'today' | 'todo' | 'past'>('today')
 
 // Modals
 const isReflectModalOpen = ref(false)
@@ -61,8 +63,7 @@ const newChallengeForm = ref({
   newContactDescription: '',
   text: '',
   type: 'written' as 'written' | 'spoken',
-  scheduledDateOption: 'today' as 'today' | 'tomorrow' | 'custom',
-  customDate: '',
+  rank: 2.5,
 })
 const newChallengeSubmitting = ref(false)
 
@@ -108,66 +109,54 @@ const getLocalDateString = (d: Date | string | null = new Date()) => {
 }
 
 const todayStr = computed(() => getLocalDateString(new Date()))
-const tomorrowStr = computed(() => {
-  const t = new Date()
-  t.setDate(t.getDate() + 1)
-  return getLocalDateString(t)
-})
 
-// Challenges filtered by date
-const todayCompletedChallenges = computed(() => {
+// Challenge Categories:
+// 1. Finished today
+const finishedTodayChallenges = computed(() => {
   return challenges.value.filter((c) => {
     if (!c.completedAt) return false
     return getLocalDateString(c.completedAt) === todayStr.value
   })
 })
 
-const todayPendingChallenges = computed(() => {
+// 2. Todo backlog pool (all pending challenges, sorted by rank descending)
+const todoPoolChallenges = computed(() => {
+  return challenges.value
+    .filter((c) => !c.completedAt)
+    .sort((a, b) => (b.rank ?? 2.5) - (a.rank ?? 2.5))
+})
+
+// 3. Finished in the past
+const finishedInPastChallenges = computed(() => {
   return challenges.value.filter((c) => {
-    if (c.completedAt) return false
-    if (!c.scheduledFor) return true // backlog defaults to today
-    return getLocalDateString(c.scheduledFor) === todayStr.value
+    if (!c.completedAt) return false
+    return getLocalDateString(c.completedAt) < todayStr.value
   })
 })
 
-const tomorrowPendingChallenges = computed(() => {
-  return challenges.value.filter((c) => {
-    if (c.completedAt) return false
-    if (!c.scheduledFor) return false
-    return getLocalDateString(c.scheduledFor) === tomorrowStr.value
-  })
+// Calculations for today's goal & reserve warnings
+const todayDoneCount = computed(() => finishedTodayChallenges.value.length)
+const todoPoolCount = computed(() => todoPoolChallenges.value.length)
+
+// Alert if the backlog pool has fewer tasks than the daily target
+const isPoolUnderTarget = computed(() => todoPoolCount.value < dailyTarget.value)
+const poolMissingCount = computed(() => {
+  const diff = dailyTarget.value - todoPoolCount.value
+  return diff > 0 ? diff : 0
 })
 
-// Calculations for alerts
-const todayDoneCount = computed(() => todayCompletedChallenges.value.length)
-const todayPendingCount = computed(() => todayPendingChallenges.value.length)
-const todayTotalAvailable = computed(() => todayDoneCount.value + todayPendingCount.value)
-const todayMissingCount = computed(() => {
-  const missing = dailyTarget.value - todayTotalAvailable.value
-  return missing > 0 ? missing : 0
-})
-
-const tomorrowPendingCount = computed(() => tomorrowPendingChallenges.value.length)
-const tomorrowMissingCount = computed(() => {
-  const missing = dailyTarget.value - tomorrowPendingCount.value
-  return missing > 0 ? missing : 0
-})
-
-// Displayed challenges depending on tab
+// Displayed challenges based on tab
 const displayedChallenges = computed(() => {
   if (activeTab.value === 'today') {
-    return [
-      ...todayPendingChallenges.value,
-      ...todayCompletedChallenges.value,
-    ]
+    return finishedTodayChallenges.value
   }
-  if (activeTab.value === 'tomorrow') {
-    return challenges.value.filter((c) => {
-      if (!c.scheduledFor) return false
-      return getLocalDateString(c.scheduledFor) === tomorrowStr.value
-    })
+  if (activeTab.value === 'todo') {
+    return todoPoolChallenges.value
   }
-  return challenges.value
+  if (activeTab.value === 'past') {
+    return finishedInPastChallenges.value
+  }
+  return []
 })
 
 // Update Daily Target
@@ -267,7 +256,7 @@ const reflectContactHistory = computed(() => {
 })
 
 // Create Challenge
-const openCreateChallengeModal = (defaultTabDate?: 'today' | 'tomorrow') => {
+const openCreateChallengeModal = () => {
   newChallengeForm.value = {
     contactMode: contacts.value.length > 0 ? 'existing' : 'new',
     contactId: contacts.value[0]?.id || '',
@@ -277,8 +266,7 @@ const openCreateChallengeModal = (defaultTabDate?: 'today' | 'tomorrow') => {
     newContactDescription: '',
     text: '',
     type: 'written',
-    scheduledDateOption: defaultTabDate || (activeTab.value === 'tomorrow' ? 'tomorrow' : 'today'),
-    customDate: todayStr.value,
+    rank: 2.5,
   }
   isNewChallengeModalOpen.value = true
 }
@@ -287,17 +275,10 @@ const submitNewChallenge = async () => {
   if (!newChallengeForm.value.text.trim()) return
   newChallengeSubmitting.value = true
   try {
-    let targetDate = todayStr.value
-    if (newChallengeForm.value.scheduledDateOption === 'tomorrow') {
-      targetDate = tomorrowStr.value
-    } else if (newChallengeForm.value.scheduledDateOption === 'custom' && newChallengeForm.value.customDate) {
-      targetDate = newChallengeForm.value.customDate
-    }
-
     const payload: any = {
       text: newChallengeForm.value.text.trim(),
       type: newChallengeForm.value.type,
-      scheduledFor: new Date(`${targetDate}T10:00:00.000Z`).toISOString(),
+      rank: Number(newChallengeForm.value.rank) || 2.5,
     }
 
     if (newChallengeForm.value.contactMode === 'existing') {
@@ -340,7 +321,7 @@ const submitNewChallenge = async () => {
               Défis & Réseau
             </h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              Définis, accomplis et analyse tes interactions quotidiennes à Dijon.
+              Accomplis tes interactions quotidiennes sans date imposée et puise dans ta réserve.
             </p>
           </div>
         </div>
@@ -407,7 +388,7 @@ const submitNewChallenge = async () => {
           </div>
         </div>
 
-        <!-- Progress bar & counts -->
+        <!-- Progress bar & counts for Today -->
         <div class="space-y-2">
           <div class="flex justify-between items-baseline">
             <div class="flex items-baseline gap-2">
@@ -415,7 +396,13 @@ const submitNewChallenge = async () => {
                 {{ todayDoneCount }}
               </span>
               <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                / {{ dailyTarget }} complétés aujourd'hui
+                / {{ dailyTarget }} accomplis aujourd'hui
+              </span>
+              <span
+                v-if="todayDoneCount > dailyTarget"
+                class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300"
+              >
+                +{{ todayDoneCount - dailyTarget }} en surplus !
               </span>
             </div>
             <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">
@@ -426,88 +413,97 @@ const submitNewChallenge = async () => {
           <div class="w-full bg-gray-100 dark:bg-gray-700 h-3.5 rounded-full overflow-hidden">
             <div
               class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out"
+              :class="todayDoneCount >= dailyTarget ? '!bg-emerald-500' : ''"
               :style="{ width: `${Math.min(100, Math.round((todayDoneCount / (dailyTarget || 1)) * 100))}%` }"
             />
           </div>
         </div>
 
-        <!-- Dynamic Warning Alerts for Today -->
+        <!-- Status Message for Today -->
         <div
-          v-if="todayMissingCount > 0"
-          class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 flex items-start gap-3.5"
-        >
-          <UIcon name="i-heroicons-exclamation-triangle" class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-          <div class="text-sm">
-            <p class="font-bold text-amber-900 dark:text-amber-200">
-              Il te manque {{ todayMissingCount }} défi{{ todayMissingCount > 1 ? 's' : '' }} pour atteindre ton objectif aujourd'hui !
-            </p>
-            <p class="text-amber-700 dark:text-amber-400 mt-0.5">
-              Tu as réalisé {{ todayDoneCount }} défi{{ todayDoneCount > 1 ? 's' : '' }} et il t'en reste {{ todayPendingCount }} prévu{{ todayPendingCount > 1 ? 's' : '' }} aujourd'hui.
-            </p>
-            <button
-              @click="openCreateChallengeModal('today')"
-              class="mt-2 text-xs font-bold text-amber-900 dark:text-amber-200 underline hover:no-underline cursor-pointer"
-            >
-              + Ajouter un défi pour aujourd'hui
-            </button>
-          </div>
-        </div>
-
-        <div
-          v-else
+          v-if="todayDoneCount >= dailyTarget"
           class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-center gap-3.5"
         >
           <UIcon name="i-heroicons-check-badge" class="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <p class="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
-            Félicitations ! Tu as suffisamment de défis planifiés ou complétés pour remplir ton objectif de {{ dailyTarget }} aujourd'hui.
+            Objectif atteint pour aujourd'hui ({{ todayDoneCount }}/{{ dailyTarget }}) ! Tout défi supplémentaire compte en bonus.
           </p>
+        </div>
+        <div
+          v-else
+          class="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 flex items-center justify-between gap-3 text-sm"
+        >
+          <div class="flex items-center gap-2.5 text-indigo-900 dark:text-indigo-200">
+            <UIcon name="i-heroicons-bolt" class="w-5 h-5 text-indigo-500 shrink-0" />
+            <span>Encore <strong>{{ dailyTarget - todayDoneCount }}</strong> défi{{ (dailyTarget - todayDoneCount) > 1 ? 's' : '' }} à accomplir aujourd'hui.</span>
+          </div>
+          <button
+            @click="activeTab = 'todo'"
+            class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
+          >
+            Piocher dans les défis &rarr;
+          </button>
         </div>
       </div>
 
-      <!-- Preparation Card for Tomorrow -->
+      <!-- Backlog Reserve / Buffer Card -->
       <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-700/60 shadow-sm flex flex-col justify-between space-y-4">
         <div>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-calendar-days" class="w-5 h-5 text-sky-500" />
+            <UIcon name="i-heroicons-circle-stack" class="w-5 h-5 text-indigo-500" />
             <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Préparation de demain
+              Réserve disponible (À faire)
             </span>
           </div>
 
           <div class="mt-4">
             <div class="flex items-baseline gap-2">
               <span class="text-3xl font-black text-gray-900 dark:text-white">
-                {{ tomorrowPendingCount }}
+                {{ todoPoolCount }}
               </span>
               <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                / {{ dailyTarget }} programmés
+                défis en réserve
               </span>
             </div>
 
             <div class="mt-3">
-              <div v-if="tomorrowMissingCount > 0" class="text-xs text-sky-800 dark:text-sky-300 font-medium bg-sky-50 dark:bg-sky-950/40 p-3 rounded-lg border border-sky-100 dark:border-sky-900/40">
-                Il t'en manque <strong>{{ tomorrowMissingCount }}</strong> pour être totalement prêt demain.
+              <!-- Warning if backlog is smaller than daily target -->
+              <div
+                v-if="isPoolUnderTarget"
+                class="text-xs text-amber-800 dark:text-amber-300 font-medium bg-amber-50 dark:bg-amber-950/40 p-3 rounded-lg border border-amber-200 dark:border-amber-900/40 space-y-1"
+              >
+                <div class="flex items-center gap-1 font-bold text-amber-900 dark:text-amber-200">
+                  <UIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4" />
+                  <span>Réserve basse</span>
+                </div>
+                <p>
+                  Il ne te reste que {{ todoPoolCount }} défi{{ todoPoolCount > 1 ? 's' : '' }} pour un objectif de {{ dailyTarget }}/jour. Pense à en créer {{ poolMissingCount }} d'autres !
+                </p>
               </div>
-              <div v-else class="text-xs text-emerald-800 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-lg border border-emerald-100 dark:border-emerald-900/40">
-                Objectif de demain déjà atteint en préparation !
+              <div
+                v-else
+                class="text-xs text-emerald-800 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-lg border border-emerald-100 dark:border-emerald-900/40"
+              >
+                Réserve suffisante pour assurer tes objectifs.
               </div>
             </div>
           </div>
         </div>
 
         <button
-          @click="openCreateChallengeModal('tomorrow')"
-          class="w-full py-2.5 px-4 rounded-xl border border-dashed border-sky-300 dark:border-sky-700 hover:bg-sky-50 dark:hover:bg-sky-950/30 text-sky-700 dark:text-sky-300 text-xs font-bold transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+          @click="openCreateChallengeModal()"
+          class="w-full py-2.5 px-4 rounded-xl border border-dashed border-indigo-300 dark:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
         >
           <UIcon name="i-heroicons-plus" class="w-4 h-4" />
-          <span>Planifier un défi pour demain</span>
+          <span>Ajouter à la réserve</span>
         </button>
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs : FINISHED TASKS ("finished today", "todo", "finished in the past") -->
     <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
       <div class="flex space-x-2 sm:space-x-4">
+        <!-- 1. Finished today (Default) -->
         <button
           @click="activeTab = 'today'"
           class="py-3 px-4 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
@@ -515,41 +511,43 @@ const submitNewChallenge = async () => {
             ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
             : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          <span>Aujourd'hui</span>
-          <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-            {{ todayPendingChallenges.length + todayCompletedChallenges.length }}
+          <span>Terminés aujourd'hui</span>
+          <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold">
+            {{ finishedTodayChallenges.length }}
           </span>
         </button>
 
+        <!-- 2. Todo pool -->
         <button
-          @click="activeTab = 'tomorrow'"
+          @click="activeTab = 'todo'"
           class="py-3 px-4 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
-          :class="activeTab === 'tomorrow'
+          :class="activeTab === 'todo'
             ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
             : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          <span>Demain</span>
-          <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-            {{ tomorrowPendingCount }}
+          <span>À faire (Réserve)</span>
+          <span class="px-2 py-0.5 text-xs rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold">
+            {{ todoPoolChallenges.length }}
           </span>
         </button>
 
+        <!-- 3. Finished in the past -->
         <button
-          @click="activeTab = 'all'"
+          @click="activeTab = 'past'"
           class="py-3 px-4 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
-          :class="activeTab === 'all'
+          :class="activeTab === 'past'
             ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
             : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          <span>Tous / Historique</span>
+          <span>Historique passé</span>
           <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-            {{ challenges.length }}
+            {{ finishedInPastChallenges.length }}
           </span>
         </button>
       </div>
 
       <div class="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">
-        {{ contacts.length }} contact{{ contacts.length > 1 ? 's' : '' }} référencé{{ contacts.length > 1 ? 's' : '' }}
+        {{ contacts.length }} contact{{ contacts.length > 1 ? 's' : '' }}
       </div>
     </div>
 
@@ -564,14 +562,25 @@ const submitNewChallenge = async () => {
         <UIcon name="i-heroicons-clipboard-document-list" class="w-6 h-6" />
       </div>
       <div>
-        <h3 class="text-base font-bold text-gray-900 dark:text-white">Aucun défi dans cette vue</h3>
+        <h3 class="text-base font-bold text-gray-900 dark:text-white">
+          {{ activeTab === 'today' ? "Aucun défi terminé aujourd'hui pour l'instant" : activeTab === 'todo' ? "La réserve est vide" : "Aucun défi passé" }}
+        </h3>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Planifie tes prochaines prises de contact pour booster ton réseau à Dijon.
+          {{ activeTab === 'today' ? "Choisis un défi dans la réserve « À faire » pour commencer ta journée." : "Crée de nouveaux défis pour alimenter ta réserve." }}
         </p>
       </div>
       <button
+        v-if="activeTab === 'today'"
+        @click="activeTab = 'todo'"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl cursor-pointer"
+      >
+        <span>Voir les défis à faire</span>
+        <UIcon name="i-heroicons-arrow-right" class="w-4 h-4" />
+      </button>
+      <button
+        v-else
         @click="openCreateChallengeModal()"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl cursor-pointer"
       >
         <UIcon name="i-heroicons-plus" class="w-4 h-4" />
         <span>Créer un défi</span>
@@ -610,13 +619,21 @@ const submitNewChallenge = async () => {
                 <span>{{ challenge.type === 'written' ? '✍️ Écrit' : '🗣️ Oral' }}</span>
               </span>
 
-              <!-- Status Badge -->
+              <!-- Inconspicuous Rank Display -->
+              <span
+                class="text-[11px] font-mono text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800"
+                title="Rang de priorité (0.0 - 5.0)"
+              >
+                #{{ Number(challenge.rank || 2.5).toFixed(1) }}
+              </span>
+
+              <!-- Status Badge if completed -->
               <span
                 v-if="challenge.completedAt"
                 class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 inline-flex items-center gap-1"
               >
                 <UIcon name="i-heroicons-check" class="w-3.5 h-3.5" />
-                <span>Accompli</span>
+                <span>Accompli {{ new Date(challenge.completedAt).toLocaleDateString('fr-FR') }}</span>
               </span>
             </div>
 
@@ -766,14 +783,14 @@ const submitNewChallenge = async () => {
             <button
               type="button"
               @click="isReflectModalOpen = false"
-              class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
             >
               Annuler
             </button>
             <button
               type="submit"
               :disabled="reflectSubmitting"
-              class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2"
+              class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer"
             >
               <UIcon v-if="reflectSubmitting" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
               <span>Valider le bilan</span>
@@ -847,9 +864,14 @@ const submitNewChallenge = async () => {
               class="p-4 rounded-xl border border-gray-100 dark:border-gray-700/80 bg-white dark:bg-gray-900 text-sm space-y-2"
             >
               <div class="flex items-center justify-between text-xs">
-                <span class="font-semibold text-indigo-600 dark:text-indigo-400">
-                  {{ ch.type === 'written' ? '✍️ Échange écrit' : '🗣️ Échange oral' }}
-                </span>
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-indigo-600 dark:text-indigo-400">
+                    {{ ch.type === 'written' ? '✍️ Échange écrit' : '🗣️ Échange oral' }}
+                  </span>
+                  <span class="text-[10px] font-mono text-gray-400 bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                    #{{ Number(ch.rank || 2.5).toFixed(1) }}
+                  </span>
+                </div>
                 <span class="text-gray-400">
                   {{ ch.completedAt ? `Accompli le ${new Date(ch.completedAt).toLocaleDateString('fr-FR')}` : 'En attente' }}
                 </span>
@@ -866,7 +888,7 @@ const submitNewChallenge = async () => {
         <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
           <button
             @click="isContactModalOpen = false"
-            class="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-semibold hover:bg-gray-200"
+            class="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-semibold hover:bg-gray-200 cursor-pointer"
           >
             Fermer
           </button>
@@ -887,7 +909,7 @@ const submitNewChallenge = async () => {
               Créer un nouveau défi
             </h2>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              Associe une action à un contact et programme sa réalisation.
+              Associe une action à un contact et ajoute-la à ta réserve de défis.
             </p>
           </div>
           <button
@@ -1029,66 +1051,38 @@ const submitNewChallenge = async () => {
             </label>
           </div>
 
-          <!-- Scheduled For -->
+          <!-- Challenge Rank (0.0 to 5.0, default 2.5) -->
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
-              Planifié pour
-            </label>
-            <div class="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                @click="newChallengeForm.scheduledDateOption = 'today'"
-                class="py-2 text-xs font-semibold rounded-lg border transition-all"
-                :class="newChallengeForm.scheduledDateOption === 'today'
-                  ? 'bg-indigo-600 text-white border-indigo-600'
-                  : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
-              >
-                Aujourd'hui
-              </button>
-              <button
-                type="button"
-                @click="newChallengeForm.scheduledDateOption = 'tomorrow'"
-                class="py-2 text-xs font-semibold rounded-lg border transition-all"
-                :class="newChallengeForm.scheduledDateOption === 'tomorrow'
-                  ? 'bg-indigo-600 text-white border-indigo-600'
-                  : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
-              >
-                Demain
-              </button>
-              <button
-                type="button"
-                @click="newChallengeForm.scheduledDateOption = 'custom'"
-                class="py-2 text-xs font-semibold rounded-lg border transition-all"
-                :class="newChallengeForm.scheduledDateOption === 'custom'
-                  ? 'bg-indigo-600 text-white border-indigo-600'
-                  : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
-              >
-                Autre date
-              </button>
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                Rang de priorité (0.0 à 5.0)
+              </label>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                {{ Number(newChallengeForm.rank).toFixed(1) }}
+              </span>
             </div>
-
-            <div v-if="newChallengeForm.scheduledDateOption === 'custom'" class="mt-2">
-              <input
-                v-model="newChallengeForm.customDate"
-                type="date"
-                required
-                class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-900 dark:text-white dark:bg-gray-900"
-              />
-            </div>
+            <input
+              v-model.number="newChallengeForm.rank"
+              type="number"
+              step="0.1"
+              min="0"
+              max="5"
+              class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white"
+            />
           </div>
 
           <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
             <button
               type="button"
               @click="isNewChallengeModalOpen = false"
-              class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
             >
               Annuler
             </button>
             <button
               type="submit"
               :disabled="newChallengeSubmitting"
-              class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2"
+              class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer"
             >
               <UIcon v-if="newChallengeSubmitting" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
               <span>Créer le défi</span>

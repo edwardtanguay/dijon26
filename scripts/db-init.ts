@@ -61,14 +61,15 @@ async function init() {
     `)
     console.log('✔ Contact table verified/created.')
 
-    // Create Challenge table
+    // Drop and Recreate Challenge table to update schema
+    await client.execute(`DROP TABLE IF EXISTS "Challenge";`)
     await client.execute(`
       CREATE TABLE IF NOT EXISTS "Challenge" (
         "id" TEXT NOT NULL PRIMARY KEY,
         "contactId" TEXT NOT NULL,
         "text" TEXT NOT NULL,
         "type" TEXT NOT NULL,
-        "scheduledFor" DATETIME,
+        "rank" REAL NOT NULL DEFAULT 2.5,
         "completedAt" DATETIME,
         "afterChallengeNotes" TEXT,
         "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

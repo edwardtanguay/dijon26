@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
         contact: true,
       },
       orderBy: [
-        { scheduledFor: 'asc' },
+        { rank: 'desc' },
         { createdAt: 'desc' },
       ],
     })

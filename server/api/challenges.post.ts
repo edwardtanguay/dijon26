@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
       newContactDescription,
       text,
       type,
-      scheduledFor,
+      rank,
     } = body
 
     if (!text || typeof text !== 'string' || !text.trim()) {
@@ -57,14 +57,20 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const scheduledDate = scheduledFor ? new Date(scheduledFor) : new Date()
+    let parsedRank = 2.5
+    if (rank !== undefined && rank !== null) {
+      const num = parseFloat(rank)
+      if (!isNaN(num) && num >= 0 && num <= 5) {
+        parsedRank = Math.round(num * 10) / 10
+      }
+    }
 
     const challenge = await prisma.challenge.create({
       data: {
         contactId: finalContactId,
         text: text.trim(),
         type,
-        scheduledFor: scheduledDate,
+        rank: parsedRank,
       },
       include: {
         contact: true,

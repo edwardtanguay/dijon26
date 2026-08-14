@@ -97,13 +97,13 @@ async function main() {
   const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
   const tomorrowStr = tomorrow.toISOString().split('T')[0]
 
-  // Seed some challenges for today (completed and pending)
+  // Seed challenges (some completed today, some completed in the past, and a pool of todo challenges)
   await prisma.challenge.create({
     data: {
       contactId: contactBeauxArts.id,
       text: 'Demander par e-mail le calendrier des visites guidées thématiques de la rentrée',
       type: 'written',
-      scheduledFor: new Date(`${todayStr}T09:00:00.000Z`),
+      rank: 4.5,
       completedAt: new Date(`${todayStr}T10:15:00.000Z`),
       afterChallengeNotes: 'E-mail envoyé ce matin. Demande faite pour le parcours Moyen-Âge. Réponse automatique reçue, en attente du guide.',
     },
@@ -114,30 +114,43 @@ async function main() {
       contactId: contactOT.id,
       text: 'Appeler pour connaître les horaires du parcours de la Chouette et le tarif des livrets',
       type: 'spoken',
-      scheduledFor: new Date(`${todayStr}T11:00:00.000Z`),
+      rank: 3.8,
       completedAt: new Date(`${todayStr}T11:30:00.000Z`),
       afterChallengeNotes: 'Appel très fluide. Accueil chaleureux, livret à 4€ disponible directement au guichet.',
     },
   })
 
+  // Past completed challenge
+  const pastDate = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)
+  await prisma.challenge.create({
+    data: {
+      contactId: contactCAF.id,
+      text: 'Se renseigner sur la permanence hebdomadaire du club et les adhésions',
+      type: 'spoken',
+      rank: 2.5,
+      completedAt: pastDate,
+      afterChallengeNotes: 'Permanence tous les jeudis soirs de 18h à 20h. Très accueillants.',
+    },
+  })
+
+  // Todo pool challenges
   await prisma.challenge.create({
     data: {
       contactId: contactCAF.id,
       text: 'Écrire pour demander les conditions d’inscription et le programme des sorties débutants',
       type: 'written',
-      scheduledFor: new Date(`${todayStr}T14:00:00.000Z`),
+      rank: 4.8,
       completedAt: null,
       afterChallengeNotes: null,
     },
   })
 
-  // Seed challenges for tomorrow
   await prisma.challenge.create({
     data: {
       contactId: contactBeauxArts.id,
       text: 'Contacter le responsable pédagogique pour les ateliers de dessin du samedi',
       type: 'written',
-      scheduledFor: new Date(`${tomorrowStr}T09:00:00.000Z`),
+      rank: 3.2,
       completedAt: null,
       afterChallengeNotes: null,
     },
@@ -148,7 +161,7 @@ async function main() {
       contactId: contactCAF.id,
       text: 'Appeler le club pour confirmer le lieu de rendez-vous de la randonnée dimanche',
       type: 'spoken',
-      scheduledFor: new Date(`${tomorrowStr}T15:00:00.000Z`),
+      rank: 2.0,
       completedAt: null,
       afterChallengeNotes: null,
     },

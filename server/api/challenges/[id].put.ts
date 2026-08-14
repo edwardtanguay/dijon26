@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   try {
     const id = getRouterParam(event, 'id')
     const body = await readBody(event)
-    const { text, type, contactId, scheduledFor } = body
+    const { text, type, contactId, rank } = body
 
     if (!id) {
       throw createError({
@@ -45,8 +45,11 @@ export default defineEventHandler(async (event) => {
       updateData.contactId = contactId
     }
 
-    if (scheduledFor !== undefined) {
-      updateData.scheduledFor = scheduledFor ? new Date(scheduledFor) : null
+    if (rank !== undefined && rank !== null) {
+      const num = parseFloat(rank)
+      if (!isNaN(num) && num >= 0 && num <= 5) {
+        updateData.rank = Math.round(num * 10) / 10
+      }
     }
 
     const updated = await prisma.challenge.update({
