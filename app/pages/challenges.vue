@@ -2,9 +2,13 @@
 import { ref, computed, onMounted } from 'vue'
 
 useHead({
-  title: 'Défis & Réseau - Dijon 26',
+  title: 'Défis de communication réelle - Dijon 26',
   meta: [
-    { name: 'description', content: 'Gère tes défis quotidiens et ton réseau de contacts à Dijon' },
+    {
+      name: 'description',
+      content:
+        'Utiliser et améliorer ton français pour accomplir des tâches concrètes et élargir ton réseau social',
+    },
   ],
 })
 
@@ -40,21 +44,34 @@ const isEditingTarget = ref(false)
 const targetInput = ref<number>(10)
 const loading = ref(true)
 
-// Tabs: default is "today"
-const activeTab = ref<'today' | 'todo' | 'past'>('today')
+// Active Tab: contacts | finished | todo
+const activeTab = ref<'contacts' | 'finished' | 'todo'>('contacts')
 
-// Modals
-const isReflectModalOpen = ref(false)
-const selectedChallengeForReflect = ref<Challenge | null>(null)
-const reflectNotes = ref('')
-const reflectCompletedAt = ref('')
-const reflectSubmitting = ref(false)
+// Search states
+const searchContacts = ref('')
+const searchFinished = ref('')
 
+// Modals state
 const isContactModalOpen = ref(false)
-const selectedContact = ref<Contact | null>(null)
+const isEditingContact = ref(false)
+const contactForm = ref({
+  id: '',
+  name: '',
+  email: '',
+  telephone: '',
+  description: '',
+})
+const contactSubmitting = ref(false)
 
-const isNewChallengeModalOpen = ref(false)
-const newChallengeForm = ref({
+// Contact Challenges Modal (concise view)
+const isContactChallengesModalOpen = ref(false)
+const activeContactForChallenges = ref<Contact | null>(null)
+
+// Challenge Form Modal (for Add / Edit)
+const isChallengeModalOpen = ref(false)
+const isEditingChallenge = ref(false)
+const editingChallengeId = ref('')
+const challengeForm = ref({
   contactMode: 'existing' as 'existing' | 'new',
   contactId: '',
   newContactName: '',
@@ -64,8 +81,18 @@ const newChallengeForm = ref({
   text: '',
   type: 'written' as 'written' | 'spoken',
   rank: 2.5,
+  isFinished: false,
+  completedAt: '',
+  afterChallengeNotes: '',
 })
-const newChallengeSubmitting = ref(false)
+const challengeSubmitting = ref(false)
+
+// Reflection Modal (when completing a todo challenge)
+const isReflectModalOpen = ref(false)
+const selectedChallengeForReflect = ref<Challenge | null>(null)
+const reflectNotes = ref('')
+const reflectCompletedAt = ref('')
+const reflectSubmitting = ref(false)
 
 // Fetch Data
 const fetchData = async () => {
@@ -111,7 +138,12 @@ const getLocalDateString = (d: Date | string | null = new Date()) => {
 const todayStr = computed(() => getLocalDateString(new Date()))
 
 // Challenge Categories:
-// 1. Finished today
+// 1. Finished Challenges (completedAt != null)
+const finishedChallenges = computed(() => {
+  return challenges.value.filter((c) => !!c.completedAt)
+})
+
+// Finished today specifically
 const finishedTodayChallenges = computed(() => {
   return challenges.value.filter((c) => {
     if (!c.completedAt) return false
@@ -119,47 +151,88 @@ const finishedTodayChallenges = computed(() => {
   })
 })
 
-// 2. Todo backlog pool (all pending challenges, sorted by rank descending)
-const todoPoolChallenges = computed(() => {
-  return challenges.value
-    .filter((c) => !c.completedAt)
-    .sort((a, b) => (b.rank ?? 2.5) - (a.rank ?? 2.5))
+// 2. Todo challenges (completedAt == null)
+const todoChallenges = computed(() => {
+  return challenges.value.filter((c) => !c.completedAt)
 })
 
-// 3. Finished in the past
-const finishedInPastChallenges = computed(() => {
-  return challenges.value.filter((c) => {
-    if (!c.completedAt) return false
-    return getLocalDateString(c.completedAt) < todayStr.value
+// Today / Tomorrow dynamic calculation
+// Target = dailyTarget.value
+// todayDone = finishedTodayChallenges.length
+// todoPool = todoChallenges.length
+const todayDoneCount = computed(() => finishedTodayChallenges.value.length)
+const todoPoolCount = computed(() => todoChallenges.value.length)
+
+const todayMissing = computed(() => {
+  const missing = dailyTarget.value - todayDoneCount.value
+  return missing > 0 ? missing : 0
+})
+
+const tomorrowMissing = computed(() => {
+  // reserve left in todo pool after satisfying today's deficit
+  const remainingTodoAfterToday = Math.max(0, todoPoolCount.value - todayMissing.value)
+  const missingTomorrow = dailyTarget.value - remainingTodoAfterToday
+  return missingTomorrow > 0 ? missingTomorrow : 0
+})
+
+// Filtered Lists
+// Tab 1: Contacts (whenCreated desc)
+const filteredContacts = computed(() => {
+  let list = [...contacts.value].sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  })
+  if (!searchContacts.value.trim()) return list
+  const q = searchContacts.value.trim().toLowerCase()
+  return list.filter((c) => {
+    return (
+      c.name.toLowerCase().includes(q) ||
+      (c.email && c.email.toLowerCase().includes(q)) ||
+      (c.telephone && c.telephone.toLowerCase().includes(q)) ||
+      (c.description && c.description.toLowerCase().includes(q))
+    )
   })
 })
 
-// Calculations for today's goal & reserve warnings
-const todayDoneCount = computed(() => finishedTodayChallenges.value.length)
-const todoPoolCount = computed(() => todoPoolChallenges.value.length)
-
-// Alert if the backlog pool has fewer tasks than the daily target
-const isPoolUnderTarget = computed(() => todoPoolCount.value < dailyTarget.value)
-const poolMissingCount = computed(() => {
-  const diff = dailyTarget.value - todoPoolCount.value
-  return diff > 0 ? diff : 0
+// Tab 2: Finished Challenges (whenFinished desc)
+const filteredFinishedChallenges = computed(() => {
+  let list = [...finishedChallenges.value].sort((a, b) => {
+    const timeA = a.completedAt ? new Date(a.completedAt).getTime() : 0
+    const timeB = b.completedAt ? new Date(b.completedAt).getTime() : 0
+    return timeB - timeA
+  })
+  if (!searchFinished.value.trim()) return list
+  const q = searchFinished.value.trim().toLowerCase()
+  return list.filter((c) => {
+    const contactName = c.contact?.name?.toLowerCase() || ''
+    const text = c.text.toLowerCase()
+    const notes = c.afterChallengeNotes?.toLowerCase() || ''
+    return text.includes(q) || contactName.includes(q) || notes.includes(q)
+  })
 })
 
-// Displayed challenges based on tab
-const displayedChallenges = computed(() => {
-  if (activeTab.value === 'today') {
-    return finishedTodayChallenges.value
-  }
-  if (activeTab.value === 'todo') {
-    return todoPoolChallenges.value
-  }
-  if (activeTab.value === 'past') {
-    return finishedInPastChallenges.value
-  }
-  return []
+// Tab 3: Todo Challenges (rank desc)
+const sortedTodoChallenges = computed(() => {
+  return [...todoChallenges.value].sort((a, b) => {
+    return (b.rank ?? 2.5) - (a.rank ?? 2.5)
+  })
 })
 
-// Update Daily Target
+// Contact's challenges sorted by whenFinished ascending (completedAt asc, pending last)
+const activeContactChallenges = computed(() => {
+  if (!activeContactForChallenges.value) return []
+  const cId = activeContactForChallenges.value.id
+  const list = challenges.value.filter((c) => c.contactId === cId)
+  return list.sort((a, b) => {
+    if (a.completedAt && b.completedAt) {
+      return new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime()
+    }
+    if (a.completedAt && !b.completedAt) return -1
+    if (!a.completedAt && b.completedAt) return 1
+    return (b.rank ?? 2.5) - (a.rank ?? 2.5)
+  })
+})
+
+// Save Daily Target
 const saveDailyTarget = async () => {
   if (targetInput.value < 1) targetInput.value = 1
   try {
@@ -177,12 +250,232 @@ const saveDailyTarget = async () => {
   }
 }
 
-// Open Reflect Modal
+// ---------------------------
+// Contact CRUD Handlers
+// ---------------------------
+const openCreateContactModal = () => {
+  isEditingContact.value = false
+  contactForm.value = {
+    id: '',
+    name: '',
+    email: '',
+    telephone: '',
+    description: '',
+  }
+  isContactModalOpen.value = true
+}
+
+const openEditContactModal = (contact: Contact) => {
+  isEditingContact.value = true
+  contactForm.value = {
+    id: contact.id,
+    name: contact.name,
+    email: contact.email || '',
+    telephone: contact.telephone || '',
+    description: contact.description || '',
+  }
+  isContactModalOpen.value = true
+}
+
+const submitContactForm = async () => {
+  if (!contactForm.value.name.trim()) return
+  contactSubmitting.value = true
+  try {
+    await $fetch('/api/contacts', {
+      method: 'POST',
+      body: {
+        id: isEditingContact.value ? contactForm.value.id : undefined,
+        name: contactForm.value.name.trim(),
+        email: contactForm.value.email.trim() || undefined,
+        telephone: contactForm.value.telephone.trim() || undefined,
+        description: contactForm.value.description.trim() || undefined,
+      },
+    })
+    isContactModalOpen.value = false
+    await fetchData()
+    // Update active contact if modal was opened
+    if (activeContactForChallenges.value && isEditingContact.value && activeContactForChallenges.value.id === contactForm.value.id) {
+      activeContactForChallenges.value = contacts.value.find((c) => c.id === contactForm.value.id) || null
+    }
+  } catch (err) {
+    console.error('Erreur lors de l’enregistrement du contact:', err)
+  } finally {
+    contactSubmitting.value = false
+  }
+}
+
+const deleteContact = async (contact: Contact) => {
+  const count = challenges.value.filter((c) => c.contactId === contact.id).length
+  const warning = count > 0 
+    ? `⚠️ Attention : Supprimer "${contact.name}" supprimera également ses ${count} défi(s) associé(s) !\n\nEs-tu sûr(e) de vouloir continuer ?`
+    : `Es-tu sûr(e) de vouloir supprimer le contact "${contact.name}" ?`
+
+  if (!confirm(warning)) return
+
+  try {
+    await $fetch(`/api/contacts/${contact.id}`, { method: 'DELETE' })
+    if (activeContactForChallenges.value?.id === contact.id) {
+      isContactChallengesModalOpen.value = false
+      activeContactForChallenges.value = null
+    }
+    await fetchData()
+  } catch (err) {
+    console.error('Erreur lors de la suppression du contact:', err)
+  }
+}
+
+const openContactChallengesModal = (contact: Contact) => {
+  activeContactForChallenges.value = contact
+  isContactChallengesModalOpen.value = true
+}
+
+// ---------------------------
+// Challenge CRUD Handlers
+// ---------------------------
+const openCreateChallengeModal = (presetContactId?: string, defaultFinished = false) => {
+  isEditingChallenge.value = false
+  editingChallengeId.value = ''
+  
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  const currentLocalDt = `${year}-${month}-${day}T${hours}:${minutes}`
+
+  challengeForm.value = {
+    contactMode: contacts.value.length > 0 ? 'existing' : 'new',
+    contactId: presetContactId || contacts.value[0]?.id || '',
+    newContactName: '',
+    newContactEmail: '',
+    newContactPhone: '',
+    newContactDescription: '',
+    text: '',
+    type: 'written',
+    rank: 2.5,
+    isFinished: defaultFinished,
+    completedAt: defaultFinished ? currentLocalDt : '',
+    afterChallengeNotes: '',
+  }
+  isChallengeModalOpen.value = true
+}
+
+const openEditChallengeModal = (challenge: Challenge) => {
+  isEditingChallenge.value = true
+  editingChallengeId.value = challenge.id
+
+  let formattedDate = ''
+  if (challenge.completedAt) {
+    const d = new Date(challenge.completedAt)
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    const hours = String(d.getHours()).padStart(2, '0')
+    const minutes = String(d.getMinutes()).padStart(2, '0')
+    formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`
+  }
+
+  challengeForm.value = {
+    contactMode: 'existing',
+    contactId: challenge.contactId,
+    newContactName: '',
+    newContactEmail: '',
+    newContactPhone: '',
+    newContactDescription: '',
+    text: challenge.text,
+    type: challenge.type,
+    rank: challenge.rank ?? 2.5,
+    isFinished: !!challenge.completedAt,
+    completedAt: formattedDate,
+    afterChallengeNotes: challenge.afterChallengeNotes || '',
+  }
+  isChallengeModalOpen.value = true
+}
+
+const submitChallengeForm = async () => {
+  if (!challengeForm.value.text.trim()) return
+  challengeSubmitting.value = true
+  try {
+    if (isEditingChallenge.value) {
+      // Update
+      const payload: any = {
+        text: challengeForm.value.text.trim(),
+        type: challengeForm.value.type,
+        contactId: challengeForm.value.contactId,
+        rank: Number(challengeForm.value.rank) || 2.5,
+        afterChallengeNotes: challengeForm.value.afterChallengeNotes.trim() || null,
+        completedAt: challengeForm.value.isFinished && challengeForm.value.completedAt
+          ? new Date(challengeForm.value.completedAt).toISOString()
+          : (challengeForm.value.isFinished ? new Date().toISOString() : null),
+      }
+
+      await $fetch(`/api/challenges/${editingChallengeId.value}`, {
+        method: 'PUT',
+        body: payload,
+      })
+    } else {
+      // Create
+      const payload: any = {
+        text: challengeForm.value.text.trim(),
+        type: challengeForm.value.type,
+        rank: Number(challengeForm.value.rank) || 2.5,
+      }
+
+      if (challengeForm.value.contactMode === 'existing') {
+        payload.contactId = challengeForm.value.contactId
+      } else {
+        payload.newContactName = challengeForm.value.newContactName.trim()
+        payload.newContactEmail = challengeForm.value.newContactEmail.trim() || undefined
+        payload.newContactPhone = challengeForm.value.newContactPhone.trim() || undefined
+        payload.newContactDescription = challengeForm.value.newContactDescription.trim() || undefined
+      }
+
+      const res = await $fetch<{ success: boolean; data: Challenge }>('/api/challenges', {
+        method: 'POST',
+        body: payload,
+      })
+
+      // If created as finished right away, update its completedAt & notes
+      if (res.success && challengeForm.value.isFinished && res.data?.id) {
+        await $fetch(`/api/challenges/${res.data.id}/complete`, {
+          method: 'POST',
+          body: {
+            completedAt: challengeForm.value.completedAt
+              ? new Date(challengeForm.value.completedAt).toISOString()
+              : new Date().toISOString(),
+            afterChallengeNotes: challengeForm.value.afterChallengeNotes.trim() || null,
+          },
+        })
+      }
+    }
+
+    isChallengeModalOpen.value = false
+    await fetchData()
+  } catch (err) {
+    console.error('Erreur lors de l’enregistrement du défi:', err)
+  } finally {
+    challengeSubmitting.value = false
+  }
+}
+
+const deleteChallenge = async (challenge: Challenge) => {
+  if (!confirm(`Es-tu sûr(e) de vouloir supprimer le défi : "${challenge.text}" ?`)) return
+  try {
+    await $fetch(`/api/challenges/${challenge.id}`, { method: 'DELETE' })
+    await fetchData()
+  } catch (err) {
+    console.error('Erreur lors de la suppression du défi:', err)
+  }
+}
+
+// ---------------------------
+// Reflection / Completion Handlers
+// ---------------------------
 const openReflectModal = (challenge: Challenge) => {
   selectedChallengeForReflect.value = challenge
   reflectNotes.value = challenge.afterChallengeNotes || ''
-  
-  // Format current local datetime for datetime-local input
+
   const now = new Date()
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')
@@ -190,11 +483,10 @@ const openReflectModal = (challenge: Challenge) => {
   const hours = String(now.getHours()).padStart(2, '0')
   const minutes = String(now.getMinutes()).padStart(2, '0')
   reflectCompletedAt.value = `${year}-${month}-${day}T${hours}:${minutes}`
-  
+
   isReflectModalOpen.value = true
 }
 
-// Submit Challenge Reflection
 const submitReflection = async () => {
   if (!selectedChallengeForReflect.value) return
   reflectSubmitting.value = true
@@ -220,117 +512,38 @@ const submitReflection = async () => {
   }
 }
 
-// Delete Challenge
-const deleteChallenge = async (id: string) => {
-  if (!confirm('Es-tu sûr(e) de vouloir supprimer ce défi ?')) return
-  try {
-    await $fetch(`/api/challenges/${id}`, { method: 'DELETE' })
-    await fetchData()
-  } catch (err) {
-    console.error('Erreur lors de la suppression du défi:', err)
-  }
-}
-
-// Open Contact Details Modal
-const openContactModal = (contactId: string) => {
-  const found = contacts.value.find((c) => c.id === contactId)
-  if (found) {
-    selectedContact.value = found
-    isContactModalOpen.value = true
-  }
-}
-
-// Filter Contact challenges for history
-const selectedContactChallenges = computed(() => {
-  if (!selectedContact.value) return []
-  return challenges.value.filter((c) => c.contactId === selectedContact.value?.id)
-})
-
-// Reflect Contact Previous Challenges (for the reflect modal)
-const reflectContactHistory = computed(() => {
-  if (!selectedChallengeForReflect.value) return []
-  const cId = selectedChallengeForReflect.value.contactId
-  return challenges.value.filter(
-    (c) => c.contactId === cId && c.id !== selectedChallengeForReflect.value?.id && c.completedAt
-  )
-})
-
-// Create Challenge
-const openCreateChallengeModal = () => {
-  newChallengeForm.value = {
-    contactMode: contacts.value.length > 0 ? 'existing' : 'new',
-    contactId: contacts.value[0]?.id || '',
-    newContactName: '',
-    newContactEmail: '',
-    newContactPhone: '',
-    newContactDescription: '',
-    text: '',
-    type: 'written',
-    rank: 2.5,
-  }
-  isNewChallengeModalOpen.value = true
-}
-
-const submitNewChallenge = async () => {
-  if (!newChallengeForm.value.text.trim()) return
-  newChallengeSubmitting.value = true
-  try {
-    const payload: any = {
-      text: newChallengeForm.value.text.trim(),
-      type: newChallengeForm.value.type,
-      rank: Number(newChallengeForm.value.rank) || 2.5,
-    }
-
-    if (newChallengeForm.value.contactMode === 'existing') {
-      payload.contactId = newChallengeForm.value.contactId
-    } else {
-      payload.newContactName = newChallengeForm.value.newContactName.trim()
-      payload.newContactEmail = newChallengeForm.value.newContactEmail.trim() || undefined
-      payload.newContactPhone = newChallengeForm.value.newContactPhone.trim() || undefined
-      payload.newContactDescription = newChallengeForm.value.newContactDescription.trim() || undefined
-    }
-
-    const res = await $fetch<{ success: boolean; data: Challenge }>('/api/challenges', {
-      method: 'POST',
-      body: payload,
-    })
-
-    if (res.success) {
-      isNewChallengeModalOpen.value = false
-      await fetchData()
-    }
-  } catch (err) {
-    console.error('Erreur lors de la création du défi:', err)
-  } finally {
-    newChallengeSubmitting.value = false
-  }
+// Helpers for color dynamic classes on slider and indicators
+const getRankBadgeClass = (rank: number) => {
+  if (rank >= 4) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+  if (rank >= 2.5) return 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+  return 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300'
 }
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto space-y-8 pb-12">
+  <div class="max-w-6xl mx-auto space-y-8 pb-16">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-6">
-      <div>
+      <div class="space-y-1">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-600/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 flex items-center justify-center font-bold">
-            <UIcon name="i-heroicons-sparkles" class="w-6 h-6" />
+          <div class="w-11 h-11 rounded-xl bg-indigo-600/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 flex items-center justify-center font-bold">
+            <UIcon name="i-heroicons-chat-bubble-left-right" class="w-6 h-6" />
           </div>
           <div>
-            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-              Défis & Réseau
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              Défis de communication réelle
             </h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Accomplis tes interactions quotidiennes sans date imposée et puise dans ta réserve.
+            <p class="text-sm text-gray-600 dark:text-gray-400 max-w-2xl">
+              Utiliser et améliorer ton français pour accomplir des tâches concrètes et élargir ton réseau social
             </p>
           </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 self-start md:self-auto">
         <button
           @click="openCreateChallengeModal()"
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md transition-all active:scale-95 cursor-pointer"
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md transition-all active:scale-95 cursor-pointer"
         >
           <UIcon name="i-heroicons-plus" class="w-5 h-5" />
           <span>Nouveau défi</span>
@@ -338,620 +551,793 @@ const submitNewChallenge = async () => {
       </div>
     </div>
 
-    <!-- Dashboard & Goal Tracker -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Goal Config & Main Progress Card -->
-      <div class="md:col-span-2 bg-white dark:bg-gray-800/90 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-700/60 shadow-sm space-y-5">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-flag" class="w-5 h-5 text-indigo-500" />
-            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Objectif quotidien
-            </span>
-          </div>
-
-          <!-- Target Edit -->
-          <div class="flex items-center gap-2">
-            <div v-if="!isEditingTarget" class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                {{ dailyTarget }} défis / jour
-              </span>
-              <button
-                @click="isEditingTarget = true"
-                class="p-1 rounded-md text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                title="Modifier l'objectif"
-              >
-                <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
-              </button>
-            </div>
-            <div v-else class="flex items-center gap-2">
-              <input
-                v-model.number="targetInput"
-                type="number"
-                min="1"
-                max="100"
-                class="w-16 px-2 py-1 text-sm border rounded-lg border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-900 dark:text-white"
-              />
-              <button
-                @click="saveDailyTarget"
-                class="px-2.5 py-1 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
-              >
-                OK
-              </button>
-              <button
-                @click="isEditingTarget = false"
-                class="px-2.5 py-1 text-xs font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg"
-              >
-                Annuler
-              </button>
-            </div>
-          </div>
+    <!-- Top Panel: Define challenges for today and tomorrow -->
+    <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-700/60 shadow-sm">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-700/60 pb-4">
+        <div class="flex items-center gap-2.5">
+          <UIcon name="i-heroicons-calendar-days" class="w-5 h-5 text-indigo-500" />
+          <h2 class="text-base font-bold text-gray-900 dark:text-white">
+            Définir les défis pour aujourd'hui et demain
+          </h2>
         </div>
 
-        <!-- Progress bar & counts for Today -->
-        <div class="space-y-2">
-          <div class="flex justify-between items-baseline">
-            <div class="flex items-baseline gap-2">
-              <span class="text-3xl font-black text-gray-900 dark:text-white">
-                {{ todayDoneCount }}
-              </span>
-              <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                / {{ dailyTarget }} accomplis aujourd'hui
-              </span>
-              <span
-                v-if="todayDoneCount > dailyTarget"
-                class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300"
-              >
-                +{{ todayDoneCount - dailyTarget }} en surplus !
-              </span>
-            </div>
-            <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">
-              {{ Math.round((todayDoneCount / (dailyTarget || 1)) * 100) }}%
-            </span>
+        <!-- Target Setting -->
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-gray-500 dark:text-gray-400">Objectif journalier :</span>
+          <div v-if="!isEditingTarget" class="flex items-center gap-1.5 font-bold text-gray-800 dark:text-gray-200">
+            <span>{{ dailyTarget }} défis / jour</span>
+            <button
+              @click="isEditingTarget = true"
+              class="p-1 rounded text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              title="Modifier l'objectif quotidien"
+            >
+              <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+            </button>
           </div>
-
-          <div class="w-full bg-gray-100 dark:bg-gray-700 h-3.5 rounded-full overflow-hidden">
-            <div
-              class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out"
-              :class="todayDoneCount >= dailyTarget ? '!bg-emerald-500' : ''"
-              :style="{ width: `${Math.min(100, Math.round((todayDoneCount / (dailyTarget || 1)) * 100))}%` }"
+          <div v-else class="flex items-center gap-1.5">
+            <input
+              v-model.number="targetInput"
+              type="number"
+              min="1"
+              max="100"
+              class="w-14 px-2 py-0.5 text-xs font-bold border rounded border-indigo-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
             />
+            <button
+              @click="saveDailyTarget"
+              class="px-2 py-0.5 font-semibold bg-indigo-600 text-white rounded text-xs hover:bg-indigo-500"
+            >
+              OK
+            </button>
+            <button
+              @click="isEditingTarget = false"
+              class="px-2 py-0.5 font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs"
+            >
+              Annuler
+            </button>
           </div>
-        </div>
-
-        <!-- Status Message for Today -->
-        <div
-          v-if="todayDoneCount >= dailyTarget"
-          class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-center gap-3.5"
-        >
-          <UIcon name="i-heroicons-check-badge" class="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <p class="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
-            Objectif atteint pour aujourd'hui ({{ todayDoneCount }}/{{ dailyTarget }}) ! Tout défi supplémentaire compte en bonus.
-          </p>
-        </div>
-        <div
-          v-else
-          class="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 flex items-center justify-between gap-3 text-sm"
-        >
-          <div class="flex items-center gap-2.5 text-indigo-900 dark:text-indigo-200">
-            <UIcon name="i-heroicons-bolt" class="w-5 h-5 text-indigo-500 shrink-0" />
-            <span>Encore <strong>{{ dailyTarget - todayDoneCount }}</strong> défi{{ (dailyTarget - todayDoneCount) > 1 ? 's' : '' }} à accomplir aujourd'hui.</span>
-          </div>
-          <button
-            @click="activeTab = 'todo'"
-            class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
-          >
-            Piocher dans les défis &rarr;
-          </button>
         </div>
       </div>
 
-      <!-- Backlog Reserve / Buffer Card -->
-      <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-700/60 shadow-sm flex flex-col justify-between space-y-4">
-        <div>
-          <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-circle-stack" class="w-5 h-5 text-indigo-500" />
-            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Réserve disponible (À faire)
+      <!-- Indicators Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+        <!-- Today Status Card -->
+        <div
+          class="p-4 rounded-xl border flex items-center justify-between"
+          :class="todayMissing > 0
+            ? 'bg-red-50/70 dark:bg-red-950/20 border-red-200 dark:border-red-900/40'
+            : 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40'"
+        >
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
+              Aujourd'hui
             </span>
+            <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              {{ todayDoneCount }} accompli{{ todayDoneCount > 1 ? 's' : '' }} / {{ dailyTarget }} visés
+            </div>
           </div>
 
-          <div class="mt-4">
-            <div class="flex items-baseline gap-2">
-              <span class="text-3xl font-black text-gray-900 dark:text-white">
-                {{ todoPoolCount }}
-              </span>
-              <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                défis en réserve
-              </span>
-            </div>
-
-            <div class="mt-3">
-              <!-- Warning if backlog is smaller than daily target -->
-              <div
-                v-if="isPoolUnderTarget"
-                class="text-xs text-amber-800 dark:text-amber-300 font-medium bg-amber-50 dark:bg-amber-950/40 p-3 rounded-lg border border-amber-200 dark:border-amber-900/40 space-y-1"
-              >
-                <div class="flex items-center gap-1 font-bold text-amber-900 dark:text-amber-200">
-                  <UIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4" />
-                  <span>Réserve basse</span>
-                </div>
-                <p>
-                  Il ne te reste que {{ todoPoolCount }} défi{{ todoPoolCount > 1 ? 's' : '' }} pour un objectif de {{ dailyTarget }}/jour. Pense à en créer {{ poolMissingCount }} d'autres !
-                </p>
-              </div>
-              <div
-                v-else
-                class="text-xs text-emerald-800 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-lg border border-emerald-100 dark:border-emerald-900/40"
-              >
-                Réserve suffisante pour assurer tes objectifs.
-              </div>
-            </div>
+          <div
+            class="px-3.5 py-1.5 rounded-full font-black text-sm flex items-center gap-1 shadow-xs"
+            :class="todayMissing > 0
+              ? 'bg-red-500 text-white'
+              : 'bg-emerald-500 text-white'"
+          >
+            <span>aujourd'hui : {{ todayMissing > 0 ? `+${todayMissing}` : '0' }}</span>
           </div>
         </div>
 
-        <button
-          @click="openCreateChallengeModal()"
-          class="w-full py-2.5 px-4 rounded-xl border border-dashed border-indigo-300 dark:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+        <!-- Tomorrow Status Card -->
+        <div
+          class="p-4 rounded-xl border flex items-center justify-between"
+          :class="tomorrowMissing > 0
+            ? 'bg-amber-50/70 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/40'
+            : 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40'"
         >
-          <UIcon name="i-heroicons-plus" class="w-4 h-4" />
-          <span>Ajouter à la réserve</span>
-        </button>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
+              Demain
+            </span>
+            <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              {{ todoPoolCount }} en réserve à faire
+            </div>
+          </div>
+
+          <div
+            class="px-3.5 py-1.5 rounded-full font-black text-sm flex items-center gap-1 shadow-xs"
+            :class="tomorrowMissing > 0
+              ? 'bg-amber-500 text-white'
+              : 'bg-emerald-500 text-white'"
+          >
+            <span>demain : {{ tomorrowMissing > 0 ? `+${tomorrowMissing}` : '0' }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Navigation Tabs : FINISHED TASKS ("finished today", "todo", "finished in the past") -->
-    <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
-      <div class="flex space-x-2 sm:space-x-4">
-        <!-- 1. Finished today (Default) -->
+    <!-- Navigation Tabs -->
+    <div class="border-b border-gray-200 dark:border-gray-800">
+      <div class="flex space-x-2 sm:space-x-6">
+        <!-- Tab 1: Contacts -->
         <button
-          @click="activeTab = 'today'"
-          class="py-3 px-4 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
-          :class="activeTab === 'today'
+          @click="activeTab = 'contacts'"
+          class="py-3.5 px-3 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
+          :class="activeTab === 'contacts'
             ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
             : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          <span>Terminés aujourd'hui</span>
-          <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold">
-            {{ finishedTodayChallenges.length }}
-          </span>
+          <UIcon name="i-heroicons-user-group" class="w-4 h-4" />
+          <span>{{ contacts.length }} Contacts</span>
         </button>
 
-        <!-- 2. Todo pool -->
+        <!-- Tab 2: Challenges finished -->
+        <button
+          @click="activeTab = 'finished'"
+          class="py-3.5 px-3 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
+          :class="activeTab === 'finished'
+            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+            : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+        >
+          <UIcon name="i-heroicons-check-circle" class="w-4 h-4" />
+          <span>{{ finishedChallenges.length }} Défis terminés</span>
+        </button>
+
+        <!-- Tab 3: Challenges todo -->
         <button
           @click="activeTab = 'todo'"
-          class="py-3 px-4 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
+          class="py-3.5 px-3 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
           :class="activeTab === 'todo'
             ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
             : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          <span>À faire (Réserve)</span>
-          <span class="px-2 py-0.5 text-xs rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold">
-            {{ todoPoolChallenges.length }}
-          </span>
+          <UIcon name="i-heroicons-queue-list" class="w-4 h-4" />
+          <span>{{ todoChallenges.length }} Défis à faire</span>
         </button>
-
-        <!-- 3. Finished in the past -->
-        <button
-          @click="activeTab = 'past'"
-          class="py-3 px-4 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
-          :class="activeTab === 'past'
-            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-            : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
-        >
-          <span>Historique passé</span>
-          <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-            {{ finishedInPastChallenges.length }}
-          </span>
-        </button>
-      </div>
-
-      <div class="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">
-        {{ contacts.length }} contact{{ contacts.length > 1 ? 's' : '' }}
       </div>
     </div>
 
-    <!-- Challenges List -->
+    <!-- Loading State -->
     <div v-if="loading" class="text-center py-12 text-gray-500">
       <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin mx-auto text-indigo-600 mb-2" />
-      <p>Chargement des défis...</p>
+      <p>Chargement des données...</p>
     </div>
 
-    <div v-else-if="displayedChallenges.length === 0" class="text-center py-12 bg-white dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-800 p-8 space-y-4">
-      <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto text-gray-400">
-        <UIcon name="i-heroicons-clipboard-document-list" class="w-6 h-6" />
-      </div>
-      <div>
-        <h3 class="text-base font-bold text-gray-900 dark:text-white">
-          {{ activeTab === 'today' ? "Aucun défi terminé aujourd'hui pour l'instant" : activeTab === 'todo' ? "La réserve est vide" : "Aucun défi passé" }}
-        </h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {{ activeTab === 'today' ? "Choisis un défi dans la réserve « À faire » pour commencer ta journée." : "Crée de nouveaux défis pour alimenter ta réserve." }}
-        </p>
-      </div>
-      <button
-        v-if="activeTab === 'today'"
-        @click="activeTab = 'todo'"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl cursor-pointer"
-      >
-        <span>Voir les défis à faire</span>
-        <UIcon name="i-heroicons-arrow-right" class="w-4 h-4" />
-      </button>
-      <button
-        v-else
-        @click="openCreateChallengeModal()"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl cursor-pointer"
-      >
-        <UIcon name="i-heroicons-plus" class="w-4 h-4" />
-        <span>Créer un défi</span>
-      </button>
-    </div>
-
-    <div v-else class="space-y-3">
-      <div
-        v-for="challenge in displayedChallenges"
-        :key="challenge.id"
-        class="bg-white dark:bg-gray-800 rounded-xl p-5 border transition-all duration-200 shadow-sm hover:shadow-md"
-        :class="challenge.completedAt
-          ? 'border-emerald-200 dark:border-emerald-950/60 bg-emerald-50/10 dark:bg-emerald-950/10'
-          : 'border-gray-200 dark:border-gray-700/80'"
-      >
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <!-- Left Content -->
-          <div class="space-y-2 flex-1">
-            <!-- Contact & Badges Row -->
-            <div class="flex flex-wrap items-center gap-2">
-              <button
-                @click="openContactModal(challenge.contactId)"
-                class="font-bold text-sm text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <UIcon name="i-heroicons-building-library" class="w-4 h-4 text-indigo-500 shrink-0" />
-                <span>{{ challenge.contact?.name || 'Contact inconnu' }}</span>
-              </button>
-
-              <!-- Type Badge -->
-              <span
-                class="px-2 py-0.5 rounded-full text-xs font-medium inline-flex items-center gap-1"
-                :class="challenge.type === 'written'
-                  ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border border-blue-200/50 dark:border-blue-800/50'
-                  : 'bg-purple-50 text-purple-700 dark:bg-purple-950/50 dark:text-purple-300 border border-purple-200/50 dark:border-purple-800/50'"
-              >
-                <span>{{ challenge.type === 'written' ? '✍️ Écrit' : '🗣️ Oral' }}</span>
-              </span>
-
-              <!-- Inconspicuous Rank Display -->
-              <span
-                class="text-[11px] font-mono text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800"
-                title="Rang de priorité (0.0 - 5.0)"
-              >
-                #{{ Number(challenge.rank || 2.5).toFixed(1) }}
-              </span>
-
-              <!-- Status Badge if completed -->
-              <span
-                v-if="challenge.completedAt"
-                class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 inline-flex items-center gap-1"
-              >
-                <UIcon name="i-heroicons-check" class="w-3.5 h-3.5" />
-                <span>Accompli {{ new Date(challenge.completedAt).toLocaleDateString('fr-FR') }}</span>
-              </span>
-            </div>
-
-            <!-- Challenge Text -->
-            <p class="text-base font-semibold text-gray-800 dark:text-gray-100">
-              {{ challenge.text }}
-            </p>
-
-            <!-- After notes preview if completed -->
-            <div
-              v-if="challenge.afterChallengeNotes"
-              class="mt-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg text-xs text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-gray-800 space-y-1"
-            >
-              <div class="flex items-center gap-1.5 font-bold text-gray-500 dark:text-gray-400">
-                <UIcon name="i-heroicons-chat-bubble-bottom-center-text" class="w-3.5 h-3.5" />
-                <span>Récapituler et réfléchir :</span>
-              </div>
-              <p class="whitespace-pre-wrap leading-relaxed">
-                {{ challenge.afterChallengeNotes }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Right Actions -->
-          <div class="flex items-center sm:flex-col sm:items-end justify-between sm:justify-start gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100 dark:border-gray-700">
-            <button
-              @click="openReflectModal(challenge)"
-              class="px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-              :class="challenge.completedAt
-                ? 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200'
-                : 'bg-emerald-600 hover:bg-emerald-500 text-white'"
-            >
-              <UIcon :name="challenge.completedAt ? 'i-heroicons-pencil-square' : 'i-heroicons-check-circle'" class="w-4 h-4" />
-              <span>{{ challenge.completedAt ? 'Modifier bilan' : 'Terminer & Réfléchir' }}</span>
-            </button>
-
-            <div class="flex items-center gap-1">
-              <button
-                @click="openContactModal(challenge.contactId)"
-                class="p-2 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                title="Voir la fiche contact et l'historique"
-              >
-                <UIcon name="i-heroicons-eye" class="w-4 h-4" />
-              </button>
-              <button
-                @click="deleteChallenge(challenge.id)"
-                class="p-2 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                title="Supprimer le défi"
-              >
-                <UIcon name="i-heroicons-trash" class="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal : Récapituler et Réfléchir -->
-    <div
-      v-if="isReflectModalOpen && selectedChallengeForReflect"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
-      @click.self="isReflectModalOpen = false"
-    >
-      <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
-        <!-- Header -->
-        <div class="flex items-start justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
-                {{ selectedChallengeForReflect.type === 'written' ? 'Défi écrit' : 'Défi oral' }}
-              </span>
-              <span class="text-xs text-gray-400">avec</span>
-              <span class="text-sm font-bold text-gray-900 dark:text-white">
-                {{ selectedChallengeForReflect.contact?.name }}
-              </span>
-            </div>
-            <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mt-1">
-              Récapituler et réfléchir
-            </h2>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              Défi : « {{ selectedChallengeForReflect.text }} »
-            </p>
-          </div>
-          <button
-            @click="isReflectModalOpen = false"
-            class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg"
-          >
-            <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
-          </button>
-        </div>
-
-        <!-- Form -->
-        <form @submit.prevent="submitReflection" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
-              Date & heure d'accomplissement
-            </label>
+    <div v-else class="space-y-4">
+      <!-- ============================================================ -->
+      <!-- TAB 1 : CONTACTS                                             -->
+      <!-- ============================================================ -->
+      <div v-if="activeTab === 'contacts'" class="space-y-4">
+        <!-- Controls: Search & Create -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div class="relative flex-1 max-w-md">
+            <UIcon name="i-heroicons-magnifying-glass" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
-              v-model="reflectCompletedAt"
-              type="datetime-local"
-              required
-              class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+              v-model="searchContacts"
+              type="text"
+              placeholder="Rechercher un contact (nom, email, description)..."
+              class="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
             />
           </div>
 
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
-              {{ selectedChallengeForReflect.type === 'written' ? 'Texte de l’e-mail / Échange écrit & analyse' : 'Débriefing de l’interaction orale' }}
-            </label>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mb-2">
-              {{ selectedChallengeForReflect.type === 'written'
-                ? 'Copie ici le message envoyé, note les éventuelles difficultés, incompréhensions ou points d’amélioration.'
-                : 'Décris comment s’est passé l’échange, ce qui a bien fonctionné, ce qui a coincé et ce que tu as appris.' }}
-            </p>
-            <textarea
-              v-model="reflectNotes"
-              rows="6"
-              placeholder="Écris ton bilan et tes réflexions ici..."
-              class="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
-          <!-- Contact Previous History preview -->
-          <div v-if="reflectContactHistory.length > 0" class="pt-4 border-t border-gray-100 dark:border-gray-700 space-y-3">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Historique des défis précédents avec {{ selectedChallengeForReflect.contact?.name }}
-            </h4>
-            <div class="space-y-2 max-h-48 overflow-y-auto pr-2">
-              <div
-                v-for="prev in reflectContactHistory"
-                :key="prev.id"
-                class="p-3 bg-gray-50 dark:bg-gray-900/60 rounded-xl border border-gray-100 dark:border-gray-800 text-xs space-y-1"
-              >
-                <div class="flex items-center justify-between text-gray-400">
-                  <span class="font-medium">{{ prev.type === 'written' ? '✍️ Écrit' : '🗣️ Oral' }}</span>
-                  <span>{{ prev.completedAt ? new Date(prev.completedAt).toLocaleDateString('fr-FR') : '' }}</span>
-                </div>
-                <p class="font-semibold text-gray-800 dark:text-gray-200">{{ prev.text }}</p>
-                <p v-if="prev.afterChallengeNotes" class="text-gray-600 dark:text-gray-400 italic">
-                  « {{ prev.afterChallengeNotes }} »
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
-            <button
-              type="button"
-              @click="isReflectModalOpen = false"
-              class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              :disabled="reflectSubmitting"
-              class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <UIcon v-if="reflectSubmitting" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
-              <span>Valider le bilan</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Modal : Fiche Contact & Historique -->
-    <div
-      v-if="isContactModalOpen && selectedContact"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
-      @click.self="isContactModalOpen = false"
-    >
-      <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
-        <!-- Contact Header -->
-        <div class="flex items-start justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 flex items-center justify-center font-bold text-xl">
-              {{ selectedContact.name.charAt(0).toUpperCase() }}
-            </div>
-            <div>
-              <h2 class="text-xl font-extrabold text-gray-900 dark:text-white">
-                {{ selectedContact.name }}
-              </h2>
-              <p class="text-xs text-gray-400">
-                Fiche contact & historique des échanges
-              </p>
-            </div>
-          </div>
           <button
-            @click="isContactModalOpen = false"
-            class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg"
+            @click="openCreateContactModal()"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
           >
-            <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
+            <UIcon name="i-heroicons-user-plus" class="w-4 h-4" />
+            <span>Nouveau contact</span>
           </button>
         </div>
 
-        <!-- Contact details -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-900/40 p-4 rounded-xl border border-gray-100 dark:border-gray-800 text-sm">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block">E-mail</span>
-            <span class="font-medium text-gray-800 dark:text-gray-200">{{ selectedContact.email || 'Non renseigné' }}</span>
-          </div>
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block">Téléphone</span>
-            <span class="font-medium text-gray-800 dark:text-gray-200">{{ selectedContact.telephone || 'Non renseigné' }}</span>
-          </div>
-          <div class="sm:col-span-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block">Description / Rôle</span>
-            <span class="text-gray-700 dark:text-gray-300">{{ selectedContact.description || 'Aucune description disponible' }}</span>
+        <!-- Contacts Table -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/80 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-900/60 text-xs uppercase text-gray-500 dark:text-gray-400 font-bold border-b border-gray-200 dark:border-gray-700">
+                <tr>
+                  <th class="px-5 py-3.5">Contact</th>
+                  <th class="px-5 py-3.5">Coordonnées</th>
+                  <th class="px-5 py-3.5">Description</th>
+                  <th class="px-5 py-3.5">Créé le</th>
+                  <th class="px-5 py-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
+                <tr v-if="filteredContacts.length === 0">
+                  <td colspan="5" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
+                    Aucun contact trouvé.
+                  </td>
+                </tr>
+                <tr
+                  v-for="contact in filteredContacts"
+                  :key="contact.id"
+                  class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                >
+                  <!-- Contact Name -->
+                  <td class="px-5 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center text-xs">
+                        {{ contact.name.charAt(0).toUpperCase() }}
+                      </div>
+                      <span>{{ contact.name }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Contact Info -->
+                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-300">
+                    <div class="space-y-0.5">
+                      <div v-if="contact.email" class="flex items-center gap-1.5">
+                        <UIcon name="i-heroicons-envelope" class="w-3.5 h-3.5 text-gray-400" />
+                        <span>{{ contact.email }}</span>
+                      </div>
+                      <div v-if="contact.telephone" class="flex items-center gap-1.5">
+                        <UIcon name="i-heroicons-phone" class="w-3.5 h-3.5 text-gray-400" />
+                        <span>{{ contact.telephone }}</span>
+                      </div>
+                      <div v-if="!contact.email && !contact.telephone" class="text-gray-400 italic">
+                        Non renseigné
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Description -->
+                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 max-w-xs truncate">
+                    {{ contact.description || '—' }}
+                  </td>
+
+                  <!-- Created At -->
+                  <td class="px-5 py-4 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    {{ new Date(contact.createdAt).toLocaleDateString('fr-FR') }}
+                  </td>
+
+                  <!-- Actions -->
+                  <td class="px-5 py-4 text-right whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button
+                        @click="openContactChallengesModal(contact)"
+                        class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 font-semibold text-xs transition-colors flex items-center gap-1 cursor-pointer"
+                        title="Voir la liste concise des défis de ce contact"
+                      >
+                        <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5" />
+                        <span>Défis ({{ challenges.filter(c => c.contactId === contact.id).length }})</span>
+                      </button>
+                      <button
+                        @click="openEditContactModal(contact)"
+                        class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                        title="Modifier le contact"
+                      >
+                        <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+                      </button>
+                      <button
+                        @click="deleteContact(contact)"
+                        class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                        title="Supprimer le contact"
+                      >
+                        <UIcon name="i-heroicons-trash" class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
+      </div>
 
-        <!-- Contact Challenge History -->
-        <div class="space-y-3">
-          <h3 class="text-sm font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
-            <UIcon name="i-heroicons-clock" class="w-4 h-4 text-indigo-500" />
-            <span>Historique des défis avec ce contact ({{ selectedContactChallenges.length }})</span>
-          </h3>
-
-          <div v-if="selectedContactChallenges.length === 0" class="text-xs text-gray-400 py-4 text-center">
-            Aucun défi pour ce contact pour le moment.
+      <!-- ============================================================ -->
+      <!-- TAB 2 : CHALLENGES FINISHED                                  -->
+      <!-- ============================================================ -->
+      <div v-if="activeTab === 'finished'" class="space-y-4">
+        <!-- Controls: Search & Create -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div class="relative flex-1 max-w-md">
+            <UIcon name="i-heroicons-magnifying-glass" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              v-model="searchFinished"
+              type="text"
+              placeholder="Rechercher parmi les défis terminés (texte, contact, bilan)..."
+              class="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            />
           </div>
 
-          <div v-else class="space-y-3">
-            <div
-              v-for="ch in selectedContactChallenges"
-              :key="ch.id"
-              class="p-4 rounded-xl border border-gray-100 dark:border-gray-700/80 bg-white dark:bg-gray-900 text-sm space-y-2"
+          <button
+            @click="openCreateChallengeModal(undefined, true)"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
+          >
+            <UIcon name="i-heroicons-plus" class="w-4 h-4" />
+            <span>Ajouter un défi accompli</span>
+          </button>
+        </div>
+
+        <!-- Finished Challenges Table -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/80 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-900/60 text-xs uppercase text-gray-500 dark:text-gray-400 font-bold border-b border-gray-200 dark:border-gray-700">
+                <tr>
+                  <th class="px-5 py-3.5">Défi & Contact</th>
+                  <th class="px-5 py-3.5">Type & Rang</th>
+                  <th class="px-5 py-3.5">Bilan / Réflexion</th>
+                  <th class="px-5 py-3.5">Date d'accomplissement</th>
+                  <th class="px-5 py-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
+                <tr v-if="filteredFinishedChallenges.length === 0">
+                  <td colspan="5" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
+                    Aucun défi terminé trouvé.
+                  </td>
+                </tr>
+                <tr
+                  v-for="challenge in filteredFinishedChallenges"
+                  :key="challenge.id"
+                  class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                >
+                  <!-- Text & Contact -->
+                  <td class="px-5 py-4 max-w-sm">
+                    <div class="font-bold text-gray-900 dark:text-white leading-snug">
+                      {{ challenge.text }}
+                    </div>
+                    <div class="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-1 flex items-center gap-1">
+                      <UIcon name="i-heroicons-user" class="w-3.5 h-3.5" />
+                      <span>{{ challenge.contact?.name || 'Contact inconnu' }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Type & Rank -->
+                  <td class="px-5 py-4 whitespace-nowrap">
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                        :class="challenge.type === 'written'
+                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                          : 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'"
+                      >
+                        {{ challenge.type === 'written' ? '✍️ Écrit' : '🗣️ Oral' }}
+                      </span>
+                      <span
+                        class="px-2 py-0.5 rounded-md text-xs font-bold font-mono"
+                        :class="getRankBadgeClass(challenge.rank ?? 2.5)"
+                      >
+                        {{ Number(challenge.rank ?? 2.5).toFixed(1) }}
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Notes -->
+                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-300 max-w-xs">
+                    <p v-if="challenge.afterChallengeNotes" class="line-clamp-2 italic">
+                      « {{ challenge.afterChallengeNotes }} »
+                    </p>
+                    <span v-else class="text-gray-400 italic">Aucun bilan</span>
+                  </td>
+
+                  <!-- Completed Date -->
+                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap font-medium">
+                    {{ challenge.completedAt ? new Date(challenge.completedAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—' }}
+                  </td>
+
+                  <!-- Actions -->
+                  <td class="px-5 py-4 text-right whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button
+                        @click="openEditChallengeModal(challenge)"
+                        class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                        title="Modifier le défi"
+                      >
+                        <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+                      </button>
+                      <button
+                        @click="deleteChallenge(challenge)"
+                        class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                        title="Supprimer le défi"
+                      >
+                        <UIcon name="i-heroicons-trash" class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- TAB 3 : CHALLENGES TODO (no search, ordered by rank desc)    -->
+      <!-- ============================================================ -->
+      <div v-if="activeTab === 'todo'" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Défis en attente d'accomplissement, ordonnés par rang de priorité décroissant.
+          </p>
+          <button
+            @click="openCreateChallengeModal(undefined, false)"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
+          >
+            <UIcon name="i-heroicons-plus" class="w-4 h-4" />
+            <span>Nouveau défi à faire</span>
+          </button>
+        </div>
+
+        <!-- Todo Table -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/80 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-900/60 text-xs uppercase text-gray-500 dark:text-gray-400 font-bold border-b border-gray-200 dark:border-gray-700">
+                <tr>
+                  <th class="px-5 py-3.5">Rang</th>
+                  <th class="px-5 py-3.5">Défi</th>
+                  <th class="px-5 py-3.5">Contact</th>
+                  <th class="px-5 py-3.5">Type</th>
+                  <th class="px-5 py-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
+                <tr v-if="sortedTodoChallenges.length === 0">
+                  <td colspan="5" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
+                    Aucun défi à faire dans la réserve. Crée un nouveau défi pour commencer !
+                  </td>
+                </tr>
+                <tr
+                  v-for="challenge in sortedTodoChallenges"
+                  :key="challenge.id"
+                  class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                >
+                  <!-- Rank -->
+                  <td class="px-5 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2.5 py-1 rounded-lg text-xs font-black font-mono shadow-xs"
+                      :class="getRankBadgeClass(challenge.rank ?? 2.5)"
+                    >
+                      {{ Number(challenge.rank ?? 2.5).toFixed(1) }}
+                    </span>
+                  </td>
+
+                  <!-- Text -->
+                  <td class="px-5 py-4 font-bold text-gray-900 dark:text-white max-w-md">
+                    {{ challenge.text }}
+                  </td>
+
+                  <!-- Contact -->
+                  <td class="px-5 py-4 text-xs font-semibold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
+                    {{ challenge.contact?.name || '—' }}
+                  </td>
+
+                  <!-- Type -->
+                  <td class="px-5 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                      :class="challenge.type === 'written'
+                        ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                        : 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'"
+                    >
+                      {{ challenge.type === 'written' ? '✍️ Écrit' : '🗣️ Oral' }}
+                    </span>
+                  </td>
+
+                  <!-- Actions -->
+                  <td class="px-5 py-4 text-right whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        @click="openReflectModal(challenge)"
+                        class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1 cursor-pointer"
+                        title="Marquer comme accompli et rédiger un bilan"
+                      >
+                        <UIcon name="i-heroicons-check-circle" class="w-4 h-4" />
+                        <span>Terminer</span>
+                      </button>
+                      <button
+                        @click="openEditChallengeModal(challenge)"
+                        class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                        title="Modifier le défi"
+                      >
+                        <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+                      </button>
+                      <button
+                        @click="deleteChallenge(challenge)"
+                        class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                        title="Supprimer le défi"
+                      >
+                        <UIcon name="i-heroicons-trash" class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL : CONTACT (Ajout / Modification)                      -->
+    <!-- ============================================================ -->
+    <UModal v-model:open="isContactModalOpen">
+      <template #content>
+        <div class="p-6 space-y-6">
+          <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+              {{ isEditingContact ? 'Modifier le contact' : 'Créer un nouveau contact' }}
+            </h3>
+            <button
+              @click="isContactModalOpen = false"
+              class="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
             >
-              <div class="flex items-center justify-between text-xs">
-                <div class="flex items-center gap-2">
-                  <span class="font-semibold text-indigo-600 dark:text-indigo-400">
-                    {{ ch.type === 'written' ? '✍️ Échange écrit' : '🗣️ Échange oral' }}
-                  </span>
-                  <span class="text-[10px] font-mono text-gray-400 bg-gray-100 dark:bg-gray-800 px-1 rounded">
-                    #{{ Number(ch.rank || 2.5).toFixed(1) }}
-                  </span>
-                </div>
-                <span class="text-gray-400">
-                  {{ ch.completedAt ? `Accompli le ${new Date(ch.completedAt).toLocaleDateString('fr-FR')}` : 'En attente' }}
+              <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
+            </button>
+          </div>
+
+          <form @submit.prevent="submitContactForm" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                Nom du contact *
+              </label>
+              <input
+                v-model="contactForm.name"
+                type="text"
+                required
+                placeholder="Ex: Musée des Beaux-Arts, Sophie Martin..."
+                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  E-mail
+                </label>
+                <input
+                  v-model="contactForm.email"
+                  type="email"
+                  placeholder="contact@domaine.fr"
+                  class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  Téléphone
+                </label>
+                <input
+                  v-model="contactForm.telephone"
+                  type="tel"
+                  placeholder="03 80 00 00 00"
+                  class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                Description / Rôle / Notes
+              </label>
+              <textarea
+                v-model="contactForm.description"
+                rows="3"
+                placeholder="Informations utiles sur ce contact..."
+                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <button
+                type="button"
+                @click="isContactModalOpen = false"
+                class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                :disabled="contactSubmitting"
+                class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <UIcon v-if="contactSubmitting" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+                <span>{{ isEditingContact ? 'Enregistrer' : 'Créer le contact' }}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </template>
+    </UModal>
+
+    <!-- ============================================================ -->
+    <!-- MODAL : DÉFIS CONCIS D'UN CONTACT (whenFinished asc)         -->
+    <!-- ============================================================ -->
+    <UModal v-model:open="isContactChallengesModalOpen">
+      <template #content>
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                  Fiche Contact
                 </span>
               </div>
-              <p class="font-bold text-gray-900 dark:text-white">{{ ch.text }}</p>
-              <div v-if="ch.afterChallengeNotes" class="bg-gray-50 dark:bg-gray-800 p-2.5 rounded-lg text-xs text-gray-600 dark:text-gray-300">
-                <span class="font-bold block text-gray-500 dark:text-gray-400 mb-0.5">Bilan / Réflexion :</span>
-                {{ ch.afterChallengeNotes }}
+              <h3 class="text-xl font-extrabold text-gray-900 dark:text-white mt-0.5">
+                {{ activeContactForChallenges?.name }}
+              </h3>
+              <p v-if="activeContactForChallenges?.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {{ activeContactForChallenges.description }}
+              </p>
+            </div>
+            <button
+              @click="isContactChallengesModalOpen = false"
+              class="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
+            >
+              <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
+            </button>
+          </div>
+
+          <!-- Concise list of challenges -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                Défis associés (par date de complétion croissante) :
+              </h4>
+              <button
+                @click="openCreateChallengeModal(activeContactForChallenges?.id)"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs cursor-pointer"
+              >
+                <UIcon name="i-heroicons-plus" class="w-3.5 h-3.5" />
+                <span>Nouveau défi pour ce contact</span>
+              </button>
+            </div>
+
+            <div v-if="activeContactChallenges.length === 0" class="p-6 text-center text-xs text-gray-400 bg-gray-50 dark:bg-gray-900/40 rounded-xl">
+              Aucun défi associé à ce contact pour l'instant.
+            </div>
+
+            <div v-else class="space-y-2 max-h-72 overflow-y-auto pr-1">
+              <div
+                v-for="ch in activeContactChallenges"
+                :key="ch.id"
+                class="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/60 flex items-start justify-between gap-3 text-xs"
+              >
+                <div class="space-y-1 flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium text-indigo-600 dark:text-indigo-400">
+                      {{ ch.type === 'written' ? '✍️ Écrit' : '🗣️ Oral' }}
+                    </span>
+                    <span class="font-mono text-[11px] font-bold px-1.5 py-0.2 rounded" :class="getRankBadgeClass(ch.rank ?? 2.5)">
+                      #{{ Number(ch.rank ?? 2.5).toFixed(1) }}
+                    </span>
+                    <span v-if="ch.completedAt" class="text-emerald-600 dark:text-emerald-400 font-semibold">
+                      ✓ Terminé le {{ new Date(ch.completedAt).toLocaleDateString('fr-FR') }}
+                    </span>
+                    <span v-else class="text-amber-600 dark:text-amber-400 font-semibold">
+                      ⏳ À faire
+                    </span>
+                  </div>
+                  <p class="font-bold text-gray-900 dark:text-white">{{ ch.text }}</p>
+                  <p v-if="ch.afterChallengeNotes" class="text-gray-600 dark:text-gray-300 italic">
+                    « {{ ch.afterChallengeNotes }} »
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-1 shrink-0">
+                  <button
+                    @click="openEditChallengeModal(ch)"
+                    class="p-1 text-gray-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                    title="Modifier le défi"
+                  >
+                    <UIcon name="i-heroicons-pencil-square" class="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    @click="deleteChallenge(ch)"
+                    class="p-1 text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
+                    title="Supprimer le défi"
+                  >
+                    <UIcon name="i-heroicons-trash" class="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
-          <button
-            @click="isContactModalOpen = false"
-            class="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-semibold hover:bg-gray-200 cursor-pointer"
-          >
-            Fermer
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal : Nouveau Défi -->
-    <div
-      v-if="isNewChallengeModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
-      @click.self="isNewChallengeModalOpen = false"
-    >
-      <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
-        <div class="flex items-start justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
-          <div>
-            <h2 class="text-xl font-extrabold text-gray-900 dark:text-white">
-              Créer un nouveau défi
-            </h2>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              Associe une action à un contact et ajoute-la à ta réserve de défis.
-            </p>
+          <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
+            <button
+              @click="isContactChallengesModalOpen = false"
+              class="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs font-semibold hover:bg-gray-200 cursor-pointer"
+            >
+              Fermer
+            </button>
           </div>
-          <button
-            @click="isNewChallengeModalOpen = false"
-            class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg"
-          >
-            <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
-          </button>
         </div>
+      </template>
+    </UModal>
 
-        <form @submit.prevent="submitNewChallenge" class="space-y-4">
-          <!-- Contact Selection Mode -->
-          <div class="space-y-2">
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Contact associé
-            </label>
+    <!-- ============================================================ -->
+    <!-- MODAL : DÉFI (Ajout / Modification avec Slider de Rang)     -->
+    <!-- ============================================================ -->
+    <UModal v-model:open="isChallengeModalOpen">
+      <template #content>
+        <div class="p-6 space-y-6 max-h-[90vh] overflow-y-auto">
+          <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+              {{ isEditingChallenge ? 'Modifier le défi' : 'Créer un nouveau défi' }}
+            </h3>
+            <button
+              @click="isChallengeModalOpen = false"
+              class="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
+            >
+              <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
+            </button>
+          </div>
 
-            <div class="flex gap-4 mb-2">
-              <label class="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer">
-                <input
-                  v-model="newChallengeForm.contactMode"
-                  type="radio"
-                  value="existing"
-                  :disabled="contacts.length === 0"
-                />
-                <span>Choisir un contact existant ({{ contacts.length }})</span>
+          <form @submit.prevent="submitChallengeForm" class="space-y-4">
+            <!-- Contact Selector -->
+            <div v-if="!isEditingChallenge" class="space-y-2">
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                Contact associé
               </label>
-              <label class="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer">
+
+              <div class="flex gap-4 mb-2">
+                <label class="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer">
+                  <input
+                    v-model="challengeForm.contactMode"
+                    type="radio"
+                    value="existing"
+                    :disabled="contacts.length === 0"
+                  />
+                  <span>Contact existant ({{ contacts.length }})</span>
+                </label>
+                <label class="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer">
+                  <input
+                    v-model="challengeForm.contactMode"
+                    type="radio"
+                    value="new"
+                  />
+                  <span>Nouveau contact</span>
+                </label>
+              </div>
+
+              <div v-if="challengeForm.contactMode === 'existing' && contacts.length > 0">
+                <select
+                  v-model="challengeForm.contactId"
+                  required
+                  class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                >
+                  <option v-for="c in contacts" :key="c.id" :value="c.id">
+                    {{ c.name }} {{ c.email ? `(${c.email})` : '' }}
+                  </option>
+                </select>
+              </div>
+
+              <div v-else class="space-y-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
                 <input
-                  v-model="newChallengeForm.contactMode"
-                  type="radio"
-                  value="new"
+                  v-model="challengeForm.newContactName"
+                  type="text"
+                  placeholder="Nom du contact (ex: Office de Tourisme...)"
+                  required
+                  class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white"
                 />
-                <span>Nouveau contact</span>
-              </label>
+                <div class="grid grid-cols-2 gap-2">
+                  <input
+                    v-model="challengeForm.newContactEmail"
+                    type="email"
+                    placeholder="E-mail (optionnel)"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
+                  />
+                  <input
+                    v-model="challengeForm.newContactPhone"
+                    type="tel"
+                    placeholder="Téléphone (optionnel)"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div v-if="newChallengeForm.contactMode === 'existing' && contacts.length > 0">
+            <!-- Existing Contact select when editing -->
+            <div v-else>
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                Contact associé
+              </label>
               <select
-                v-model="newChallengeForm.contactId"
+                v-model="challengeForm.contactId"
                 required
-                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               >
                 <option v-for="c in contacts" :key="c.id" :value="c.id">
                   {{ c.name }} {{ c.email ? `(${c.email})` : '' }}
@@ -959,137 +1345,233 @@ const submitNewChallenge = async () => {
               </select>
             </div>
 
-            <div v-else class="space-y-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
+            <!-- Challenge Action Text -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Action du défi *
+                </label>
+                <span class="text-xs" :class="challengeForm.text.length > 255 ? 'text-red-500 font-bold' : 'text-gray-400'">
+                  {{ challengeForm.text.length }} / 255
+                </span>
+              </div>
               <input
-                v-model="newChallengeForm.newContactName"
+                v-model="challengeForm.text"
                 type="text"
-                placeholder="Nom du contact (personne, musée, club...)"
+                maxlength="255"
+                placeholder="Ex: Demander par mail les horaires d'ouverture du samedi"
                 required
-                class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white"
+                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
-              <div class="grid grid-cols-2 gap-2">
+            </div>
+
+            <!-- Type Selector -->
+            <div class="grid grid-cols-2 gap-3">
+              <label
+                class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all"
+                :class="challengeForm.type === 'written'
+                  ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200'
+                  : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
+              >
                 <input
-                  v-model="newChallengeForm.newContactEmail"
-                  type="email"
-                  placeholder="E-mail (optionnel)"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
+                  v-model="challengeForm.type"
+                  type="radio"
+                  value="written"
+                  class="hidden"
                 />
+                <span class="text-xl">✍️</span>
+                <div>
+                  <div class="text-xs font-bold">Écrit</div>
+                  <div class="text-[10px] text-gray-500 dark:text-gray-400">E-mail, formulaire, message</div>
+                </div>
+              </label>
+
+              <label
+                class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all"
+                :class="challengeForm.type === 'spoken'
+                  ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200'
+                  : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
+              >
                 <input
-                  v-model="newChallengeForm.newContactPhone"
-                  type="tel"
-                  placeholder="Téléphone (optionnel)"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
+                  v-model="challengeForm.type"
+                  type="radio"
+                  value="spoken"
+                  class="hidden"
                 />
-              </div>
-              <input
-                v-model="newChallengeForm.newContactDescription"
-                type="text"
-                placeholder="Description courte / adresse (optionnel)"
-                class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
-              />
-            </div>
-          </div>
-
-          <!-- Challenge Text -->
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Action du défi (court)
+                <span class="text-xl">🗣️</span>
+                <div>
+                  <div class="text-xs font-bold">Oral</div>
+                  <div class="text-[10px] text-gray-500 dark:text-gray-400">Téléphone, sur place, vocal</div>
+                </div>
               </label>
-              <span class="text-xs" :class="newChallengeForm.text.length > 255 ? 'text-red-500 font-bold' : 'text-gray-400'">
-                {{ newChallengeForm.text.length }} / 255
-              </span>
             </div>
-            <input
-              v-model="newChallengeForm.text"
-              type="text"
-              maxlength="255"
-              placeholder="Ex: Écrire au musée pour demander les visites guidées de septembre"
-              required
-              class="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
 
-          <!-- Challenge Type -->
-          <div class="grid grid-cols-2 gap-3">
-            <label
-              class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all"
-              :class="newChallengeForm.type === 'written'
-                ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200'
-                : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
-            >
-              <input
-                v-model="newChallengeForm.type"
-                type="radio"
-                value="written"
-                class="hidden"
-              />
-              <span class="text-xl">✍️</span>
-              <div>
-                <div class="text-xs font-bold">Écrit</div>
-                <div class="text-[10px] text-gray-500 dark:text-gray-400">E-mail, formulaire, message</div>
+            <!-- Rank Slider: 0 (Red) to 5 (Green) -->
+            <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-2">
+              <div class="flex justify-between items-center">
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Rang de priorité (0.0 à 5.0)
+                </label>
+                <span
+                  class="text-xs font-black font-mono px-2 py-0.5 rounded shadow-xs"
+                  :class="getRankBadgeClass(challengeForm.rank)"
+                >
+                  {{ Number(challengeForm.rank).toFixed(1) }} / 5.0
+                </span>
               </div>
-            </label>
 
-            <label
-              class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all"
-              :class="newChallengeForm.type === 'spoken'
-                ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200'
-                : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
-            >
+              <!-- Range Slider -->
               <input
-                v-model="newChallengeForm.type"
-                type="radio"
-                value="spoken"
-                class="hidden"
+                v-model.number="challengeForm.rank"
+                type="range"
+                min="0"
+                max="5"
+                step="0.1"
+                class="w-full h-2 rounded-lg cursor-pointer appearance-none bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500"
               />
-              <span class="text-xl">🗣️</span>
-              <div>
-                <div class="text-xs font-bold">Oral</div>
-                <div class="text-[10px] text-gray-500 dark:text-gray-400">Téléphone, sur place, vocal</div>
+              <div class="flex justify-between text-[10px] font-bold text-gray-400">
+                <span class="text-red-500">0.0 (Faible)</span>
+                <span class="text-amber-500">2.5 (Moyen)</span>
+                <span class="text-emerald-500">5.0 (Prioritaire)</span>
               </div>
-            </label>
-          </div>
+            </div>
 
-          <!-- Challenge Rank (0.0 to 5.0, default 2.5) -->
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Rang de priorité (0.0 à 5.0)
+            <!-- Completion toggle & fields (CRUD complet pour les défis terminés) -->
+            <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-3">
+              <label class="inline-flex items-center gap-2 text-xs font-bold cursor-pointer text-gray-800 dark:text-gray-200">
+                <input
+                  v-model="challengeForm.isFinished"
+                  type="checkbox"
+                  class="rounded text-indigo-600 focus:ring-indigo-500"
+                />
+                <span>Ce défi est terminé (accompli)</span>
               </label>
-              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">
-                {{ Number(newChallengeForm.rank).toFixed(1) }}
-              </span>
+
+              <div v-if="challengeForm.isFinished" class="space-y-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                    Date & heure d'accomplissement
+                  </label>
+                  <input
+                    v-model="challengeForm.completedAt"
+                    type="datetime-local"
+                    class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                    Bilan / Réflexions après le défi
+                  </label>
+                  <textarea
+                    v-model="challengeForm.afterChallengeNotes"
+                    rows="3"
+                    placeholder="Notes, points d'apprentissage, bilan..."
+                    class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  />
+                </div>
+              </div>
             </div>
-            <input
-              v-model.number="newChallengeForm.rank"
-              type="number"
-              step="0.1"
-              min="0"
-              max="5"
-              class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white"
-            />
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <button
+                type="button"
+                @click="isChallengeModalOpen = false"
+                class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                :disabled="challengeSubmitting"
+                class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <UIcon v-if="challengeSubmitting" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+                <span>{{ isEditingChallenge ? 'Enregistrer le défi' : 'Créer le défi' }}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </template>
+    </UModal>
+
+    <!-- ============================================================ -->
+    <!-- MODAL : BILAN / RÉCAPITULER (depuis l'onglet À faire)         -->
+    <!-- ============================================================ -->
+    <UModal v-model:open="isReflectModalOpen">
+      <template #content>
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
+                  {{ selectedChallengeForReflect?.type === 'written' ? 'Défi écrit' : 'Défi oral' }}
+                </span>
+                <span class="text-xs text-gray-400">avec</span>
+                <span class="text-sm font-bold text-gray-900 dark:text-white">
+                  {{ selectedChallengeForReflect?.contact?.name }}
+                </span>
+              </div>
+              <h3 class="text-xl font-extrabold text-gray-900 dark:text-white mt-1">
+                Terminer & Réfléchir
+              </h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                « {{ selectedChallengeForReflect?.text }} »
+              </p>
+            </div>
+            <button
+              @click="isReflectModalOpen = false"
+              class="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
+            >
+              <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
+            </button>
           </div>
 
-          <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
-            <button
-              type="button"
-              @click="isNewChallengeModalOpen = false"
-              class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              :disabled="newChallengeSubmitting"
-              class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <UIcon v-if="newChallengeSubmitting" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
-              <span>Créer le défi</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          <form @submit.prevent="submitReflection" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                Date & heure d'accomplissement
+              </label>
+              <input
+                v-model="reflectCompletedAt"
+                type="datetime-local"
+                required
+                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                Bilan de l'interaction & réflexions
+              </label>
+              <textarea
+                v-model="reflectNotes"
+                rows="5"
+                placeholder="Décris comment s'est passé l'échange, tes ressentis, tes progrès..."
+                class="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <button
+                type="button"
+                @click="isReflectModalOpen = false"
+                class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                :disabled="reflectSubmitting"
+                class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <UIcon v-if="reflectSubmitting" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+                <span>Enregistrer le bilan</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>

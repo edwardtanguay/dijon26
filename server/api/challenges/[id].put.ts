@@ -52,6 +52,14 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    if (body.afterChallengeNotes !== undefined) {
+      updateData.afterChallengeNotes = body.afterChallengeNotes ? String(body.afterChallengeNotes).trim() : null
+    }
+
+    if (body.completedAt !== undefined) {
+      updateData.completedAt = body.completedAt ? new Date(body.completedAt) : null
+    }
+
     const updated = await prisma.challenge.update({
       where: { id },
       data: updateData,
