@@ -236,7 +236,7 @@ const swapCandidateChallenges = computed(() => {
 //   - if 1 or more available => exactly 1 slot is yellow ("En cours" / Doing)
 //   - remaining slots => red ("Créer un défi")
 const dailyGoalSlots = computed(() => {
-  const goalCount = 5
+  const goalCount = Math.max(1, dailyTarget.value || 1)
   const slots: Array<{
     status: 'finished' | 'doing' | 'empty'
     challenge?: Challenge
@@ -258,7 +258,7 @@ const dailyGoalSlots = computed(() => {
     })
   }
 
-  // 3. All remaining slots are empty (red)
+  // 3. All remaining slots are empty (red/gray)
   while (slots.length < goalCount) {
     slots.push({
       status: 'empty',
@@ -324,6 +324,20 @@ const filteredFinishedChallenges = computed(() => {
 const activeContactChallenges = computed(() => {
   if (!activeContactForChallenges.value) return []
   const cId = activeContactForChallenges.value.id
+  const list = challenges.value.filter((c) => c.contactId === cId)
+  return list.sort((a, b) => {
+    if (a.completedAt && b.completedAt) {
+      return new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime()
+    }
+    if (a.completedAt && !b.completedAt) return -1
+    if (!a.completedAt && b.completedAt) return 1
+    return (b.rank ?? 2.5) - (a.rank ?? 2.5)
+  })
+})
+
+const selectedContactDetailChallenges = computed(() => {
+  if (!selectedContactForDetail.value) return []
+  const cId = selectedContactForDetail.value.id
   const list = challenges.value.filter((c) => c.contactId === cId)
   return list.sort((a, b) => {
     if (a.completedAt && b.completedAt) {
@@ -658,7 +672,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               Tes défis pour aujourd'hui
             </h2>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Complète tes 5 défis pour atteindre ton objectif du jour
+              Complète tes {{ dailyTarget }} défis pour atteindre ton objectif du jour
             </p>
           </div>
         </div>
@@ -711,7 +725,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
         <!-- Loading State -->
         <template v-if="loading">
           <div
-            v-for="i in 5"
+            v-for="i in dailyTarget"
             :key="'loader-' + i"
             class="relative rounded-2xl p-5 bg-gray-50/50 dark:bg-gray-900/40 border-2 border-dashed border-gray-200 dark:border-gray-800 flex flex-col items-center justify-center text-center min-h-[170px]"
           >
@@ -834,18 +848,19 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   <select
                     :value="slot.challenge.id"
                     @change="(e: any) => handleDoingDropdownChange(e, slot.challenge?.contactId)"
-                    class="w-full text-xs py-1.5 pl-3 pr-8 rounded-lg bg-amber-100/70 hover:bg-amber-200/80 dark:bg-amber-950/70 dark:hover:bg-amber-900/80 text-amber-900 dark:text-amber-100 font-medium border border-amber-300 dark:border-amber-700/80 cursor-pointer appearance-none focus:outline-none"
+                    class="w-full text-xs py-1.5 pl-3 pr-8 rounded-lg bg-amber-100/60 hover:bg-amber-100/90 dark:bg-amber-950/60 dark:hover:bg-amber-950/90 text-amber-950 dark:text-amber-100 font-medium border border-amber-300/80 dark:border-amber-700/80 cursor-pointer appearance-none focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors"
                   >
-                    <option :value="slot.challenge.id">
+                    <option :value="slot.challenge.id" class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-semibold">
                       Changer de défi ({{ swapCandidateChallenges.length }} dispo)
                     </option>
-                    <option value="__CREATE__" class="font-bold text-indigo-700 dark:text-indigo-300">
-                      ＋ Créer un défi...
+                    <option value="__CREATE__" class="font-bold text-orange-600 dark:text-orange-400 bg-white dark:bg-gray-900">
+                      ⊕ Créer un défi
                     </option>
                     <option
                       v-for="alt in swapCandidateChallenges"
                       :key="alt.id"
                       :value="alt.id"
+                      class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200"
                     >
                       Rang {{ Number(alt.rank ?? 2.5).toFixed(1) }} - {{ alt.contact?.name ? alt.contact.name + ': ' : '' }}{{ alt.challengeText.slice(0, 45) }}...
                     </option>
@@ -2219,6 +2234,71 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   <span>Ouvrir dans Google Maps</span>
                   <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-3.5 h-3.5" />
                 </a>
+              </div>
+            </div>
+
+            <!-- Associated Challenges in Contact View Modal -->
+            <div class="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-800">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Défis associés ({{ selectedContactDetailChallenges.length }}) :
+                </h4>
+                <button
+                  @click="openCreateChallengeModal(selectedContactForDetail?.id)"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs cursor-pointer"
+                >
+                  <UIcon name="i-heroicons-plus" class="w-3.5 h-3.5" />
+                  <span>Nouveau défi</span>
+                </button>
+              </div>
+
+              <div v-if="selectedContactDetailChallenges.length === 0" class="p-6 text-center text-xs text-gray-400 bg-gray-50 dark:bg-gray-900/40 rounded-xl">
+                Aucun défi associé à ce contact pour l'instant.
+              </div>
+
+              <div v-else class="space-y-2 max-h-72 overflow-y-auto pr-1">
+                <div
+                  v-for="ch in selectedContactDetailChallenges"
+                  :key="ch.id"
+                  class="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/60 flex items-start justify-between gap-3 text-xs"
+                >
+                  <div class="space-y-1 flex-1">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs text-gray-700 dark:text-gray-300 font-normal">
+                        {{ formatTypeAndRank(ch.type, ch.rank) }}
+                      </span>
+                      <span v-if="ch.completedAt" class="text-emerald-600 dark:text-emerald-400 font-semibold">
+                        ✓ Terminé le {{ formatDateForDisplay(ch.completedAt) }}
+                      </span>
+                      <span v-else class="text-amber-600 dark:text-amber-400 font-semibold">
+                        ⏳ À faire
+                      </span>
+                    </div>
+                    <div class="text-gray-900 dark:text-white">
+                      <OutlineContent :text="ch.challengeText" :available-images="availableImages" />
+                    </div>
+                    <div v-if="ch.afterChallengeNotes" class="text-gray-600 dark:text-gray-300 italic pt-1">
+                      <OutlineContent :text="ch.afterChallengeNotes" :available-images="availableImages" />
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-1 shrink-0">
+                    <button
+                      @click="openEditChallengeModal(ch)"
+                      class="p-1 text-gray-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                      title="Modifier le défi"
+                    >
+                      <UIcon name="i-heroicons-pencil-square" class="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      @click="deleteChallenge(ch)"
+                      class="p-1 text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
+                      title="Supprimer le défi"
+                    >
+                      <UIcon name="i-heroicons-trash" class="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 

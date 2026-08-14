@@ -263,7 +263,7 @@ onUnmounted(() => {
     </div>
 
     <!-- KMZ Download Callout Section with High-Contrast Slate Button -->
-    <div class="bg-gradient-to-r from-indigo-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl border border-indigo-800/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+    <div class="bg-linear-to-r from-indigo-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl border border-indigo-800/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
       <div class="space-y-2">
         <div class="flex items-center space-x-2 text-indigo-300 font-semibold text-sm">
           <UIcon name="i-heroicons-map-pin" class="w-5 h-5 shrink-0" />
@@ -278,11 +278,11 @@ onUnmounted(() => {
         href="/kmz/dijon-001.kmz"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-slate-950 hover:bg-black !text-white font-bold rounded-xl shadow-xl border border-slate-700/80 hover:border-slate-500 transition-all shrink-0 cursor-pointer text-sm"
+        class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-slate-950 hover:bg-black text-white! font-bold rounded-xl shadow-xl border border-slate-700/80 hover:border-slate-500 transition-all shrink-0 cursor-pointer text-sm"
       >
-        <UIcon name="i-heroicons-arrow-down-tray" class="w-5 h-5 !text-white shrink-0" />
-        <span class="!text-white font-bold">Ouvre le fichier KMZ</span>
-        <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4 !text-white opacity-90 shrink-0" />
+        <UIcon name="i-heroicons-arrow-down-tray" class="w-5 h-5 text-white! shrink-0" />
+        <span class="text-white! font-bold">Ouvre le fichier KMZ</span>
+        <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4 text-white! opacity-90 shrink-0" />
       </a>
     </div>
 
@@ -354,13 +354,13 @@ onUnmounted(() => {
           class="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-lg flex flex-col group cursor-default md:cursor-pointer"
           @click="handleImageClick(img)"
         >
-          <!-- Mobile: w-full h-auto object-contain (100% width, no height cutoff) | Desktop: object-cover max-h-[380px] -->
+          <!-- Mobile: w-full h-auto object-contain (100% width, no height cutoff) | Desktop: object-cover max-h-95 -->
           <div class="overflow-hidden bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
             <img
               :src="img.src"
               :alt="img.title"
               loading="lazy"
-              class="w-full h-auto object-contain md:object-cover md:max-h-[380px] transition-transform duration-300 md:group-hover:scale-[1.02]"
+              class="w-full h-auto object-contain md:object-cover md:max-h-95 transition-transform duration-300 md:group-hover:scale-[1.02]"
             />
           </div>
           <div class="p-5 space-y-1 bg-white dark:bg-gray-900 flex-1">
@@ -407,7 +407,7 @@ onUnmounted(() => {
       <div v-if="currentCardIndex < flashcardDeck.length && flashcardDeck.length > 0" class="space-y-6">
         <div
           @click="isAnswerRevealed = !isAnswerRevealed"
-          class="bg-gradient-to-br from-gray-50 to-indigo-50/30 dark:from-gray-800/80 dark:to-indigo-950/20 rounded-2xl p-6 sm:p-10 border border-indigo-100/80 hover:border-indigo-300 dark:border-gray-700/80 dark:hover:border-indigo-700/80 text-center space-y-4 shadow-inner cursor-pointer select-none transition-all"
+          class="bg-linear-to-br from-gray-50 to-indigo-50/30 dark:from-gray-800/80 dark:to-indigo-950/20 rounded-2xl p-6 sm:p-10 border border-indigo-100/80 hover:border-indigo-300 dark:border-gray-700/80 dark:hover:border-indigo-700/80 text-center space-y-4 shadow-inner cursor-pointer select-none transition-all"
         >
           <div class="inline-block px-3 py-1 rounded-md bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-300 text-xs font-semibold uppercase tracking-wider">
             {{ currentCard?.typeLabel }}
