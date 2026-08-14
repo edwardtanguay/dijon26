@@ -55,8 +55,8 @@ const navItems = [
           <NuxtLink v-for="item in navItems"
                     :key="item.path"
                     :to="item.path"
-                    class="flex items-center space-x-2 !text-gray-600 hover:!text-black transition-colors font-medium dark:!text-gray-300 dark:hover:!text-white"
-                    active-class="!text-black dark:!text-white font-semibold">
+                    class="flex items-center space-x-2 text-gray-600! hover:text-black! transition-colors font-medium dark:text-gray-300! dark:hover:text-white!"
+                    active-class="text-black! dark:text-white! font-semibold">
             <UIcon :name="item.icon" class="h-5 w-5" />
             <span>{{ item.name }}</span>
           </NuxtLink>
@@ -104,8 +104,8 @@ const navItems = [
                     :key="item.path"
                     :to="item.path"
                     @click="mobileMenuOpen = false"
-                    class="flex items-center space-x-3 px-4 py-3 rounded-lg !text-gray-600 hover:bg-gray-100 hover:!text-black transition-colors font-medium dark:!text-gray-300 dark:hover:bg-gray-800 dark:hover:!text-white"
-                    active-class="bg-gray-100 !text-black dark:bg-gray-800 dark:!text-white">
+                    class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600! hover:bg-gray-100 hover:text-black! transition-colors font-medium dark:text-gray-300! dark:hover:bg-gray-800 dark:hover:text-white!"
+                    active-class="bg-gray-100 text-black! dark:bg-gray-800 dark:text-white!">
             <UIcon :name="item.icon" class="h-5 w-5" />
             <span>{{ item.name }}</span>
           </NuxtLink>

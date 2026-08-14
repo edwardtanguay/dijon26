@@ -156,23 +156,52 @@ const todoChallenges = computed(() => {
   return challenges.value.filter((c) => !c.completedAt)
 })
 
-// Today / Tomorrow dynamic calculation
-// Target = dailyTarget.value
-// todayDone = finishedTodayChallenges.length
-// todoPool = todoChallenges.length
-const todayDoneCount = computed(() => finishedTodayChallenges.value.length)
-const todoPoolCount = computed(() => todoChallenges.value.length)
-
-const todayMissing = computed(() => {
-  const missing = dailyTarget.value - todayDoneCount.value
-  return missing > 0 ? missing : 0
+// Tab 3: Todo Challenges (rank desc)
+const sortedTodoChallenges = computed(() => {
+  return [...todoChallenges.value].sort((a, b) => {
+    return (b.rank ?? 2.5) - (a.rank ?? 2.5)
+  })
 })
 
-const tomorrowMissing = computed(() => {
-  // reserve left in todo pool after satisfying today's deficit
-  const remainingTodoAfterToday = Math.max(0, todoPoolCount.value - todayMissing.value)
-  const missingTomorrow = dailyTarget.value - remainingTodoAfterToday
-  return missingTomorrow > 0 ? missingTomorrow : 0
+// Today dynamic calculation & 5 daily goal slots
+// Slots order:
+// 1. Finished challenges today (green glow)
+// 2. Available todo challenges from pool (yellow glow)
+// 3. Missing slots -> Add challenge action (red glow)
+const dailyGoalSlots = computed(() => {
+  const goalCount = 5
+  const slots: Array<{
+    status: 'finished' | 'available' | 'empty'
+    challenge?: Challenge
+  }> = []
+
+  // 1. Fill completed challenges today first
+  for (let i = 0; i < finishedTodayChallenges.value.length && slots.length < goalCount; i++) {
+    slots.push({
+      status: 'finished',
+      challenge: finishedTodayChallenges.value[i],
+    })
+  }
+
+  // 2. Fill available todo challenges (sorted by rank desc)
+  const remainingTodo = sortedTodoChallenges.value
+  let todoIndex = 0
+  while (slots.length < goalCount && todoIndex < remainingTodo.length) {
+    slots.push({
+      status: 'available',
+      challenge: remainingTodo[todoIndex],
+    })
+    todoIndex++
+  }
+
+  // 3. If there are still empty slots to reach 5, mark them as empty ("add challenge")
+  while (slots.length < goalCount) {
+    slots.push({
+      status: 'empty',
+    })
+  }
+
+  return slots
 })
 
 // Filtered Lists
@@ -207,13 +236,6 @@ const filteredFinishedChallenges = computed(() => {
     const text = c.text.toLowerCase()
     const notes = c.afterChallengeNotes?.toLowerCase() || ''
     return text.includes(q) || contactName.includes(q) || notes.includes(q)
-  })
-})
-
-// Tab 3: Todo Challenges (rank desc)
-const sortedTodoChallenges = computed(() => {
-  return [...todoChallenges.value].sort((a, b) => {
-    return (b.rank ?? 2.5) - (a.rank ?? 2.5)
   })
 })
 
@@ -551,12 +573,12 @@ const getRankBadgeClass = (rank: number) => {
       </div>
     </div>
 
-    <!-- Top Panel: Define challenges for today and tomorrow -->
+    <!-- Top Panel: Define challenges for today -->
     <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-700/60 shadow-sm">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-700/60 pb-4">
         <div class="flex items-center gap-2.5">
-          <UIcon name="i-heroicons-calendar-days" class="w-5 h-5 text-indigo-500" />
-          <h2 class="text-base font-bold text-gray-900 dark:text-white">
+          <UIcon name="i-heroicons-calendar-days" class="w-5 h-5 text-indigo-500 shrink-0 self-center" />
+          <h2 class="text-base font-bold text-gray-900 dark:text-white !mb-0 !leading-none inline-flex items-center">
             Définir les défis pour aujourd'hui et demain
           </h2>
         </div>
@@ -598,59 +620,88 @@ const getRankBadgeClass = (rank: number) => {
         </div>
       </div>
 
-      <!-- Indicators Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
-        <!-- Today Status Card -->
-        <div
-          class="p-4 rounded-xl border flex items-center justify-between"
-          :class="todayMissing > 0
-            ? 'bg-red-50/70 dark:bg-red-950/20 border-red-200 dark:border-red-900/40'
-            : 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40'"
-        >
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
-              Aujourd'hui
-            </span>
-            <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
-              {{ todayDoneCount }} accompli{{ todayDoneCount > 1 ? 's' : '' }} / {{ dailyTarget }} visés
+      <!-- 5 Daily Goal Challenge Slots -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-5">
+        <template v-for="(slot, index) in dailyGoalSlots" :key="index">
+          <!-- Finished Challenge Card (Green Glow) -->
+          <div
+            v-if="slot.status === 'finished' && slot.challenge"
+            class="relative rounded-xl p-4 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-300/80 dark:border-emerald-700/70 shadow-[0_0_15px_rgba(16,185,129,0.22)] dark:shadow-[0_0_18px_rgba(16,185,129,0.3)] flex flex-col justify-between min-h-[140px] transition-all hover:scale-[1.01]"
+          >
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide flex items-center gap-1">
+                  <UIcon name="i-heroicons-check-circle" class="w-3.5 h-3.5" />
+                  Défi #{{ index + 1 }}
+                </span>
+                <span
+                  class="px-1.5 py-0.5 rounded text-[10px] font-bold font-mono"
+                  :class="getRankBadgeClass(slot.challenge.rank ?? 2.5)"
+                >
+                  {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
+                </span>
+              </div>
+              <p class="text-xs font-semibold text-gray-900 dark:text-white line-clamp-3 leading-snug">
+                {{ slot.challenge.text }}
+              </p>
+            </div>
+            <div class="pt-2 mt-auto border-t border-emerald-200/60 dark:border-emerald-800/40 flex items-center justify-between text-[11px] text-emerald-800 dark:text-emerald-300">
+              <span class="truncate font-medium">{{ slot.challenge.contact?.name || 'Contact' }}</span>
+              <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">Terminé</span>
             </div>
           </div>
 
+          <!-- Available Todo Challenge Card (Yellow Glow) -->
           <div
-            class="px-3.5 py-1.5 rounded-full font-black text-sm flex items-center gap-1 shadow-xs"
-            :class="todayMissing > 0
-              ? 'bg-red-500 text-white'
-              : 'bg-emerald-500 text-white'"
+            v-else-if="slot.status === 'available' && slot.challenge"
+            class="relative rounded-xl p-4 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-300/80 dark:border-amber-700/70 shadow-[0_0_15px_rgba(245,158,11,0.25)] dark:shadow-[0_0_18px_rgba(245,158,11,0.35)] flex flex-col justify-between min-h-[140px] transition-all hover:scale-[1.01]"
           >
-            <span>aujourd'hui : {{ todayMissing > 0 ? `+${todayMissing}` : '0' }}</span>
-          </div>
-        </div>
-
-        <!-- Tomorrow Status Card -->
-        <div
-          class="p-4 rounded-xl border flex items-center justify-between"
-          :class="tomorrowMissing > 0
-            ? 'bg-amber-50/70 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/40'
-            : 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40'"
-        >
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
-              Demain
-            </span>
-            <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
-              {{ todoPoolCount }} en réserve à faire
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide flex items-center gap-1">
+                  <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5 text-amber-500" />
+                  Défi #{{ index + 1 }}
+                </span>
+                <span
+                  class="px-1.5 py-0.5 rounded text-[10px] font-bold font-mono"
+                  :class="getRankBadgeClass(slot.challenge.rank ?? 2.5)"
+                >
+                  {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
+                </span>
+              </div>
+              <p class="text-xs font-semibold text-gray-900 dark:text-white line-clamp-3 leading-snug">
+                {{ slot.challenge.text }}
+              </p>
+            </div>
+            <div class="pt-2 mt-auto border-t border-amber-200/60 dark:border-amber-800/40 flex items-center justify-between text-[11px]">
+              <span class="truncate font-medium text-amber-900 dark:text-amber-200">{{ slot.challenge.contact?.name || 'Contact' }}</span>
+              <button
+                @click="openReflectModal(slot.challenge)"
+                class="px-2 py-0.5 rounded bg-amber-500 hover:bg-amber-600 text-white font-bold text-[10px] shadow-xs cursor-pointer shrink-0 transition-colors"
+                title="Valider et faire le bilan"
+              >
+                Accomplir
+              </button>
             </div>
           </div>
 
+          <!-- Empty / Add Challenge Card (Red Glow) -->
           <div
-            class="px-3.5 py-1.5 rounded-full font-black text-sm flex items-center gap-1 shadow-xs"
-            :class="tomorrowMissing > 0
-              ? 'bg-amber-500 text-white'
-              : 'bg-emerald-500 text-white'"
+            v-else
+            @click="openCreateChallengeModal(undefined, false)"
+            class="group relative rounded-xl p-4 bg-red-50/40 dark:bg-red-950/20 border-2 border-dashed border-red-300 dark:border-red-700/60 shadow-[0_0_15px_rgba(239,68,68,0.22)] dark:shadow-[0_0_18px_rgba(239,68,68,0.3)] flex flex-col items-center justify-center text-center min-h-[140px] cursor-pointer hover:bg-red-50/80 dark:hover:bg-red-950/30 transition-all hover:scale-[1.01]"
           >
-            <span>demain : {{ tomorrowMissing > 0 ? `+${tomorrowMissing}` : '0' }}</span>
+            <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <UIcon name="i-heroicons-plus" class="w-4 h-4" />
+            </div>
+            <span class="text-xs font-bold text-red-700 dark:text-red-300">
+              Ajouter un défi
+            </span>
+            <span class="text-[10px] text-red-500/80 dark:text-red-400/80 mt-0.5">
+              Défi #{{ index + 1 }} manquant
+            </span>
           </div>
-        </div>
+        </template>
       </div>
     </div>
 
@@ -1427,7 +1478,7 @@ const getRankBadgeClass = (rank: number) => {
                 min="0"
                 max="5"
                 step="0.1"
-                class="w-full h-2 rounded-lg cursor-pointer appearance-none bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500"
+                class="w-full h-2 rounded-lg cursor-pointer appearance-none bg-linear-to-r from-red-500 via-amber-400 to-emerald-500"
               />
               <div class="flex justify-between text-[10px] font-bold text-gray-400">
                 <span class="text-red-500">0.0 (Faible)</span>

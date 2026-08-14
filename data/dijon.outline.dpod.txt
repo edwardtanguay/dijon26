@@ -22,6 +22,7 @@
 	- écrire à Diva Mobilités
 		- vélo
 		- bus/tramway
+	- trouver des théâtres, des pièces et des conférences, comme Urania.
 	- un pass hebdomadaire pour tous les transports
 	- commander des gels sur Amazon
 	- développer l'application de manière à ce
@@ -60,6 +61,9 @@
 	- n'importe quand
 		- 30m / Jardin botanique de l'Arquebuse
 		- 30m / La Source des Vins - dégustation de vins de Bourgogne (blog)
+	- seulement certains jours
+		- https://caveaumarsannay.com/actualites.php?type=evenement
+			- plus un randonée
 - façons de décrire le vin
 	- Ce vin est très aromatique, avec des notes de fruits rouges.
 	- Il a un nez assez expressif, avec des arômes de fruits mûrs.
@@ -211,14 +215,33 @@
 		- un cru est, dans le domaine du vin, un vignoble ou un terroir particulier reconnu pour la qualité de ses vins
 			- le mot vient du verbe croître : un cru est littéralement quelque chose qui a « poussé », notamment ce qui est produit par une terre
 			- par exemple, Chambertin est un cru très célèbre en Bourgogne
-- contacts
-	- Laurent
-		- CHALLENGE: 2026-08-13 19:54:05 j'ai écrit Laurent
-		
+- challenges
+	- challengeCreationTodos
+		- +33 (0)3 80 44 11 44 et essayer toutes les choix de recording
+		- 
+	- before finish app
+		- Dijon Bourgogne Tourisme & Congrès
+			- va à https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes et explique que tu veux registrer pour octobre mais c'est impossible
+			- Tél. +33 (0)3 80 44 11 44
+			- 11 rue des Forges • 21000 Dijon
+			- "nouveau format « Flash »." quel est ça
+			- 2026-08-14 15:04:37
+				- j'ai parlé avec une femme pour 5 minutes, on peut payer seulement avec visa
+			- new challenge: ask to send something in the mail? get an overview of the tours before hand
+	- contacts
+		- Laurent
+			- CHALLENGE: 2026-08-13 19:54:05 j'ai écrit Laurent
+	- infos
+		- intros
+			- Bonjour, Edward Tanguay à l’appareil. Je vous appelle au sujet de…
+			- Bonjour, je m’appelle Edward Tanguay. Je vous appelle parce que j’aurais une question concernant…
+		- liens
+			- vidéos pour apprendre à parler au téléphone
+			
 		
 - défis d'écriture avant le voyage
 	- à faire
-		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes
+		- 
 		- appeler l'office de tourisme et demander des visites guidées
 		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
 		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
