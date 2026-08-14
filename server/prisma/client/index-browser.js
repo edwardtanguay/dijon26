@@ -136,6 +136,7 @@ exports.Prisma.ContactScalarFieldEnum = {
   email: 'email',
   telephone: 'telephone',
   description: 'description',
+  mapUrl: 'mapUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -143,7 +144,7 @@ exports.Prisma.ContactScalarFieldEnum = {
 exports.Prisma.ChallengeScalarFieldEnum = {
   id: 'id',
   contactId: 'contactId',
-  text: 'text',
+  challengeText: 'challengeText',
   type: 'type',
   rank: 'rank',
   completedAt: 'completedAt',

@@ -18,6 +18,7 @@ interface Contact {
   email: string | null
   telephone: string | null
   description: string | null
+  mapUrl?: string | null
   createdAt: string
   updatedAt: string
   challenges?: Challenge[]
@@ -27,7 +28,7 @@ interface Challenge {
   id: string
   contactId: string
   contact?: Contact
-  text: string
+  challengeText: string
   type: 'written' | 'spoken'
   rank: number
   completedAt: string | null
@@ -39,6 +40,7 @@ interface Challenge {
 // State
 const challenges = ref<Challenge[]>([])
 const contacts = ref<Contact[]>([])
+const availableImages = ref<string[]>([])
 const dailyTarget = ref<number>(10)
 const isEditingTarget = ref(false)
 const targetInput = ref<number>(10)
@@ -60,6 +62,7 @@ const contactForm = ref({
   email: '',
   telephone: '',
   description: '',
+  mapUrl: '',
 })
 const contactSubmitting = ref(false)
 
@@ -78,7 +81,8 @@ const challengeForm = ref({
   newContactEmail: '',
   newContactPhone: '',
   newContactDescription: '',
-  text: '',
+  newContactMapUrl: '',
+  challengeText: '',
   type: 'written' as 'written' | 'spoken',
   rank: 2.5,
   isFinished: false,
@@ -94,14 +98,40 @@ const reflectNotes = ref('')
 const reflectCompletedAt = ref('')
 const reflectSubmitting = ref(false)
 
+// Date helpers - YYYY-MM-DD HH:mm:ss format
+const getCurrentTimestamp = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  const seconds = String(now.getSeconds()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+}
+
+const formatDateForDisplay = (d: string | null | undefined) => {
+  if (!d) return '—'
+  const dateObj = new Date(d)
+  if (isNaN(dateObj.getTime())) return d
+  const year = dateObj.getFullYear()
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+  const day = String(dateObj.getDate()).padStart(2, '0')
+  const hours = String(dateObj.getHours()).padStart(2, '0')
+  const minutes = String(dateObj.getMinutes()).padStart(2, '0')
+  const seconds = String(dateObj.getSeconds()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+}
+
 // Fetch Data
 const fetchData = async () => {
   loading.value = true
   try {
-    const [settingsRes, challengesRes, contactsRes] = await Promise.all([
+    const [settingsRes, challengesRes, contactsRes, imagesRes] = await Promise.all([
       $fetch<{ success: boolean; data: any }>('/api/settings'),
       $fetch<{ success: boolean; data: Challenge[] }>('/api/challenges'),
       $fetch<{ success: boolean; data: Contact[] }>('/api/contacts'),
+      $fetch<{ images: string[] }>('/api/outline-images').catch(() => ({ images: [] })),
     ])
 
     if (settingsRes.success && settingsRes.data?.dailyChallengeTarget) {
@@ -114,6 +144,9 @@ const fetchData = async () => {
     if (contactsRes.success) {
       contacts.value = contactsRes.data
     }
+    if (imagesRes && imagesRes.images) {
+      availableImages.value = imagesRes.images
+    }
   } catch (err) {
     console.error('Erreur lors du chargement des données:', err)
   } finally {
@@ -125,7 +158,6 @@ onMounted(() => {
   fetchData()
 })
 
-// Date helpers
 const getLocalDateString = (d: Date | string | null = new Date()) => {
   if (!d) return ''
   const dateObj = typeof d === 'string' ? new Date(d) : d
@@ -138,12 +170,10 @@ const getLocalDateString = (d: Date | string | null = new Date()) => {
 const todayStr = computed(() => getLocalDateString(new Date()))
 
 // Challenge Categories:
-// 1. Finished Challenges (completedAt != null)
 const finishedChallenges = computed(() => {
   return challenges.value.filter((c) => !!c.completedAt)
 })
 
-// Finished today specifically
 const finishedTodayChallenges = computed(() => {
   return challenges.value.filter((c) => {
     if (!c.completedAt) return false
@@ -151,7 +181,6 @@ const finishedTodayChallenges = computed(() => {
   })
 })
 
-// 2. Todo challenges (completedAt == null)
 const todoChallenges = computed(() => {
   return challenges.value.filter((c) => !c.completedAt)
 })
@@ -163,11 +192,7 @@ const sortedTodoChallenges = computed(() => {
   })
 })
 
-// Today dynamic calculation & 5 daily goal slots
-// Slots order:
-// 1. Finished challenges today (green glow)
-// 2. Available todo challenges from pool (yellow glow)
-// 3. Missing slots -> Add challenge action (red glow)
+// Top Panel: 5 daily goal slots
 const dailyGoalSlots = computed(() => {
   const goalCount = 5
   const slots: Array<{
@@ -175,7 +200,7 @@ const dailyGoalSlots = computed(() => {
     challenge?: Challenge
   }> = []
 
-  // 1. Fill completed challenges today first
+  // 1. Finished challenges today
   for (let i = 0; i < finishedTodayChallenges.value.length && slots.length < goalCount; i++) {
     slots.push({
       status: 'finished',
@@ -183,7 +208,7 @@ const dailyGoalSlots = computed(() => {
     })
   }
 
-  // 2. Fill available todo challenges (sorted by rank desc)
+  // 2. Available todo challenges (sorted by rank desc)
   const remainingTodo = sortedTodoChallenges.value
   let todoIndex = 0
   while (slots.length < goalCount && todoIndex < remainingTodo.length) {
@@ -194,7 +219,7 @@ const dailyGoalSlots = computed(() => {
     todoIndex++
   }
 
-  // 3. If there are still empty slots to reach 5, mark them as empty ("add challenge")
+  // 3. Missing slots
   while (slots.length < goalCount) {
     slots.push({
       status: 'empty',
@@ -205,7 +230,6 @@ const dailyGoalSlots = computed(() => {
 })
 
 // Filtered Lists
-// Tab 1: Contacts (whenCreated desc)
 const filteredContacts = computed(() => {
   let list = [...contacts.value].sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -222,7 +246,6 @@ const filteredContacts = computed(() => {
   })
 })
 
-// Tab 2: Finished Challenges (whenFinished desc)
 const filteredFinishedChallenges = computed(() => {
   let list = [...finishedChallenges.value].sort((a, b) => {
     const timeA = a.completedAt ? new Date(a.completedAt).getTime() : 0
@@ -233,13 +256,12 @@ const filteredFinishedChallenges = computed(() => {
   const q = searchFinished.value.trim().toLowerCase()
   return list.filter((c) => {
     const contactName = c.contact?.name?.toLowerCase() || ''
-    const text = c.text.toLowerCase()
+    const text = (c.challengeText || '').toLowerCase()
     const notes = c.afterChallengeNotes?.toLowerCase() || ''
     return text.includes(q) || contactName.includes(q) || notes.includes(q)
   })
 })
 
-// Contact's challenges sorted by whenFinished ascending (completedAt asc, pending last)
 const activeContactChallenges = computed(() => {
   if (!activeContactForChallenges.value) return []
   const cId = activeContactForChallenges.value.id
@@ -272,9 +294,7 @@ const saveDailyTarget = async () => {
   }
 }
 
-// ---------------------------
 // Contact CRUD Handlers
-// ---------------------------
 const openCreateContactModal = () => {
   isEditingContact.value = false
   contactForm.value = {
@@ -283,6 +303,7 @@ const openCreateContactModal = () => {
     email: '',
     telephone: '',
     description: '',
+    mapUrl: '',
   }
   isContactModalOpen.value = true
 }
@@ -295,6 +316,7 @@ const openEditContactModal = (contact: Contact) => {
     email: contact.email || '',
     telephone: contact.telephone || '',
     description: contact.description || '',
+    mapUrl: contact.mapUrl || '',
   }
   isContactModalOpen.value = true
 }
@@ -311,11 +333,11 @@ const submitContactForm = async () => {
         email: contactForm.value.email.trim() || undefined,
         telephone: contactForm.value.telephone.trim() || undefined,
         description: contactForm.value.description.trim() || undefined,
+        mapUrl: contactForm.value.mapUrl.trim() || undefined,
       },
     })
     isContactModalOpen.value = false
     await fetchData()
-    // Update active contact if modal was opened
     if (activeContactForChallenges.value && isEditingContact.value && activeContactForChallenges.value.id === contactForm.value.id) {
       activeContactForChallenges.value = contacts.value.find((c) => c.id === contactForm.value.id) || null
     }
@@ -351,21 +373,11 @@ const openContactChallengesModal = (contact: Contact) => {
   isContactChallengesModalOpen.value = true
 }
 
-// ---------------------------
 // Challenge CRUD Handlers
-// ---------------------------
 const openCreateChallengeModal = (presetContactId?: string, defaultFinished = false) => {
   isEditingChallenge.value = false
   editingChallengeId.value = ''
   
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  const hours = String(now.getHours()).padStart(2, '0')
-  const minutes = String(now.getMinutes()).padStart(2, '0')
-  const currentLocalDt = `${year}-${month}-${day}T${hours}:${minutes}`
-
   challengeForm.value = {
     contactMode: contacts.value.length > 0 ? 'existing' : 'new',
     contactId: presetContactId || contacts.value[0]?.id || '',
@@ -373,11 +385,12 @@ const openCreateChallengeModal = (presetContactId?: string, defaultFinished = fa
     newContactEmail: '',
     newContactPhone: '',
     newContactDescription: '',
-    text: '',
+    newContactMapUrl: '',
+    challengeText: '',
     type: 'written',
     rank: 2.5,
     isFinished: defaultFinished,
-    completedAt: defaultFinished ? currentLocalDt : '',
+    completedAt: defaultFinished ? getCurrentTimestamp() : '',
     afterChallengeNotes: '',
   }
   isChallengeModalOpen.value = true
@@ -387,17 +400,6 @@ const openEditChallengeModal = (challenge: Challenge) => {
   isEditingChallenge.value = true
   editingChallengeId.value = challenge.id
 
-  let formattedDate = ''
-  if (challenge.completedAt) {
-    const d = new Date(challenge.completedAt)
-    const year = d.getFullYear()
-    const month = String(d.getMonth() + 1).padStart(2, '0')
-    const day = String(d.getDate()).padStart(2, '0')
-    const hours = String(d.getHours()).padStart(2, '0')
-    const minutes = String(d.getMinutes()).padStart(2, '0')
-    formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`
-  }
-
   challengeForm.value = {
     contactMode: 'existing',
     contactId: challenge.contactId,
@@ -405,24 +407,25 @@ const openEditChallengeModal = (challenge: Challenge) => {
     newContactEmail: '',
     newContactPhone: '',
     newContactDescription: '',
-    text: challenge.text,
+    newContactMapUrl: '',
+    challengeText: challenge.challengeText,
     type: challenge.type,
     rank: challenge.rank ?? 2.5,
     isFinished: !!challenge.completedAt,
-    completedAt: formattedDate,
+    completedAt: challenge.completedAt ? formatDateForDisplay(challenge.completedAt) : '',
     afterChallengeNotes: challenge.afterChallengeNotes || '',
   }
   isChallengeModalOpen.value = true
 }
 
 const submitChallengeForm = async () => {
-  if (!challengeForm.value.text.trim()) return
+  if (!challengeForm.value.challengeText.trim()) return
   challengeSubmitting.value = true
   try {
     if (isEditingChallenge.value) {
       // Update
       const payload: any = {
-        text: challengeForm.value.text.trim(),
+        challengeText: challengeForm.value.challengeText.trim(),
         type: challengeForm.value.type,
         contactId: challengeForm.value.contactId,
         rank: Number(challengeForm.value.rank) || 2.5,
@@ -439,7 +442,7 @@ const submitChallengeForm = async () => {
     } else {
       // Create
       const payload: any = {
-        text: challengeForm.value.text.trim(),
+        challengeText: challengeForm.value.challengeText.trim(),
         type: challengeForm.value.type,
         rank: Number(challengeForm.value.rank) || 2.5,
       }
@@ -451,6 +454,7 @@ const submitChallengeForm = async () => {
         payload.newContactEmail = challengeForm.value.newContactEmail.trim() || undefined
         payload.newContactPhone = challengeForm.value.newContactPhone.trim() || undefined
         payload.newContactDescription = challengeForm.value.newContactDescription.trim() || undefined
+        payload.newContactMapUrl = challengeForm.value.newContactMapUrl.trim() || undefined
       }
 
       const res = await $fetch<{ success: boolean; data: Challenge }>('/api/challenges', {
@@ -458,7 +462,6 @@ const submitChallengeForm = async () => {
         body: payload,
       })
 
-      // If created as finished right away, update its completedAt & notes
       if (res.success && challengeForm.value.isFinished && res.data?.id) {
         await $fetch(`/api/challenges/${res.data.id}/complete`, {
           method: 'POST',
@@ -482,7 +485,7 @@ const submitChallengeForm = async () => {
 }
 
 const deleteChallenge = async (challenge: Challenge) => {
-  if (!confirm(`Es-tu sûr(e) de vouloir supprimer le défi : "${challenge.text}" ?`)) return
+  if (!confirm(`Es-tu sûr(e) de vouloir supprimer ce défi ?`)) return
   try {
     await $fetch(`/api/challenges/${challenge.id}`, { method: 'DELETE' })
     await fetchData()
@@ -491,21 +494,11 @@ const deleteChallenge = async (challenge: Challenge) => {
   }
 }
 
-// ---------------------------
 // Reflection / Completion Handlers
-// ---------------------------
 const openReflectModal = (challenge: Challenge) => {
   selectedChallengeForReflect.value = challenge
   reflectNotes.value = challenge.afterChallengeNotes || ''
-
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  const hours = String(now.getHours()).padStart(2, '0')
-  const minutes = String(now.getMinutes()).padStart(2, '0')
-  reflectCompletedAt.value = `${year}-${month}-${day}T${hours}:${minutes}`
-
+  reflectCompletedAt.value = getCurrentTimestamp()
   isReflectModalOpen.value = true
 }
 
@@ -534,11 +527,28 @@ const submitReflection = async () => {
   }
 }
 
-// Helpers for color dynamic classes on slider and indicators
-const getRankBadgeClass = (rank: number) => {
-  if (rank >= 4) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-  if (rank >= 2.5) return 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-  return 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300'
+// Card Border Color according to rank: 0 (green / easy) to 5 (red / challenging)
+const getRankCardBorderClass = (rank: number) => {
+  if (rank <= 1.8) return 'border-emerald-400/80 dark:border-emerald-600/70 shadow-[0_0_15px_rgba(16,185,129,0.18)]'
+  if (rank <= 3.4) return 'border-amber-400/80 dark:border-amber-600/70 shadow-[0_0_15px_rgba(245,158,11,0.18)]'
+  return 'border-rose-500/80 dark:border-rose-600/70 shadow-[0_0_15px_rgba(244,63,94,0.22)]'
+}
+
+// Rank text color: easy (0) = green, average (2.5) = amber, challenging (5) = red
+const getRankTextColor = (rank: number) => {
+  if (rank <= 1.8) return 'text-emerald-600 dark:text-emerald-400'
+  if (rank <= 3.4) return 'text-amber-600 dark:text-amber-400'
+  return 'text-rose-600 dark:text-rose-400'
+}
+
+// Format Type & Rank: e.g. "oral (3.8)", "écrit" (if rank is 2.5, don't show it)
+const formatTypeAndRank = (type: string, rank?: number) => {
+  const typeLabel = type === 'written' ? 'écrit' : 'oral'
+  const rankNum = Number(rank ?? 2.5)
+  if (Math.abs(rankNum - 2.5) < 0.01) {
+    return typeLabel
+  }
+  return `${typeLabel} (${rankNum.toFixed(1)})`
 }
 </script>
 
@@ -561,25 +571,15 @@ const getRankBadgeClass = (rank: number) => {
           </div>
         </div>
       </div>
-
-      <div class="flex items-center gap-3 self-start md:self-auto">
-        <button
-          @click="openCreateChallengeModal()"
-          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md transition-all active:scale-95 cursor-pointer"
-        >
-          <UIcon name="i-heroicons-plus" class="w-5 h-5" />
-          <span>Nouveau défi</span>
-        </button>
-      </div>
     </div>
 
-    <!-- Top Panel: Define challenges for today -->
+    <!-- Top Panel: Tes défis pour aujourd'hui -->
     <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-700/60 shadow-sm">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-700/60 pb-4">
         <div class="flex items-center gap-2.5">
           <UIcon name="i-heroicons-calendar-days" class="w-5 h-5 text-indigo-500 shrink-0 self-center" />
           <h2 class="text-base font-bold text-gray-900 dark:text-white !mb-0 !leading-none inline-flex items-center">
-            Définir les défis pour aujourd'hui et demain
+            Tes défis pour aujourd'hui
           </h2>
         </div>
 
@@ -590,7 +590,7 @@ const getRankBadgeClass = (rank: number) => {
             <span>{{ dailyTarget }} défis / jour</span>
             <button
               @click="isEditingTarget = true"
-              class="p-1 rounded text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              class="p-1 rounded text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
               title="Modifier l'objectif quotidien"
             >
               <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
@@ -606,13 +606,13 @@ const getRankBadgeClass = (rank: number) => {
             />
             <button
               @click="saveDailyTarget"
-              class="px-2 py-0.5 font-semibold bg-indigo-600 text-white rounded text-xs hover:bg-indigo-500"
+              class="px-2 py-0.5 font-semibold bg-indigo-600 text-white rounded text-xs hover:bg-indigo-500 cursor-pointer"
             >
               OK
             </button>
             <button
               @click="isEditingTarget = false"
-              class="px-2 py-0.5 font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs"
+              class="px-2 py-0.5 font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs cursor-pointer"
             >
               Annuler
             </button>
@@ -620,64 +620,96 @@ const getRankBadgeClass = (rank: number) => {
         </div>
       </div>
 
-      <!-- 5 Daily Goal Challenge Slots -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-5">
+      <!-- 2 Flex Columns Maximum Grid for Challenges Cards (no text truncation, minimum height) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
         <template v-for="(slot, index) in dailyGoalSlots" :key="index">
-          <!-- Finished Challenge Card (Green Glow) -->
+          <!-- Finished Challenge Card -->
           <div
             v-if="slot.status === 'finished' && slot.challenge"
-            class="relative rounded-xl p-4 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-300/80 dark:border-emerald-700/70 shadow-[0_0_15px_rgba(16,185,129,0.22)] dark:shadow-[0_0_18px_rgba(16,185,129,0.3)] flex flex-col justify-between min-h-[140px] transition-all hover:scale-[1.01]"
+            class="relative rounded-2xl p-5 bg-gray-50/80 dark:bg-gray-900/80 border-2 transition-all flex flex-col justify-between min-h-[170px]"
+            :class="getRankCardBorderClass(slot.challenge.rank ?? 2.5)"
           >
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between gap-1">
-                <span class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide flex items-center gap-1">
-                  <UIcon name="i-heroicons-check-circle" class="w-3.5 h-3.5" />
-                  Défi #{{ index + 1 }}
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                  <UIcon name="i-heroicons-check-circle" class="w-4 h-4 text-emerald-500" />
+                  Défi #{{ index + 1 }} accompli
                 </span>
                 <span
-                  class="px-1.5 py-0.5 rounded text-[10px] font-bold font-mono"
-                  :class="getRankBadgeClass(slot.challenge.rank ?? 2.5)"
+                  class="text-xs font-normal"
+                  :class="getRankTextColor(slot.challenge.rank ?? 2.5)"
                 >
-                  {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
+                  Rang {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
                 </span>
               </div>
-              <p class="text-xs font-semibold text-gray-900 dark:text-white line-clamp-3 leading-snug">
-                {{ slot.challenge.text }}
-              </p>
+
+              <!-- Full Challenge Content without truncation -->
+              <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
+              </div>
             </div>
-            <div class="pt-2 mt-auto border-t border-emerald-200/60 dark:border-emerald-800/40 flex items-center justify-between text-[11px] text-emerald-800 dark:text-emerald-300">
-              <span class="truncate font-medium">{{ slot.challenge.contact?.name || 'Contact' }}</span>
-              <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">Terminé</span>
+
+            <div class="pt-3 mt-4 border-t border-gray-200/60 dark:border-gray-800 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <div class="flex items-center gap-2">
+                <span class="font-medium text-gray-800 dark:text-gray-200">{{ slot.challenge.contact?.name || 'Contact' }}</span>
+                <a
+                  v-if="slot.challenge.contact?.mapUrl"
+                  :href="slot.challenge.contact.mapUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 inline-flex items-center"
+                  title="Voir sur Google Maps"
+                >
+                  <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+                </a>
+              </div>
+              <span class="text-emerald-600 dark:text-emerald-400 font-medium">Terminé</span>
             </div>
           </div>
 
-          <!-- Available Todo Challenge Card (Yellow Glow) -->
+          <!-- Available Todo Challenge Card -->
           <div
             v-else-if="slot.status === 'available' && slot.challenge"
-            class="relative rounded-xl p-4 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-300/80 dark:border-amber-700/70 shadow-[0_0_15px_rgba(245,158,11,0.25)] dark:shadow-[0_0_18px_rgba(245,158,11,0.35)] flex flex-col justify-between min-h-[140px] transition-all hover:scale-[1.01]"
+            class="relative rounded-2xl p-5 bg-gray-50/80 dark:bg-gray-900/80 border-2 transition-all flex flex-col justify-between min-h-[170px]"
+            :class="getRankCardBorderClass(slot.challenge.rank ?? 2.5)"
           >
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between gap-1">
-                <span class="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide flex items-center gap-1">
-                  <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5 text-amber-500" />
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                  <UIcon name="i-heroicons-sparkles" class="w-4 h-4 text-indigo-500" />
                   Défi #{{ index + 1 }}
                 </span>
                 <span
-                  class="px-1.5 py-0.5 rounded text-[10px] font-bold font-mono"
-                  :class="getRankBadgeClass(slot.challenge.rank ?? 2.5)"
+                  class="text-xs font-normal"
+                  :class="getRankTextColor(slot.challenge.rank ?? 2.5)"
                 >
-                  {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
+                  Rang {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
                 </span>
               </div>
-              <p class="text-xs font-semibold text-gray-900 dark:text-white line-clamp-3 leading-snug">
-                {{ slot.challenge.text }}
-              </p>
+
+              <!-- Full Challenge Content without truncation -->
+              <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
+              </div>
             </div>
-            <div class="pt-2 mt-auto border-t border-amber-200/60 dark:border-amber-800/40 flex items-center justify-between text-[11px]">
-              <span class="truncate font-medium text-amber-900 dark:text-amber-200">{{ slot.challenge.contact?.name || 'Contact' }}</span>
+
+            <div class="pt-3 mt-4 border-t border-gray-200/60 dark:border-gray-800 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="font-medium text-gray-800 dark:text-gray-200">{{ slot.challenge.contact?.name || 'Contact' }}</span>
+                <a
+                  v-if="slot.challenge.contact?.mapUrl"
+                  :href="slot.challenge.contact.mapUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 inline-flex items-center"
+                  title="Voir sur Google Maps"
+                >
+                  <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+                </a>
+              </div>
               <button
                 @click="openReflectModal(slot.challenge)"
-                class="px-2 py-0.5 rounded bg-amber-500 hover:bg-amber-600 text-white font-bold text-[10px] shadow-xs cursor-pointer shrink-0 transition-colors"
+                class="px-3 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs cursor-pointer transition-colors"
                 title="Valider et faire le bilan"
               >
                 Accomplir
@@ -685,20 +717,20 @@ const getRankBadgeClass = (rank: number) => {
             </div>
           </div>
 
-          <!-- Empty / Add Challenge Card (Red Glow) -->
+          <!-- Empty / Add Challenge Card -->
           <div
             v-else
             @click="openCreateChallengeModal(undefined, false)"
-            class="group relative rounded-xl p-4 bg-red-50/40 dark:bg-red-950/20 border-2 border-dashed border-red-300 dark:border-red-700/60 shadow-[0_0_15px_rgba(239,68,68,0.22)] dark:shadow-[0_0_18px_rgba(239,68,68,0.3)] flex flex-col items-center justify-center text-center min-h-[140px] cursor-pointer hover:bg-red-50/80 dark:hover:bg-red-950/30 transition-all hover:scale-[1.01]"
+            class="group relative rounded-2xl p-5 bg-gray-50/50 dark:bg-gray-900/40 border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center justify-center text-center min-h-[170px] cursor-pointer hover:bg-gray-100/60 dark:hover:bg-gray-900/70 transition-all"
           >
-            <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-              <UIcon name="i-heroicons-plus" class="w-4 h-4" />
+            <div class="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <UIcon name="i-heroicons-plus" class="w-5 h-5" />
             </div>
-            <span class="text-xs font-bold text-red-700 dark:text-red-300">
-              Ajouter un défi
+            <span class="text-sm font-bold text-gray-800 dark:text-gray-200">
+              Nouveau défi
             </span>
-            <span class="text-[10px] text-red-500/80 dark:text-red-400/80 mt-0.5">
-              Défi #{{ index + 1 }} manquant
+            <span class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              Emplacement #{{ index + 1 }} à compléter
             </span>
           </div>
         </template>
@@ -787,13 +819,14 @@ const getRankBadgeClass = (rank: number) => {
                   <th class="px-5 py-3.5">Contact</th>
                   <th class="px-5 py-3.5">Coordonnées</th>
                   <th class="px-5 py-3.5">Description</th>
+                  <th class="px-5 py-3.5">Plan / Carte</th>
                   <th class="px-5 py-3.5">Créé le</th>
                   <th class="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
                 <tr v-if="filteredContacts.length === 0">
-                  <td colspan="5" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td colspan="6" class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
                     Aucun contact trouvé.
                   </td>
                 </tr>
@@ -830,8 +863,24 @@ const getRankBadgeClass = (rank: number) => {
                   </td>
 
                   <!-- Description -->
-                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 max-w-xs truncate">
+                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 max-w-xs">
                     {{ contact.description || '—' }}
+                  </td>
+
+                  <!-- Map URL -->
+                  <td class="px-5 py-4 text-xs whitespace-nowrap">
+                    <a
+                      v-if="contact.mapUrl"
+                      :href="contact.mapUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 font-medium transition-colors"
+                    >
+                      <UIcon name="i-heroicons-map-pin" class="w-3.5 h-3.5" />
+                      <span>Google Maps</span>
+                      <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-3 h-3 opacity-70" />
+                    </a>
+                    <span v-else class="text-gray-400 italic">—</span>
                   </td>
 
                   <!-- Created At -->
@@ -845,7 +894,7 @@ const getRankBadgeClass = (rank: number) => {
                       <button
                         @click="openContactChallengesModal(contact)"
                         class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 font-semibold text-xs transition-colors flex items-center gap-1 cursor-pointer"
-                        title="Voir la liste concise des défis de ce contact"
+                        title="Voir la liste des défis de ce contact"
                       >
                         <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5" />
                         <span>Défis ({{ challenges.filter(c => c.contactId === contact.id).length }})</span>
@@ -894,7 +943,7 @@ const getRankBadgeClass = (rank: number) => {
             class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
           >
             <UIcon name="i-heroicons-plus" class="w-4 h-4" />
-            <span>Ajouter un défi accompli</span>
+            <span>Nouveau défi</span>
           </button>
         </div>
 
@@ -922,48 +971,39 @@ const getRankBadgeClass = (rank: number) => {
                   :key="challenge.id"
                   class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                 >
-                  <!-- Text & Contact -->
-                  <td class="px-5 py-4 max-w-sm">
-                    <div class="font-bold text-gray-900 dark:text-white leading-snug">
-                      {{ challenge.text }}
-                    </div>
-                    <div class="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-1 flex items-center gap-1">
+                  <!-- Text & Contact (Outline content rendered without truncation) -->
+                  <td class="px-5 py-4 max-w-md">
+                    <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
+                    <div class="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-2 flex items-center gap-1.5">
                       <UIcon name="i-heroicons-user" class="w-3.5 h-3.5" />
                       <span>{{ challenge.contact?.name || 'Contact inconnu' }}</span>
+                      <a
+                        v-if="challenge.contact?.mapUrl"
+                        :href="challenge.contact.mapUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-indigo-600 ml-1 inline-flex items-center"
+                        title="Google Maps"
+                      >
+                        <UIcon name="i-heroicons-map-pin" class="w-3.5 h-3.5" />
+                      </a>
                     </div>
                   </td>
 
-                  <!-- Type & Rank -->
-                  <td class="px-5 py-4 whitespace-nowrap">
-                    <div class="flex items-center gap-2">
-                      <span
-                        class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                        :class="challenge.type === 'written'
-                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
-                          : 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'"
-                      >
-                        {{ challenge.type === 'written' ? '✍️ Écrit' : '🗣️ Oral' }}
-                      </span>
-                      <span
-                        class="px-2 py-0.5 rounded-md text-xs font-bold font-mono"
-                        :class="getRankBadgeClass(challenge.rank ?? 2.5)"
-                      >
-                        {{ Number(challenge.rank ?? 2.5).toFixed(1) }}
-                      </span>
-                    </div>
+                  <!-- Type & Rank (Plain text without pills or icons) -->
+                  <td class="px-5 py-4 whitespace-nowrap text-xs text-gray-700 dark:text-gray-300 font-normal">
+                    {{ formatTypeAndRank(challenge.type, challenge.rank) }}
                   </td>
 
-                  <!-- Notes -->
+                  <!-- Notes (Outline content rendered without truncation) -->
                   <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-300 max-w-xs">
-                    <p v-if="challenge.afterChallengeNotes" class="line-clamp-2 italic">
-                      « {{ challenge.afterChallengeNotes }} »
-                    </p>
+                    <OutlineContent v-if="challenge.afterChallengeNotes" :text="challenge.afterChallengeNotes" :available-images="availableImages" />
                     <span v-else class="text-gray-400 italic">Aucun bilan</span>
                   </td>
 
                   <!-- Completed Date -->
-                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap font-medium">
-                    {{ challenge.completedAt ? new Date(challenge.completedAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—' }}
+                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap font-mono">
+                    {{ formatDateForDisplay(challenge.completedAt) }}
                   </td>
 
                   <!-- Actions -->
@@ -1005,7 +1045,7 @@ const getRankBadgeClass = (rank: number) => {
             class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
           >
             <UIcon name="i-heroicons-plus" class="w-4 h-4" />
-            <span>Nouveau défi à faire</span>
+            <span>Nouveau défi</span>
           </button>
         </div>
 
@@ -1018,7 +1058,7 @@ const getRankBadgeClass = (rank: number) => {
                   <th class="px-5 py-3.5">Rang</th>
                   <th class="px-5 py-3.5">Défi</th>
                   <th class="px-5 py-3.5">Contact</th>
-                  <th class="px-5 py-3.5">Type</th>
+                  <th class="px-5 py-3.5">Type & Rang</th>
                   <th class="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
@@ -1033,36 +1073,41 @@ const getRankBadgeClass = (rank: number) => {
                   :key="challenge.id"
                   class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                 >
-                  <!-- Rank -->
+                  <!-- Rank (no bold, colored text) -->
                   <td class="px-5 py-4 whitespace-nowrap">
                     <span
-                      class="px-2.5 py-1 rounded-lg text-xs font-black font-mono shadow-xs"
-                      :class="getRankBadgeClass(challenge.rank ?? 2.5)"
+                      class="text-xs font-normal font-mono"
+                      :class="getRankTextColor(challenge.rank ?? 2.5)"
                     >
                       {{ Number(challenge.rank ?? 2.5).toFixed(1) }}
                     </span>
                   </td>
 
-                  <!-- Text -->
-                  <td class="px-5 py-4 font-bold text-gray-900 dark:text-white max-w-md">
-                    {{ challenge.text }}
+                  <!-- Text (Outline content rendered without truncation) -->
+                  <td class="px-5 py-4 text-gray-900 dark:text-white max-w-md">
+                    <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
                   </td>
 
                   <!-- Contact -->
                   <td class="px-5 py-4 text-xs font-semibold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
-                    {{ challenge.contact?.name || '—' }}
+                    <div class="flex items-center gap-1.5">
+                      <span>{{ challenge.contact?.name || '—' }}</span>
+                      <a
+                        v-if="challenge.contact?.mapUrl"
+                        :href="challenge.contact.mapUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-indigo-600"
+                        title="Google Maps"
+                      >
+                        <UIcon name="i-heroicons-map-pin" class="w-3.5 h-3.5" />
+                      </a>
+                    </div>
                   </td>
 
-                  <!-- Type -->
-                  <td class="px-5 py-4 whitespace-nowrap">
-                    <span
-                      class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                      :class="challenge.type === 'written'
-                        ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
-                        : 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'"
-                    >
-                      {{ challenge.type === 'written' ? '✍️ Écrit' : '🗣️ Oral' }}
-                    </span>
+                  <!-- Type & Rank (plain text) -->
+                  <td class="px-5 py-4 whitespace-nowrap text-xs text-gray-700 dark:text-gray-300 font-normal">
+                    {{ formatTypeAndRank(challenge.type, challenge.rank) }}
                   </td>
 
                   <!-- Actions -->
@@ -1160,6 +1205,18 @@ const getRankBadgeClass = (rank: number) => {
 
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                Lien Google Maps
+              </label>
+              <input
+                v-model="contactForm.mapUrl"
+                type="url"
+                placeholder="https://maps.google.com/..."
+                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                 Description / Rôle / Notes
               </label>
               <textarea
@@ -1205,9 +1262,21 @@ const getRankBadgeClass = (rank: number) => {
                   Fiche Contact
                 </span>
               </div>
-              <h3 class="text-xl font-extrabold text-gray-900 dark:text-white mt-0.5">
-                {{ activeContactForChallenges?.name }}
-              </h3>
+              <div class="flex items-center gap-2 mt-0.5">
+                <h3 class="text-xl font-extrabold text-gray-900 dark:text-white">
+                  {{ activeContactForChallenges?.name }}
+                </h3>
+                <a
+                  v-if="activeContactForChallenges?.mapUrl"
+                  :href="activeContactForChallenges.mapUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 inline-flex items-center"
+                  title="Ouvrir dans Google Maps"
+                >
+                  <UIcon name="i-heroicons-map-pin" class="w-5 h-5" />
+                </a>
+              </div>
               <p v-if="activeContactForChallenges?.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {{ activeContactForChallenges.description }}
               </p>
@@ -1224,14 +1293,14 @@ const getRankBadgeClass = (rank: number) => {
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Défis associés (par date de complétion croissante) :
+                Défis associés :
               </h4>
               <button
                 @click="openCreateChallengeModal(activeContactForChallenges?.id)"
                 class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs cursor-pointer"
               >
                 <UIcon name="i-heroicons-plus" class="w-3.5 h-3.5" />
-                <span>Nouveau défi pour ce contact</span>
+                <span>Nouveau défi</span>
               </button>
             </div>
 
@@ -1247,23 +1316,22 @@ const getRankBadgeClass = (rank: number) => {
               >
                 <div class="space-y-1 flex-1">
                   <div class="flex items-center gap-2">
-                    <span class="font-medium text-indigo-600 dark:text-indigo-400">
-                      {{ ch.type === 'written' ? '✍️ Écrit' : '🗣️ Oral' }}
-                    </span>
-                    <span class="font-mono text-[11px] font-bold px-1.5 py-0.2 rounded" :class="getRankBadgeClass(ch.rank ?? 2.5)">
-                      #{{ Number(ch.rank ?? 2.5).toFixed(1) }}
+                    <span class="text-xs text-gray-700 dark:text-gray-300 font-normal">
+                      {{ formatTypeAndRank(ch.type, ch.rank) }}
                     </span>
                     <span v-if="ch.completedAt" class="text-emerald-600 dark:text-emerald-400 font-semibold">
-                      ✓ Terminé le {{ new Date(ch.completedAt).toLocaleDateString('fr-FR') }}
+                      ✓ Terminé le {{ formatDateForDisplay(ch.completedAt) }}
                     </span>
                     <span v-else class="text-amber-600 dark:text-amber-400 font-semibold">
                       ⏳ À faire
                     </span>
                   </div>
-                  <p class="font-bold text-gray-900 dark:text-white">{{ ch.text }}</p>
-                  <p v-if="ch.afterChallengeNotes" class="text-gray-600 dark:text-gray-300 italic">
-                    « {{ ch.afterChallengeNotes }} »
-                  </p>
+                  <div class="text-gray-900 dark:text-white">
+                    <OutlineContent :text="ch.challengeText" :available-images="availableImages" />
+                  </div>
+                  <div v-if="ch.afterChallengeNotes" class="text-gray-600 dark:text-gray-300 italic pt-1">
+                    <OutlineContent :text="ch.afterChallengeNotes" :available-images="availableImages" />
+                  </div>
                 </div>
 
                 <div class="flex items-center gap-1 shrink-0">
@@ -1377,6 +1445,12 @@ const getRankBadgeClass = (rank: number) => {
                     class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
                   />
                 </div>
+                <input
+                  v-model="challengeForm.newContactMapUrl"
+                  type="url"
+                  placeholder="Lien Google Maps (optionnel)"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
+                />
               </div>
             </div>
 
@@ -1396,21 +1470,15 @@ const getRankBadgeClass = (rank: number) => {
               </select>
             </div>
 
-            <!-- Challenge Action Text -->
+            <!-- Challenge Action Text (Textarea for outline syntax) -->
             <div>
-              <div class="flex justify-between items-center mb-1">
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Action du défi *
-                </label>
-                <span class="text-xs" :class="challengeForm.text.length > 255 ? 'text-red-500 font-bold' : 'text-gray-400'">
-                  {{ challengeForm.text.length }} / 255
-                </span>
-              </div>
-              <input
-                v-model="challengeForm.text"
-                type="text"
-                maxlength="255"
-                placeholder="Ex: Demander par mail les horaires d'ouverture du samedi"
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                Action du défi * (supporte le format outline et ##images)
+              </label>
+              <textarea
+                v-model="challengeForm.challengeText"
+                rows="4"
+                placeholder="Ex: Demander par mail les horaires d'ouverture du samedi ##nom_image"
                 required
                 class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
@@ -1457,37 +1525,29 @@ const getRankBadgeClass = (rank: number) => {
               </label>
             </div>
 
-            <!-- Rank Slider: 0 (Red) to 5 (Green) -->
+            <!-- Rank Slider: easy (0, green) -> challenging (5, red) -->
             <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-2">
-              <div class="flex justify-between items-center">
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Rang de priorité (0.0 à 5.0)
-                </label>
-                <span
-                  class="text-xs font-black font-mono px-2 py-0.5 rounded shadow-xs"
-                  :class="getRankBadgeClass(challengeForm.rank)"
-                >
-                  {{ Number(challengeForm.rank).toFixed(1) }} / 5.0
-                </span>
-              </div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                Rang de priorité
+              </label>
 
-              <!-- Range Slider -->
+              <!-- Range Slider: Easy 0 (Green) to Challenging 5 (Red) -->
               <input
                 v-model.number="challengeForm.rank"
                 type="range"
                 min="0"
                 max="5"
                 step="0.1"
-                class="w-full h-2 rounded-lg cursor-pointer appearance-none bg-linear-to-r from-red-500 via-amber-400 to-emerald-500"
+                class="w-full h-2 rounded-lg cursor-pointer appearance-none bg-linear-to-r from-emerald-500 via-amber-400 to-rose-500"
               />
-              <div class="flex justify-between text-[10px] font-bold text-gray-400">
-                <span class="text-red-500">0.0 (Faible)</span>
-                <span class="text-amber-500">2.5 (Moyen)</span>
-                <span class="text-emerald-500">5.0 (Prioritaire)</span>
+              <div class="flex justify-between text-xs font-medium">
+                <span class="text-emerald-600 dark:text-emerald-400">Facile</span>
+                <span class="text-amber-600 dark:text-amber-400">Moyen</span>
+                <span class="text-rose-600 dark:text-rose-400">Difficile</span>
               </div>
             </div>
 
-            <!-- Completion toggle & fields (CRUD complet pour les défis terminés) -->
+            <!-- Completion toggle & fields -->
             <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-3">
               <label class="inline-flex items-center gap-2 text-xs font-bold cursor-pointer text-gray-800 dark:text-gray-200">
                 <input
@@ -1503,16 +1563,28 @@ const getRankBadgeClass = (rank: number) => {
                   <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                     Date & heure d'accomplissement
                   </label>
-                  <input
-                    v-model="challengeForm.completedAt"
-                    type="datetime-local"
-                    class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                  />
+                  <div class="flex gap-2">
+                    <input
+                      v-model="challengeForm.completedAt"
+                      type="text"
+                      placeholder="YYYY-MM-DD HH:mm:ss"
+                      class="flex-1 px-3 py-2 font-mono rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      @click="challengeForm.completedAt = getCurrentTimestamp()"
+                      class="px-3 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      title="Insérer l'horodatage actuel"
+                    >
+                      <UIcon name="i-heroicons-clock" class="w-4 h-4" />
+                      <span>Maintenant</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div>
                   <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
-                    Bilan / Réflexions après le défi
+                    Bilan / Réflexions après le défi (supporte outline & images)
                   </label>
                   <textarea
                     v-model="challengeForm.afterChallengeNotes"
@@ -1555,8 +1627,8 @@ const getRankBadgeClass = (rank: number) => {
           <div class="flex items-start justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
             <div>
               <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
-                  {{ selectedChallengeForReflect?.type === 'written' ? 'Défi écrit' : 'Défi oral' }}
+                <span class="text-xs text-gray-700 dark:text-gray-300 font-normal">
+                  {{ formatTypeAndRank(selectedChallengeForReflect?.type || 'written', selectedChallengeForReflect?.rank) }}
                 </span>
                 <span class="text-xs text-gray-400">avec</span>
                 <span class="text-sm font-bold text-gray-900 dark:text-white">
@@ -1566,9 +1638,9 @@ const getRankBadgeClass = (rank: number) => {
               <h3 class="text-xl font-extrabold text-gray-900 dark:text-white mt-1">
                 Terminer & Réfléchir
               </h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                « {{ selectedChallengeForReflect?.text }} »
-              </p>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <OutlineContent :text="selectedChallengeForReflect?.challengeText" :available-images="availableImages" />
+              </div>
             </div>
             <button
               @click="isReflectModalOpen = false"
@@ -1583,17 +1655,29 @@ const getRankBadgeClass = (rank: number) => {
               <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                 Date & heure d'accomplissement
               </label>
-              <input
-                v-model="reflectCompletedAt"
-                type="datetime-local"
-                required
-                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
+              <div class="flex gap-2">
+                <input
+                  v-model="reflectCompletedAt"
+                  type="text"
+                  placeholder="YYYY-MM-DD HH:mm:ss"
+                  required
+                  class="flex-1 px-3 py-2 font-mono rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  @click="reflectCompletedAt = getCurrentTimestamp()"
+                  class="px-3 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Insérer l'horodatage actuel"
+                >
+                  <UIcon name="i-heroicons-clock" class="w-4 h-4" />
+                  <span>Maintenant</span>
+                </button>
+              </div>
             </div>
 
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
-                Bilan de l'interaction & réflexions
+                Bilan de l'interaction & réflexions (supporte outline & images)
               </label>
               <textarea
                 v-model="reflectNotes"

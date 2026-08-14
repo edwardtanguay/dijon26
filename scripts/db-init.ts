@@ -48,6 +48,7 @@ async function init() {
     console.log('✔ Task table verified/created.')
 
     // Create Contact table
+    await client.execute(`DROP TABLE IF EXISTS "Contact";`)
     await client.execute(`
       CREATE TABLE IF NOT EXISTS "Contact" (
         "id" TEXT NOT NULL PRIMARY KEY,
@@ -55,6 +56,7 @@ async function init() {
         "email" TEXT,
         "telephone" TEXT,
         "description" TEXT,
+        "mapUrl" TEXT,
         "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
@@ -67,7 +69,7 @@ async function init() {
       CREATE TABLE IF NOT EXISTS "Challenge" (
         "id" TEXT NOT NULL PRIMARY KEY,
         "contactId" TEXT NOT NULL,
-        "text" TEXT NOT NULL,
+        "challengeText" TEXT NOT NULL,
         "type" TEXT NOT NULL,
         "rank" REAL NOT NULL DEFAULT 2.5,
         "completedAt" DATETIME,

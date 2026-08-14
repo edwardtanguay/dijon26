@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   try {
     const id = getRouterParam(event, 'id')
     const body = await readBody(event)
-    const { text, type, contactId, rank } = body
+    const { challengeText, text, type, contactId, rank } = body
 
     if (!id) {
       throw createError({
@@ -15,20 +15,15 @@ export default defineEventHandler(async (event) => {
 
     const updateData: any = {}
 
-    if (text !== undefined) {
-      if (typeof text !== 'string' || !text.trim()) {
+    const rawText = challengeText !== undefined ? challengeText : text
+    if (rawText !== undefined) {
+      if (typeof rawText !== 'string' || !rawText.trim()) {
         throw createError({
           statusCode: 400,
           statusMessage: 'Le texte du défi ne peut pas être vide.',
         })
       }
-      if (text.trim().length > 255) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: 'Le texte ne doit pas dépasser 255 caractères.',
-        })
-      }
-      updateData.text = text.trim()
+      updateData.challengeText = rawText.trim()
     }
 
     if (type !== undefined) {

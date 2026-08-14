@@ -3,7 +3,7 @@ import { prisma } from '../utils/prisma'
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const { id, name, email, telephone, description } = body
+    const { id, name, email, telephone, description, mapUrl } = body
 
     if (!name || typeof name !== 'string' || !name.trim()) {
       throw createError({
@@ -21,6 +21,7 @@ export default defineEventHandler(async (event) => {
           email: email?.trim() || null,
           telephone: telephone?.trim() || null,
           description: description?.trim() || null,
+          mapUrl: mapUrl?.trim() || null,
         },
       })
       return { success: true, data: updated }
@@ -32,6 +33,7 @@ export default defineEventHandler(async (event) => {
           email: email?.trim() || null,
           telephone: telephone?.trim() || null,
           description: description?.trim() || null,
+          mapUrl: mapUrl?.trim() || null,
         },
       })
       return { success: true, data: created }

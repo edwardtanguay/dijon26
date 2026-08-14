@@ -27,6 +27,7 @@ model Contact {
   email       String?
   telephone   String?
   description String?
+  mapUrl      String?
   challenges  Challenge[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -36,7 +37,7 @@ model Challenge {
   id                  String    @id @default(uuid())
   contactId           String
   contact             Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  text                String
+  challengeText       String
   type                String // "written" | "spoken"
   rank                Float     @default(2.5)
   completedAt         DateTime?

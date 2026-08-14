@@ -3295,6 +3295,7 @@ export namespace Prisma {
     email: string | null
     telephone: string | null
     description: string | null
+    mapUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3305,6 +3306,7 @@ export namespace Prisma {
     email: string | null
     telephone: string | null
     description: string | null
+    mapUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3315,6 +3317,7 @@ export namespace Prisma {
     email: number
     telephone: number
     description: number
+    mapUrl: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3327,6 +3330,7 @@ export namespace Prisma {
     email?: true
     telephone?: true
     description?: true
+    mapUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3337,6 +3341,7 @@ export namespace Prisma {
     email?: true
     telephone?: true
     description?: true
+    mapUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3347,6 +3352,7 @@ export namespace Prisma {
     email?: true
     telephone?: true
     description?: true
+    mapUrl?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3430,6 +3436,7 @@ export namespace Prisma {
     email: string | null
     telephone: string | null
     description: string | null
+    mapUrl: string | null
     createdAt: Date
     updatedAt: Date
     _count: ContactCountAggregateOutputType | null
@@ -3457,6 +3464,7 @@ export namespace Prisma {
     email?: boolean
     telephone?: boolean
     description?: boolean
+    mapUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     challenges?: boolean | Contact$challengesArgs<ExtArgs>
@@ -3469,6 +3477,7 @@ export namespace Prisma {
     email?: boolean
     telephone?: boolean
     description?: boolean
+    mapUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["contact"]>
@@ -3479,6 +3488,7 @@ export namespace Prisma {
     email?: boolean
     telephone?: boolean
     description?: boolean
+    mapUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["contact"]>
@@ -3489,11 +3499,12 @@ export namespace Prisma {
     email?: boolean
     telephone?: boolean
     description?: boolean
+    mapUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ContactOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "telephone" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["contact"]>
+  export type ContactOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "telephone" | "description" | "mapUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["contact"]>
   export type ContactInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     challenges?: boolean | Contact$challengesArgs<ExtArgs>
     _count?: boolean | ContactCountOutputTypeDefaultArgs<ExtArgs>
@@ -3512,6 +3523,7 @@ export namespace Prisma {
       email: string | null
       telephone: string | null
       description: string | null
+      mapUrl: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["contact"]>
@@ -3943,6 +3955,7 @@ export namespace Prisma {
     readonly email: FieldRef<"Contact", 'String'>
     readonly telephone: FieldRef<"Contact", 'String'>
     readonly description: FieldRef<"Contact", 'String'>
+    readonly mapUrl: FieldRef<"Contact", 'String'>
     readonly createdAt: FieldRef<"Contact", 'DateTime'>
     readonly updatedAt: FieldRef<"Contact", 'DateTime'>
   }
@@ -4401,7 +4414,7 @@ export namespace Prisma {
   export type ChallengeMinAggregateOutputType = {
     id: string | null
     contactId: string | null
-    text: string | null
+    challengeText: string | null
     type: string | null
     rank: number | null
     completedAt: Date | null
@@ -4413,7 +4426,7 @@ export namespace Prisma {
   export type ChallengeMaxAggregateOutputType = {
     id: string | null
     contactId: string | null
-    text: string | null
+    challengeText: string | null
     type: string | null
     rank: number | null
     completedAt: Date | null
@@ -4425,7 +4438,7 @@ export namespace Prisma {
   export type ChallengeCountAggregateOutputType = {
     id: number
     contactId: number
-    text: number
+    challengeText: number
     type: number
     rank: number
     completedAt: number
@@ -4447,7 +4460,7 @@ export namespace Prisma {
   export type ChallengeMinAggregateInputType = {
     id?: true
     contactId?: true
-    text?: true
+    challengeText?: true
     type?: true
     rank?: true
     completedAt?: true
@@ -4459,7 +4472,7 @@ export namespace Prisma {
   export type ChallengeMaxAggregateInputType = {
     id?: true
     contactId?: true
-    text?: true
+    challengeText?: true
     type?: true
     rank?: true
     completedAt?: true
@@ -4471,7 +4484,7 @@ export namespace Prisma {
   export type ChallengeCountAggregateInputType = {
     id?: true
     contactId?: true
-    text?: true
+    challengeText?: true
     type?: true
     rank?: true
     completedAt?: true
@@ -4570,7 +4583,7 @@ export namespace Prisma {
   export type ChallengeGroupByOutputType = {
     id: string
     contactId: string
-    text: string
+    challengeText: string
     type: string
     rank: number
     completedAt: Date | null
@@ -4601,7 +4614,7 @@ export namespace Prisma {
   export type ChallengeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     contactId?: boolean
-    text?: boolean
+    challengeText?: boolean
     type?: boolean
     rank?: boolean
     completedAt?: boolean
@@ -4614,7 +4627,7 @@ export namespace Prisma {
   export type ChallengeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     contactId?: boolean
-    text?: boolean
+    challengeText?: boolean
     type?: boolean
     rank?: boolean
     completedAt?: boolean
@@ -4627,7 +4640,7 @@ export namespace Prisma {
   export type ChallengeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     contactId?: boolean
-    text?: boolean
+    challengeText?: boolean
     type?: boolean
     rank?: boolean
     completedAt?: boolean
@@ -4640,7 +4653,7 @@ export namespace Prisma {
   export type ChallengeSelectScalar = {
     id?: boolean
     contactId?: boolean
-    text?: boolean
+    challengeText?: boolean
     type?: boolean
     rank?: boolean
     completedAt?: boolean
@@ -4649,7 +4662,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ChallengeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "contactId" | "text" | "type" | "rank" | "completedAt" | "afterChallengeNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["challenge"]>
+  export type ChallengeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "contactId" | "challengeText" | "type" | "rank" | "completedAt" | "afterChallengeNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["challenge"]>
   export type ChallengeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     contact?: boolean | ContactDefaultArgs<ExtArgs>
   }
@@ -4668,7 +4681,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       contactId: string
-      text: string
+      challengeText: string
       type: string
       rank: number
       completedAt: Date | null
@@ -5101,7 +5114,7 @@ export namespace Prisma {
   interface ChallengeFieldRefs {
     readonly id: FieldRef<"Challenge", 'String'>
     readonly contactId: FieldRef<"Challenge", 'String'>
-    readonly text: FieldRef<"Challenge", 'String'>
+    readonly challengeText: FieldRef<"Challenge", 'String'>
     readonly type: FieldRef<"Challenge", 'String'>
     readonly rank: FieldRef<"Challenge", 'Float'>
     readonly completedAt: FieldRef<"Challenge", 'DateTime'>
@@ -6533,6 +6546,7 @@ export namespace Prisma {
     email: 'email',
     telephone: 'telephone',
     description: 'description',
+    mapUrl: 'mapUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -6543,7 +6557,7 @@ export namespace Prisma {
   export const ChallengeScalarFieldEnum: {
     id: 'id',
     contactId: 'contactId',
-    text: 'text',
+    challengeText: 'challengeText',
     type: 'type',
     rank: 'rank',
     completedAt: 'completedAt',
@@ -6723,6 +6737,7 @@ export namespace Prisma {
     email?: StringNullableFilter<"Contact"> | string | null
     telephone?: StringNullableFilter<"Contact"> | string | null
     description?: StringNullableFilter<"Contact"> | string | null
+    mapUrl?: StringNullableFilter<"Contact"> | string | null
     createdAt?: DateTimeFilter<"Contact"> | Date | string
     updatedAt?: DateTimeFilter<"Contact"> | Date | string
     challenges?: ChallengeListRelationFilter
@@ -6734,6 +6749,7 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     telephone?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
+    mapUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     challenges?: ChallengeOrderByRelationAggregateInput
@@ -6748,6 +6764,7 @@ export namespace Prisma {
     email?: StringNullableFilter<"Contact"> | string | null
     telephone?: StringNullableFilter<"Contact"> | string | null
     description?: StringNullableFilter<"Contact"> | string | null
+    mapUrl?: StringNullableFilter<"Contact"> | string | null
     createdAt?: DateTimeFilter<"Contact"> | Date | string
     updatedAt?: DateTimeFilter<"Contact"> | Date | string
     challenges?: ChallengeListRelationFilter
@@ -6759,6 +6776,7 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     telephone?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
+    mapUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ContactCountOrderByAggregateInput
@@ -6775,6 +6793,7 @@ export namespace Prisma {
     email?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     telephone?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     description?: StringNullableWithAggregatesFilter<"Contact"> | string | null
+    mapUrl?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Contact"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Contact"> | Date | string
   }
@@ -6785,7 +6804,7 @@ export namespace Prisma {
     NOT?: ChallengeWhereInput | ChallengeWhereInput[]
     id?: StringFilter<"Challenge"> | string
     contactId?: StringFilter<"Challenge"> | string
-    text?: StringFilter<"Challenge"> | string
+    challengeText?: StringFilter<"Challenge"> | string
     type?: StringFilter<"Challenge"> | string
     rank?: FloatFilter<"Challenge"> | number
     completedAt?: DateTimeNullableFilter<"Challenge"> | Date | string | null
@@ -6798,7 +6817,7 @@ export namespace Prisma {
   export type ChallengeOrderByWithRelationInput = {
     id?: SortOrder
     contactId?: SortOrder
-    text?: SortOrder
+    challengeText?: SortOrder
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrderInput | SortOrder
@@ -6814,7 +6833,7 @@ export namespace Prisma {
     OR?: ChallengeWhereInput[]
     NOT?: ChallengeWhereInput | ChallengeWhereInput[]
     contactId?: StringFilter<"Challenge"> | string
-    text?: StringFilter<"Challenge"> | string
+    challengeText?: StringFilter<"Challenge"> | string
     type?: StringFilter<"Challenge"> | string
     rank?: FloatFilter<"Challenge"> | number
     completedAt?: DateTimeNullableFilter<"Challenge"> | Date | string | null
@@ -6827,7 +6846,7 @@ export namespace Prisma {
   export type ChallengeOrderByWithAggregationInput = {
     id?: SortOrder
     contactId?: SortOrder
-    text?: SortOrder
+    challengeText?: SortOrder
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrderInput | SortOrder
@@ -6847,7 +6866,7 @@ export namespace Prisma {
     NOT?: ChallengeScalarWhereWithAggregatesInput | ChallengeScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Challenge"> | string
     contactId?: StringWithAggregatesFilter<"Challenge"> | string
-    text?: StringWithAggregatesFilter<"Challenge"> | string
+    challengeText?: StringWithAggregatesFilter<"Challenge"> | string
     type?: StringWithAggregatesFilter<"Challenge"> | string
     rank?: FloatWithAggregatesFilter<"Challenge"> | number
     completedAt?: DateTimeNullableWithAggregatesFilter<"Challenge"> | Date | string | null
@@ -6995,6 +7014,7 @@ export namespace Prisma {
     email?: string | null
     telephone?: string | null
     description?: string | null
+    mapUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     challenges?: ChallengeCreateNestedManyWithoutContactInput
@@ -7006,6 +7026,7 @@ export namespace Prisma {
     email?: string | null
     telephone?: string | null
     description?: string | null
+    mapUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     challenges?: ChallengeUncheckedCreateNestedManyWithoutContactInput
@@ -7017,6 +7038,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     challenges?: ChallengeUpdateManyWithoutContactNestedInput
@@ -7028,6 +7050,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     challenges?: ChallengeUncheckedUpdateManyWithoutContactNestedInput
@@ -7039,6 +7062,7 @@ export namespace Prisma {
     email?: string | null
     telephone?: string | null
     description?: string | null
+    mapUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7049,6 +7073,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7059,13 +7084,14 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ChallengeCreateInput = {
     id?: string
-    text: string
+    challengeText: string
     type: string
     rank?: number
     completedAt?: Date | string | null
@@ -7078,7 +7104,7 @@ export namespace Prisma {
   export type ChallengeUncheckedCreateInput = {
     id?: string
     contactId: string
-    text: string
+    challengeText: string
     type: string
     rank?: number
     completedAt?: Date | string | null
@@ -7089,7 +7115,7 @@ export namespace Prisma {
 
   export type ChallengeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    challengeText?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7102,7 +7128,7 @@ export namespace Prisma {
   export type ChallengeUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     contactId?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    challengeText?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7114,7 +7140,7 @@ export namespace Prisma {
   export type ChallengeCreateManyInput = {
     id?: string
     contactId: string
-    text: string
+    challengeText: string
     type: string
     rank?: number
     completedAt?: Date | string | null
@@ -7125,7 +7151,7 @@ export namespace Prisma {
 
   export type ChallengeUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    challengeText?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7137,7 +7163,7 @@ export namespace Prisma {
   export type ChallengeUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     contactId?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    challengeText?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7366,6 +7392,7 @@ export namespace Prisma {
     email?: SortOrder
     telephone?: SortOrder
     description?: SortOrder
+    mapUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -7376,6 +7403,7 @@ export namespace Prisma {
     email?: SortOrder
     telephone?: SortOrder
     description?: SortOrder
+    mapUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -7386,6 +7414,7 @@ export namespace Prisma {
     email?: SortOrder
     telephone?: SortOrder
     description?: SortOrder
+    mapUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -7437,7 +7466,7 @@ export namespace Prisma {
   export type ChallengeCountOrderByAggregateInput = {
     id?: SortOrder
     contactId?: SortOrder
-    text?: SortOrder
+    challengeText?: SortOrder
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrder
@@ -7453,7 +7482,7 @@ export namespace Prisma {
   export type ChallengeMaxOrderByAggregateInput = {
     id?: SortOrder
     contactId?: SortOrder
-    text?: SortOrder
+    challengeText?: SortOrder
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrder
@@ -7465,7 +7494,7 @@ export namespace Prisma {
   export type ChallengeMinOrderByAggregateInput = {
     id?: SortOrder
     contactId?: SortOrder
-    text?: SortOrder
+    challengeText?: SortOrder
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrder
@@ -7810,7 +7839,7 @@ export namespace Prisma {
 
   export type ChallengeCreateWithoutContactInput = {
     id?: string
-    text: string
+    challengeText: string
     type: string
     rank?: number
     completedAt?: Date | string | null
@@ -7821,7 +7850,7 @@ export namespace Prisma {
 
   export type ChallengeUncheckedCreateWithoutContactInput = {
     id?: string
-    text: string
+    challengeText: string
     type: string
     rank?: number
     completedAt?: Date | string | null
@@ -7861,7 +7890,7 @@ export namespace Prisma {
     NOT?: ChallengeScalarWhereInput | ChallengeScalarWhereInput[]
     id?: StringFilter<"Challenge"> | string
     contactId?: StringFilter<"Challenge"> | string
-    text?: StringFilter<"Challenge"> | string
+    challengeText?: StringFilter<"Challenge"> | string
     type?: StringFilter<"Challenge"> | string
     rank?: FloatFilter<"Challenge"> | number
     completedAt?: DateTimeNullableFilter<"Challenge"> | Date | string | null
@@ -7876,6 +7905,7 @@ export namespace Prisma {
     email?: string | null
     telephone?: string | null
     description?: string | null
+    mapUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7886,6 +7916,7 @@ export namespace Prisma {
     email?: string | null
     telephone?: string | null
     description?: string | null
+    mapUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7912,6 +7943,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7922,13 +7954,14 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ChallengeCreateManyContactInput = {
     id?: string
-    text: string
+    challengeText: string
     type: string
     rank?: number
     completedAt?: Date | string | null
@@ -7939,7 +7972,7 @@ export namespace Prisma {
 
   export type ChallengeUpdateWithoutContactInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    challengeText?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7950,7 +7983,7 @@ export namespace Prisma {
 
   export type ChallengeUncheckedUpdateWithoutContactInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    challengeText?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7961,7 +7994,7 @@ export namespace Prisma {
 
   export type ChallengeUncheckedUpdateManyWithoutContactInput = {
     id?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
+    challengeText?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

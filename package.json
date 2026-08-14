@@ -12,10 +12,12 @@
     "gh": "git log --pretty=format:\"%ad | %h | %s\" --date=format:\"%Y-%m-%d %H:%M:%S\"",
     "backup": "bash -c 'git archive --format=zip HEAD -o \"../BACKUP/dijon26-$(date +%F-%H-%M-%S).zip\"'",
     "prisma:generate": "prisma generate",
-    "prisma:push": "tsx scripts/db-init.ts",
+    "prisma:push": "prisma db push",
     "prisma:seed": "prisma db seed",
     "prisma:reset": "tsx scripts/db-init.ts && prisma db seed",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

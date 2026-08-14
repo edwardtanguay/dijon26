@@ -9,22 +9,18 @@ export default defineEventHandler(async (event) => {
       newContactEmail,
       newContactPhone,
       newContactDescription,
+      challengeText,
       text,
       type,
       rank,
     } = body
 
-    if (!text || typeof text !== 'string' || !text.trim()) {
+    const rawText = challengeText || text
+
+    if (!rawText || typeof rawText !== 'string' || !rawText.trim()) {
       throw createError({
         statusCode: 400,
         statusMessage: 'Le texte du défi est requis.',
-      })
-    }
-
-    if (text.trim().length > 255) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Le texte du défi ne doit pas dépasser 255 caractères.',
       })
     }
 
@@ -68,7 +64,7 @@ export default defineEventHandler(async (event) => {
     const challenge = await prisma.challenge.create({
       data: {
         contactId: finalContactId,
-        text: text.trim(),
+        challengeText: rawText.trim(),
         type,
         rank: parsedRank,
       },

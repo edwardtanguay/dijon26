@@ -71,6 +71,7 @@ async function main() {
       email: 'contact@mba-dijon.fr',
       telephone: '03 80 74 52 09',
       description: 'Palais des Ducs et des États de Bourgogne, place de la Sainte-Chapelle.',
+      mapUrl: 'https://maps.google.com/?q=Musee+des+Beaux-Arts+Dijon',
     },
   })
 
@@ -80,6 +81,7 @@ async function main() {
       email: 'contact@cafdijon.fr',
       telephone: '03 80 30 12 34',
       description: 'Club de randonnée, escalade et montagne à Dijon.',
+      mapUrl: 'https://maps.google.com/?q=Club+Alpin+Francais+Dijon',
     },
   })
 
@@ -89,6 +91,7 @@ async function main() {
       email: 'info@destinationdijon.com',
       telephone: '08 92 70 05 58',
       description: 'Point d’accueil rue des Forges et gare.',
+      mapUrl: 'https://maps.google.com/?q=Office+de+Tourisme+Dijon',
     },
   })
 
@@ -101,7 +104,7 @@ async function main() {
   await prisma.challenge.create({
     data: {
       contactId: contactBeauxArts.id,
-      text: 'Demander par e-mail le calendrier des visites guidées thématiques de la rentrée',
+      challengeText: 'Demander par e-mail le calendrier des visites guidées thématiques de la rentrée ##beauxarts',
       type: 'written',
       rank: 4.5,
       completedAt: new Date(`${todayStr}T10:15:00.000Z`),
@@ -112,7 +115,7 @@ async function main() {
   await prisma.challenge.create({
     data: {
       contactId: contactOT.id,
-      text: 'Appeler pour connaître les horaires du parcours de la Chouette et le tarif des livrets',
+      challengeText: 'Appeler pour connaître les horaires du parcours de la Chouette et le tarif des livrets',
       type: 'spoken',
       rank: 3.8,
       completedAt: new Date(`${todayStr}T11:30:00.000Z`),
@@ -125,7 +128,7 @@ async function main() {
   await prisma.challenge.create({
     data: {
       contactId: contactCAF.id,
-      text: 'Se renseigner sur la permanence hebdomadaire du club et les adhésions',
+      challengeText: 'Se renseigner sur la permanence hebdomadaire du club et les adhésions',
       type: 'spoken',
       rank: 2.5,
       completedAt: pastDate,
@@ -137,7 +140,7 @@ async function main() {
   await prisma.challenge.create({
     data: {
       contactId: contactCAF.id,
-      text: 'Écrire pour demander les conditions d’inscription et le programme des sorties débutants',
+      challengeText: 'Écrire pour demander les conditions d’inscription et le programme des sorties débutants',
       type: 'written',
       rank: 4.8,
       completedAt: null,
@@ -148,7 +151,7 @@ async function main() {
   await prisma.challenge.create({
     data: {
       contactId: contactBeauxArts.id,
-      text: 'Contacter le responsable pédagogique pour les ateliers de dessin du samedi',
+      challengeText: 'Contacter le responsable pédagogique pour les ateliers de dessin du samedi',
       type: 'written',
       rank: 3.2,
       completedAt: null,
@@ -159,7 +162,7 @@ async function main() {
   await prisma.challenge.create({
     data: {
       contactId: contactCAF.id,
-      text: 'Appeler le club pour confirmer le lieu de rendez-vous de la randonnée dimanche',
+      challengeText: 'Appeler le club pour confirmer le lieu de rendez-vous de la randonnée dimanche',
       type: 'spoken',
       rank: 2.0,
       completedAt: null,
