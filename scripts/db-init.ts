@@ -46,6 +46,47 @@ async function init() {
       );
     `)
     console.log('✔ Task table verified/created.')
+
+    // Create Contact table
+    await client.execute(`
+      CREATE TABLE IF NOT EXISTS "Contact" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "name" TEXT NOT NULL,
+        "email" TEXT,
+        "telephone" TEXT,
+        "description" TEXT,
+        "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
+    console.log('✔ Contact table verified/created.')
+
+    // Create Challenge table
+    await client.execute(`
+      CREATE TABLE IF NOT EXISTS "Challenge" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "contactId" TEXT NOT NULL,
+        "text" TEXT NOT NULL,
+        "type" TEXT NOT NULL,
+        "scheduledFor" DATETIME,
+        "completedAt" DATETIME,
+        "afterChallengeNotes" TEXT,
+        "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY ("contactId") REFERENCES "Contact" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+      );
+    `)
+    console.log('✔ Challenge table verified/created.')
+
+    // Create AppSetting table
+    await client.execute(`
+      CREATE TABLE IF NOT EXISTS "AppSetting" (
+        "key" TEXT NOT NULL PRIMARY KEY,
+        "value" TEXT NOT NULL,
+        "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
+    console.log('✔ AppSetting table verified/created.')
     
     console.log('🎉 Database initialization complete!')
   } catch (error) {

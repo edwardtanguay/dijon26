@@ -130,15 +130,51 @@ exports.Prisma.TaskScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ContactScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  telephone: 'telephone',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ChallengeScalarFieldEnum = {
+  id: 'id',
+  contactId: 'contactId',
+  text: 'text',
+  type: 'type',
+  scheduledFor: 'scheduledFor',
+  completedAt: 'completedAt',
+  afterChallengeNotes: 'afterChallengeNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AppSettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 
 exports.Prisma.ModelName = {
   DbTest: 'DbTest',
-  Task: 'Task'
+  Task: 'Task',
+  Contact: 'Contact',
+  Challenge: 'Challenge',
+  AppSetting: 'AppSetting'
 };
 
 /**
