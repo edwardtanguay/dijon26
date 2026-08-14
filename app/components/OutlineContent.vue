@@ -40,6 +40,7 @@ import { computed } from 'vue'
 const props = defineProps<{
   text?: string | null
   availableImages?: string[]
+  maxLines?: number
 }>()
 
 interface ParsedOutlineLine {
@@ -177,6 +178,15 @@ const parsedItems = computed<ParsedOutlineLine[]>(() => {
       image,
     })
   })
+
+  if (props.maxLines && props.maxLines > 0 && items.length > props.maxLines) {
+    const truncated = items.slice(0, props.maxLines)
+    const lastItem = truncated[truncated.length - 1]
+    if (lastItem && !lastItem.body.endsWith('...')) {
+      lastItem.body = `${lastItem.body} ...`
+    }
+    return truncated
+  }
 
   return items
 })

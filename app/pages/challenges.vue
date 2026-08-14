@@ -1471,7 +1471,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
 
                   <!-- 4. Notes -->
                   <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-300 max-w-xs">
-                    <OutlineContent v-if="challenge.afterChallengeNotes" :text="challenge.afterChallengeNotes" :available-images="availableImages" />
+                    <OutlineContent v-if="challenge.afterChallengeNotes" :text="challenge.afterChallengeNotes" :available-images="availableImages" :max-lines="3" />
                     <span v-else class="text-gray-400 italic">Aucun bilan</span>
                   </td>
 
@@ -1930,15 +1930,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               Aucun défi associé à ce contact pour l'instant.
             </div>
 
-            <div v-else class="space-y-2 max-h-72 overflow-y-auto pr-1">
+            <div v-else class="space-y-3 max-h-72 overflow-y-auto pr-1">
               <div
                 v-for="ch in activeContactChallenges"
                 :key="ch.id"
-                class="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/60 flex items-start justify-between gap-3 text-xs"
+                class="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/60 text-xs space-y-2"
               >
-                <div class="space-y-1 flex-1">
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-700 dark:text-gray-300 font-normal">
+                <!-- Top header line with light background separating from text below -->
+                <div class="bg-gray-100 dark:bg-gray-800/80 px-2.5 py-1.5 rounded-lg flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-mono font-semibold text-amber-500 dark:text-amber-300">
                       {{ formatTypeAndRank(ch.type, ch.rank) }}
                     </span>
                     <span v-if="ch.completedAt" class="text-emerald-600 dark:text-emerald-400 font-semibold">
@@ -1948,29 +1949,32 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                       ⏳ À faire
                     </span>
                   </div>
+
+                  <div class="flex items-center gap-1 shrink-0">
+                    <button
+                      @click="openEditChallengeModal(ch)"
+                      class="p-1 text-gray-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                      title="Modifier le défi"
+                    >
+                      <UIcon name="i-heroicons-pencil-square" class="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      @click="deleteChallenge(ch)"
+                      class="p-1 text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
+                      title="Supprimer le défi"
+                    >
+                      <UIcon name="i-heroicons-trash" class="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                <div class="space-y-1 px-1">
                   <div class="text-gray-900 dark:text-white">
                     <OutlineContent :text="ch.challengeText" :available-images="availableImages" />
                   </div>
                   <div v-if="ch.afterChallengeNotes" class="text-gray-600 dark:text-gray-300 italic pt-1">
                     <OutlineContent :text="ch.afterChallengeNotes" :available-images="availableImages" />
                   </div>
-                </div>
-
-                <div class="flex items-center gap-1 shrink-0">
-                  <button
-                    @click="openEditChallengeModal(ch)"
-                    class="p-1 text-gray-400 hover:text-indigo-600 transition-colors cursor-pointer"
-                    title="Modifier le défi"
-                  >
-                    <UIcon name="i-heroicons-pencil-square" class="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    @click="deleteChallenge(ch)"
-                    class="p-1 text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                    title="Supprimer le défi"
-                  >
-                    <UIcon name="i-heroicons-trash" class="w-3.5 h-3.5" />
-                  </button>
                 </div>
               </div>
             </div>
@@ -2438,15 +2442,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 Aucun défi associé à ce contact pour l'instant.
               </div>
 
-              <div v-else class="space-y-2 max-h-72 overflow-y-auto pr-1">
+              <div v-else class="space-y-3 max-h-72 overflow-y-auto pr-1">
                 <div
                   v-for="ch in selectedContactDetailChallenges"
                   :key="ch.id"
-                  class="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/60 flex items-start justify-between gap-3 text-xs"
+                  class="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/60 text-xs space-y-2"
                 >
-                  <div class="space-y-1 flex-1">
-                    <div class="flex items-center gap-2">
-                      <span class="text-xs text-gray-700 dark:text-gray-300 font-normal">
+                  <!-- Top header line with light background separating from text below -->
+                  <div class="bg-gray-100 dark:bg-gray-800/80 px-2.5 py-1.5 rounded-lg flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="text-xs font-mono font-semibold text-amber-500 dark:text-amber-300">
                         {{ formatTypeAndRank(ch.type, ch.rank) }}
                       </span>
                       <span v-if="ch.completedAt" class="text-emerald-600 dark:text-emerald-400 font-semibold">
@@ -2456,29 +2461,32 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                         ⏳ À faire
                       </span>
                     </div>
+
+                    <div class="flex items-center gap-1 shrink-0">
+                      <button
+                        @click="openEditChallengeModal(ch)"
+                        class="p-1 text-gray-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                        title="Modifier le défi"
+                      >
+                        <UIcon name="i-heroicons-pencil-square" class="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        @click="deleteChallenge(ch)"
+                        class="p-1 text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
+                        title="Supprimer le défi"
+                      >
+                        <UIcon name="i-heroicons-trash" class="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="space-y-1 px-1">
                     <div class="text-gray-900 dark:text-white">
                       <OutlineContent :text="ch.challengeText" :available-images="availableImages" />
                     </div>
                     <div v-if="ch.afterChallengeNotes" class="text-gray-600 dark:text-gray-300 italic pt-1">
                       <OutlineContent :text="ch.afterChallengeNotes" :available-images="availableImages" />
                     </div>
-                  </div>
-
-                  <div class="flex items-center gap-1 shrink-0">
-                    <button
-                      @click="openEditChallengeModal(ch)"
-                      class="p-1 text-gray-400 hover:text-indigo-600 transition-colors cursor-pointer"
-                      title="Modifier le défi"
-                    >
-                      <UIcon name="i-heroicons-pencil-square" class="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      @click="deleteChallenge(ch)"
-                      class="p-1 text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                      title="Supprimer le défi"
-                    >
-                      <UIcon name="i-heroicons-trash" class="w-3.5 h-3.5" />
-                    </button>
                   </div>
                 </div>
               </div>
@@ -2522,7 +2530,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 <UIcon name="i-heroicons-chat-bubble-bottom-center-text" class="w-4 h-4" />
                 <span>Bilan / Réflexions après le défi</span>
               </div>
-              <div class="text-sm text-emerald-950 dark:text-emerald-100 italic leading-relaxed">
+              <div class="text-sm text-emerald-950 dark:text-emerald-100 italic leading-relaxed max-h-48 overflow-y-auto pr-1.5">
                 <OutlineContent :text="selectedChallengeForDetail.afterChallengeNotes" :available-images="availableImages" />
               </div>
             </div>
