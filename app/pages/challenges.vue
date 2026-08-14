@@ -1225,11 +1225,11 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                       <div class="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-black flex items-center justify-center text-base shrink-0 shadow-xs">
                         {{ contact.name.charAt(0).toUpperCase() }}
                       </div>
-                      <div class="space-y-1">
-                        <div class="flex items-center gap-2">
+                      <div class="flex flex-col justify-center space-y-0.5 py-0.5">
+                        <div class="flex items-center gap-1.5 leading-tight">
                           <button
                             @click="openContactDetailModal(contact)"
-                            class="font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer text-left"
+                            class="font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer text-left leading-tight"
                             title="Afficher les détails"
                           >
                             {{ contact.name }}
@@ -1246,24 +1246,24 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                           </a>
                         </div>
                         <!-- 3 action icons right under the contact line -->
-                        <div class="flex items-center gap-1 text-gray-400">
+                        <div class="flex items-center gap-0.5 text-gray-400 leading-none">
                           <button
                             @click="openContactDetailModal(contact)"
-                            class="p-1 rounded-md hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                            class="p-0.5 rounded hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer inline-flex items-center justify-center"
                             title="Afficher les détails"
                           >
                             <UIcon name="i-heroicons-eye" class="w-3.5 h-3.5" />
                           </button>
                           <button
                             @click="openEditContactModal(contact)"
-                            class="p-1 rounded-md hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                            class="p-0.5 rounded hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer inline-flex items-center justify-center"
                             title="Modifier le contact"
                           >
                             <UIcon name="i-heroicons-pencil-square" class="w-3.5 h-3.5" />
                           </button>
                           <button
                             @click="deleteContact(contact)"
-                            class="p-1 rounded-md hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                            class="p-0.5 rounded hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer inline-flex items-center justify-center"
                             title="Supprimer le contact"
                           >
                             <UIcon name="i-heroicons-trash" class="w-3.5 h-3.5" />

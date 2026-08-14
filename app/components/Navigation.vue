@@ -40,8 +40,8 @@ const navItems = [
         <!-- Logo / Brand -->
         <NuxtLink to="/" @click="mobileMenuOpen = false" class="group block">
           <div class="flex flex-row items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center p-1 shrink-0 shadow-sm group-hover:bg-indigo-500 transition-colors">
-              <img src="/images/outline/dijonLogo.png" alt="Dijon 26 Logo" class="w-full h-full object-contain filter brightness-0 invert" />
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+              <img src="/images/outline/dijonLogo.png" alt="Dijon 26 Logo" class="w-full h-full object-contain" />
             </div>
             <span class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors whitespace-nowrap">
               Dijon 26
