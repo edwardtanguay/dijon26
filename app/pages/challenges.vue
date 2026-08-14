@@ -556,6 +556,16 @@ const deleteChallenge = async (challenge: Challenge) => {
   }
 }
 
+const handleDoingDropdownChange = (event: any, contactId?: string) => {
+  const val = event.target.value
+  if (val === '__CREATE__') {
+    event.target.value = activeDoingChallengeId.value || currentDoingChallenge.value?.id || ''
+    openCreateChallengeModal(contactId, false)
+  } else if (val) {
+    activeDoingChallengeId.value = val
+  }
+}
+
 // Reflection / Completion Handlers
 const openReflectModal = (challenge: Challenge) => {
   selectedChallengeForReflect.value = challenge
@@ -603,7 +613,7 @@ const getSlotCardBorderClass = (status: 'finished' | 'doing' | 'empty') => {
   if (status === 'doing') {
     return 'border-amber-400/90 dark:border-amber-500/80 shadow-[0_0_15px_rgba(245,158,11,0.15)] bg-amber-50/20 dark:bg-amber-950/10'
   }
-  return 'border-rose-400/70 dark:border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.10)] bg-rose-50/10 dark:bg-rose-950/10'
+  return 'border-gray-300 dark:border-gray-700/80 shadow-[0_0_15px_rgba(0,0,0,0.05)] bg-gray-50/50 dark:bg-gray-900/30'
 }
 
 // Format Type & Rank: e.g. "oral (3.8)", "écrit" (if rank is 2.5, don't show it)
@@ -800,27 +810,6 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   Défi #{{ index + 1 }}
                 </span>
                 <div class="flex items-center gap-2">
-                  <!-- Swap dropdown if more available -->
-                  <div v-if="swapCandidateChallenges.length > 0" class="relative">
-                    <select
-                      :value="slot.challenge.id"
-                      @change="(e: any) => { activeDoingChallengeId = e.target.value }"
-                      class="text-xs py-1 pl-2 pr-6 rounded-lg bg-amber-100/70 hover:bg-amber-200/80 dark:bg-amber-950/70 dark:hover:bg-amber-900/80 text-amber-800 dark:text-amber-200 font-medium border border-amber-300 dark:border-amber-700/80 cursor-pointer appearance-none focus:outline-none"
-                    >
-                      <option :value="slot.challenge.id">
-                        Changer ({{ swapCandidateChallenges.length }} dispo)
-                      </option>
-                      <option
-                        v-for="alt in swapCandidateChallenges"
-                        :key="alt.id"
-                        :value="alt.id"
-                      >
-                        Rang {{ Number(alt.rank ?? 2.5).toFixed(1) }} - {{ alt.contact?.name ? alt.contact.name + ': ' : '' }}{{ alt.challengeText.slice(0, 30) }}...
-                      </option>
-                    </select>
-                    <UIcon name="i-heroicons-chevron-up-down" class="w-3.5 h-3.5 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none text-amber-700 dark:text-amber-300" />
-                  </div>
-
                   <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">
                     Rang {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }}
                   </span>
@@ -837,6 +826,32 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <!-- Full Challenge Content without truncation -->
               <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                 <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
+              </div>
+
+              <!-- Full-width Swap / Create Dropdown above bottom line -->
+              <div class="pt-2">
+                <div class="relative w-full">
+                  <select
+                    :value="slot.challenge.id"
+                    @change="(e: any) => handleDoingDropdownChange(e, slot.challenge?.contactId)"
+                    class="w-full text-xs py-1.5 pl-3 pr-8 rounded-lg bg-amber-100/70 hover:bg-amber-200/80 dark:bg-amber-950/70 dark:hover:bg-amber-900/80 text-amber-900 dark:text-amber-100 font-medium border border-amber-300 dark:border-amber-700/80 cursor-pointer appearance-none focus:outline-none"
+                  >
+                    <option :value="slot.challenge.id">
+                      Changer de défi ({{ swapCandidateChallenges.length }} dispo)
+                    </option>
+                    <option value="__CREATE__" class="font-bold text-indigo-700 dark:text-indigo-300">
+                      ＋ Créer un défi...
+                    </option>
+                    <option
+                      v-for="alt in swapCandidateChallenges"
+                      :key="alt.id"
+                      :value="alt.id"
+                    >
+                      Rang {{ Number(alt.rank ?? 2.5).toFixed(1) }} - {{ alt.contact?.name ? alt.contact.name + ': ' : '' }}{{ alt.challengeText.slice(0, 45) }}...
+                    </option>
+                  </select>
+                  <UIcon name="i-heroicons-chevron-up-down" class="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-amber-700 dark:text-amber-300" />
+                </div>
               </div>
             </div>
 
@@ -863,36 +878,36 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 </a>
               </div>
               <div class="flex items-center gap-2.5">
+                <button
+                  @click="openReflectModal(slot.challenge)"
+                  class="px-3.5 py-1.5 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/80 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
+                  title="Valider et faire le bilan"
+                >
+                  <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-2" />
+                  <span>Terminer</span>
+                </button>
                 <span class="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1">
                   <UIcon name="i-heroicons-arrow-path" class="w-3.5 h-3.5" />
                   En cours
                 </span>
-                <button
-                  @click="openReflectModal(slot.challenge)"
-                  class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
-                  title="Valider et faire le bilan"
-                >
-                  <UIcon name="i-heroicons-check" class="w-4 h-4 text-white stroke-2" />
-                  <span>Terminer</span>
-                </button>
               </div>
             </div>
           </div>
 
-          <!-- 3. Empty / Not Available Card (Red / Nuanced button) -->
+          <!-- 3. Empty / Not Available Card (Gray) -->
           <div
             v-else
             class="relative rounded-2xl p-5 border-2 transition-all flex flex-col items-center justify-center text-center min-h-[170px]"
             :class="getSlotCardBorderClass('empty')"
           >
-            <span class="text-xs font-semibold text-rose-500 dark:text-rose-400 mb-2">
+            <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
               Emplacement #{{ index + 1 }} non disponible
             </span>
             <button
               @click="openCreateChallengeModal(undefined, false)"
-              class="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105"
+              class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-300 border border-gray-300 dark:border-gray-700 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105"
             >
-              <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-rose-600 dark:text-rose-400" />
+              <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <span>Créer un défi</span>
             </button>
           </div>
@@ -966,7 +981,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
 
           <button
             @click="openCreateContactModal()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
           >
             <UIcon name="i-heroicons-user-plus" class="w-4 h-4" />
             <span>Nouveau contact</span>
@@ -1072,7 +1087,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   <td class="px-5 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">
                     <div class="flex items-center gap-3">
                       <!-- Expanded letter-icon matching 2 lines -->
-                      <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-black flex items-center justify-center text-base shrink-0 shadow-xs">
+                      <div class="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-black flex items-center justify-center text-base shrink-0 shadow-xs">
                         {{ contact.name.charAt(0).toUpperCase() }}
                       </div>
                       <div class="space-y-1">
@@ -1127,7 +1142,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   <td class="px-5 py-4 whitespace-nowrap">
                     <button
                       @click="openContactChallengesModal(contact)"
-                      class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
                       title="Voir la liste des défis de ce contact"
                     >
                       <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5" />
@@ -1181,7 +1196,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
 
           <button
             @click="openCreateChallengeModal(undefined, true)"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
           >
             <UIcon name="i-heroicons-plus" class="w-4 h-4" />
             <span>Nouveau défi</span>
@@ -1314,7 +1329,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                     </div>
                   </td>
 
-                  <!-- 3. Type & Rank -->
+                  <!-- 3. Type & Rang -->
                   <td class="px-5 py-4 whitespace-nowrap text-xs text-gray-700 dark:text-gray-300 font-normal">
                     {{ formatTypeAndRank(challenge.type, challenge.rank) }}
                   </td>
@@ -1368,7 +1383,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
           </p>
           <button
             @click="openCreateChallengeModal(undefined, false)"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-xs cursor-pointer"
           >
             <UIcon name="i-heroicons-plus" class="w-4 h-4" />
             <span>Nouveau défi</span>
@@ -1767,7 +1782,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
           <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
             <button
               @click="isContactChallengesModalOpen = false"
-              class="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs font-semibold hover:bg-gray-200 cursor-pointer"
+              class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs font-semibold hover:bg-gray-200 cursor-pointer"
             >
               Fermer
             </button>
@@ -1825,7 +1840,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 <select
                   v-model="challengeForm.contactId"
                   required
-                  class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 >
                   <option v-for="c in contacts" :key="c.id" :value="c.id">
                     {{ c.name }} {{ c.email ? `(${c.email})` : '' }}
@@ -1872,7 +1887,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <select
                 v-model="challengeForm.contactId"
                 required
-                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               >
                 <option v-for="c in contacts" :key="c.id" :value="c.id">
                   {{ c.name }} {{ c.email ? `(${c.email})` : '' }}
@@ -1890,14 +1905,14 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 rows="4"
                 placeholder="Ex: Demander par mail les horaires d'ouverture du samedi ##nom_image"
                 required
-                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
 
             <!-- Type Selector -->
             <div class="grid grid-cols-2 gap-3">
               <label
-                class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all"
+                class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
                 :class="challengeForm.type === 'written'
                   ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200'
                   : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
@@ -1916,7 +1931,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               </label>
 
               <label
-                class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all"
+                class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
                 :class="challengeForm.type === 'spoken'
                   ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200'
                   : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
@@ -1978,12 +1993,12 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                       v-model="challengeForm.completedAt"
                       type="text"
                       placeholder="YYYY-MM-DD HH:mm:ss"
-                      class="flex-1 px-3 py-2 font-mono rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      class="flex-1 px-3 py-2 font-mono rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                     />
                     <button
                       type="button"
                       @click="challengeForm.completedAt = getCurrentTimestamp()"
-                      class="px-3 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      class="px-3 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 font-semibold rounded-lg text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                       title="Insérer l'horodatage actuel"
                     >
                       <UIcon name="i-heroicons-clock" class="w-4 h-4" />
@@ -2000,7 +2015,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                     v-model="challengeForm.afterChallengeNotes"
                     rows="3"
                     placeholder="Notes, points d'apprentissage, bilan..."
-                    class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -2010,14 +2025,14 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <button
                 type="button"
                 @click="isChallengeModalOpen = false"
-                class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
               >
                 Annuler
               </button>
               <button
                 type="submit"
                 :disabled="challengeSubmitting"
-                class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+                class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-xs transition-all flex items-center gap-2 cursor-pointer"
               >
                 <UIcon v-if="challengeSubmitting" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
                 <span>{{ isEditingChallenge ? 'Enregistrer le défi' : 'Créer le défi' }}</span>
@@ -2071,12 +2086,12 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   type="text"
                   placeholder="YYYY-MM-DD HH:mm:ss"
                   required
-                  class="flex-1 px-3 py-2 font-mono rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  class="flex-1 px-3 py-2 font-mono rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
                 <button
                   type="button"
                   @click="reflectCompletedAt = getCurrentTimestamp()"
-                  class="px-3 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  class="px-3 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 font-semibold rounded-lg text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   title="Insérer l'horodatage actuel"
                 >
                   <UIcon name="i-heroicons-clock" class="w-4 h-4" />
@@ -2093,7 +2108,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 v-model="reflectNotes"
                 rows="5"
                 placeholder="Décris comment s'est passé l'échange, tes ressentis, tes progrès..."
-                class="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
 
@@ -2101,14 +2116,14 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <button
                 type="button"
                 @click="isReflectModalOpen = false"
-                class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
               >
                 Annuler
               </button>
               <button
                 type="submit"
                 :disabled="reflectSubmitting"
-                class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+                class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-xs transition-all flex items-center gap-2 cursor-pointer"
               >
                 <UIcon v-if="reflectSubmitting" name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
                 <span>Enregistrer le bilan</span>
@@ -2140,7 +2155,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <button
                 v-if="detailModalType === 'contact' && selectedContactForDetail"
                 @click="isDetailModalOpen = false; openEditContactModal(selectedContactForDetail)"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 text-xs font-bold transition-colors cursor-pointer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 text-xs font-bold transition-colors cursor-pointer"
                 title="Modifier ce contact"
               >
                 <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
@@ -2150,7 +2165,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <button
                 v-else-if="detailModalType === 'challenge' && selectedChallengeForDetail"
                 @click="isDetailModalOpen = false; openEditChallengeModal(selectedChallengeForDetail)"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 text-xs font-bold transition-colors cursor-pointer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 dark:text-indigo-300 text-xs font-bold transition-colors cursor-pointer"
                 title="Modifier ce défi"
               >
                 <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />

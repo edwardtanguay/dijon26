@@ -49,7 +49,7 @@ const user = ref({
       <div class="pt-4 flex flex-col gap-3">
         <NuxtLink
           to="/"
-          class="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-center font-semibold rounded-xl transition-all shadow-md"
+          class="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-center font-semibold rounded-lg transition-all shadow-md"
         >
           Back to Tasks
         </NuxtLink>

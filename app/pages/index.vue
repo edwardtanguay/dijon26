@@ -435,7 +435,7 @@ onUnmounted(() => {
         <div v-if="isAnswerRevealed" class="flex justify-center">
           <button
             @click="nextCard"
-            class="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm"
+            class="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm"
           >
             <span>Carte suivante</span>
             <UIcon name="i-heroicons-arrow-right" class="w-5 h-5" />
@@ -459,7 +459,7 @@ onUnmounted(() => {
         <div>
           <button
             @click="restartFlashcards"
-            class="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all inline-flex items-center gap-2.5 cursor-pointer text-sm"
+            class="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-lg hover:shadow-indigo-500/25 transition-all inline-flex items-center gap-2.5 cursor-pointer text-sm"
           >
             <UIcon name="i-heroicons-arrow-path" class="w-5 h-5" />
             <span>Recommencer (Mélanger les cartes)</span>
@@ -487,7 +487,7 @@ onUnmounted(() => {
       >
         <!-- Top Toolbar -->
         <div class="absolute top-4 left-4 right-4 flex items-center justify-between text-white z-10 pointer-events-auto">
-          <div class="bg-black/60 px-4 py-2 rounded-xl border border-white/10 text-sm font-medium">
+          <div class="bg-black/60 px-4 py-2 rounded-lg border border-white/10 text-sm font-medium">
             <span>{{ selectedImage.title }}</span>
             <span class="text-gray-400 text-xs ml-2">({{ isZoomed ? 'Click to reset scale' : 'Click image to zoom 1.8x' }})</span>
           </div>
@@ -495,7 +495,7 @@ onUnmounted(() => {
           <div class="flex items-center gap-2">
             <button
               @click.stop="toggleZoom"
-              class="p-2.5 bg-black/60 hover:bg-black/90 text-white rounded-xl border border-white/10 transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+              class="p-2.5 bg-black/60 hover:bg-black/90 text-white rounded-lg border border-white/10 transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
             >
               <UIcon :name="isZoomed ? 'i-heroicons-magnifying-glass-minus' : 'i-heroicons-magnifying-glass-plus'" class="w-5 h-5" />
               <span>{{ isZoomed ? 'Reset' : '1.8x Zoom' }}</span>
@@ -503,7 +503,7 @@ onUnmounted(() => {
 
             <button
               @click="closeModal"
-              class="p-2.5 bg-black/60 hover:bg-red-900/80 text-white rounded-xl border border-white/10 transition-colors cursor-pointer"
+              class="p-2.5 bg-black/60 hover:bg-red-900/80 text-white rounded-lg border border-white/10 transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <UIcon name="i-heroicons-x-mark" class="w-6 h-6" />
