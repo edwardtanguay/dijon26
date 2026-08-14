@@ -46,12 +46,53 @@ const isEditingTarget = ref(false)
 const targetInput = ref<number>(10)
 const loading = ref(true)
 
-// Active Tab: contacts | finished | todo
-const activeTab = ref<'contacts' | 'finished' | 'todo'>('contacts')
+// Active Tab: contacts | finished | todo | history
+const activeTab = ref<'contacts' | 'finished' | 'todo' | 'history'>('contacts')
 
 // Search states
 const searchContacts = ref('')
 const searchFinished = ref('')
+
+// History Computed: Group finished challenges by date descending
+const historyByDay = computed(() => {
+  const map: Record<string, Challenge[]> = {}
+  for (const c of finishedChallenges.value) {
+    if (!c.completedAt) continue
+    const dateKey = getLocalDateString(c.completedAt)
+    if (!map[dateKey]) {
+      map[dateKey] = []
+    }
+    map[dateKey].push(c)
+  }
+
+  // Sort dates descending
+  const sortedDates = Object.keys(map).sort((a, b) => b.localeCompare(a))
+
+  return sortedDates.map((dateKey) => {
+    // Parse date parts to create local date object avoiding timezone shift
+    const [y, m, d] = dateKey.split('-').map(Number)
+    const dateObj = new Date(y!, m! - 1, d!)
+    
+    // Format: e.g. "ven. 14 août" or "Aujourd'hui"
+    const isToday = dateKey === todayStr.value
+    const formattedDate = dateObj.toLocaleDateString('fr-FR', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    })
+
+    return {
+      dateKey,
+      dateObj,
+      formattedDate,
+      isToday,
+      challenges: map[dateKey] || [],
+      count: (map[dateKey] || []).length,
+      targetReached: (map[dateKey] || []).length >= (dailyTarget.value || 1)
+    }
+  })
+})
 
 // Modals state
 const isContactModalOpen = ref(false)
@@ -664,21 +705,22 @@ const formatTypeAndRank = (type: string, rank?: number) => {
 
     <!-- Top Panel: Tes défis pour aujourd'hui -->
     <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-700/60 shadow-sm">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-700/60 pb-4">
-        <div class="flex items-center gap-2.5">
-          <UIcon name="i-heroicons-calendar-days" class="w-6 h-6 text-indigo-500 shrink-0 self-center" />
-          <div>
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white !mb-0 !leading-none">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-700/60 pb-4 text-center sm:text-left">
+        <div class="flex flex-col sm:flex-row sm:items-center items-center gap-2.5">
+          <!-- Calendar icon hidden on mobile, visible on sm and up -->
+          <UIcon name="i-heroicons-calendar-days" class="hidden sm:block w-6 h-6 text-indigo-500 shrink-0 self-center" />
+          <div class="text-center sm:text-left">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white !mb-0 !leading-none text-center sm:text-left">
               Tes défis pour aujourd'hui
             </h2>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center sm:text-left">
               Complète tes {{ dailyTarget }} défis pour atteindre ton objectif du jour
             </p>
           </div>
         </div>
 
-        <!-- Target Setting -->
-        <div class="flex items-center gap-3">
+        <!-- Target Setting (Centered on mobile) -->
+        <div class="flex items-center justify-center gap-3">
           <div v-if="!isEditingTarget" class="flex items-center gap-2">
             <div class="flex flex-col items-center">
               <span class="text-4xl sm:text-5xl font-black text-indigo-600 dark:text-indigo-400 leading-none tracking-tight">
@@ -720,22 +762,18 @@ const formatTypeAndRank = (type: string, rank?: number) => {
         </div>
       </div>
 
-      <!-- 2 Flex Columns Maximum Grid for Challenges Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-        <!-- Loading State -->
-        <template v-if="loading">
-          <div
-            v-for="i in dailyTarget"
-            :key="'loader-' + i"
-            class="relative rounded-2xl p-5 bg-gray-50/50 dark:bg-gray-900/40 border-2 border-dashed border-gray-200 dark:border-gray-800 flex flex-col items-center justify-center text-center min-h-[170px]"
-          >
-            <div class="w-8 h-8 border-3 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin [animation-duration:2.5s]"></div>
-            <span class="text-xs text-gray-400 mt-2 font-medium">Chargement du défi #{{ i }}...</span>
-          </div>
-        </template>
+      <!-- Loading State: Single centered spinner turning slowly -->
+      <div
+        v-if="loading"
+        class="relative rounded-2xl p-8 bg-gray-50/50 dark:bg-gray-900/40 border-2 border-dashed border-gray-200 dark:border-gray-800 flex flex-col items-center justify-center text-center min-h-[190px] mt-5"
+      >
+        <div class="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin [animation-duration:2.5s]"></div>
+        <span class="text-xs text-gray-400 dark:text-gray-500 mt-3 font-medium">Chargement de tes défis...</span>
+      </div>
 
-        <!-- Loaded State -->
-        <template v-else v-for="(slot, index) in dailyGoalSlots" :key="index">
+      <!-- Loaded State: 2 Flex Columns Maximum Grid for Challenges Cards -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+        <template v-for="(slot, index) in dailyGoalSlots" :key="index">
           <!-- 1. Finished Challenge Card (Green) -->
           <div
             v-if="slot.status === 'finished' && slot.challenge"
@@ -842,25 +880,37 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
               </div>
 
-              <!-- Full-width Swap / Create Dropdown above bottom line -->
+              <!-- Dropdown or Yellow Create Button -->
               <div class="pt-2">
-                <div class="relative w-full">
+                <!-- If only 1 challenge available (0 swap candidates): show centered yellow "Créer un défi" button -->
+                <div v-if="swapCandidateChallenges.length === 0" class="flex justify-center">
+                  <button
+                    @click="openCreateChallengeModal(slot.challenge?.contactId, false)"
+                    class="px-4 py-1.5 rounded-lg bg-amber-200/90 hover:bg-amber-300 dark:bg-amber-900/60 dark:hover:bg-amber-800/80 text-amber-950 dark:text-amber-100 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105 border border-amber-400/80 dark:border-amber-700/80"
+                  >
+                    <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-amber-700 dark:text-amber-300" />
+                    <span>Créer un défi</span>
+                  </button>
+                </div>
+
+                <!-- If multiple challenges available: show swap dropdown -->
+                <div v-else class="relative w-full">
                   <select
                     :value="slot.challenge.id"
                     @change="(e: any) => handleDoingDropdownChange(e, slot.challenge?.contactId)"
-                    class="w-full text-xs py-1.5 pl-3 pr-8 rounded-lg bg-amber-100/60 hover:bg-amber-100/90 dark:bg-amber-950/60 dark:hover:bg-amber-950/90 text-amber-950 dark:text-amber-100 font-medium border border-amber-300/80 dark:border-amber-700/80 cursor-pointer appearance-none focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors"
+                    class="w-full text-xs py-1.5 pl-3 pr-8 rounded-lg bg-amber-100/70 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-950/90 text-amber-950 dark:text-amber-100 font-medium border border-amber-300/80 dark:border-amber-700/80 cursor-pointer appearance-none focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors"
                   >
-                    <option :value="slot.challenge.id" class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-semibold">
+                    <option :value="slot.challenge.id" class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-semibold py-1">
                       Changer de défi ({{ swapCandidateChallenges.length }} dispo)
                     </option>
-                    <option value="__CREATE__" class="font-bold text-orange-600 dark:text-orange-400 bg-white dark:bg-gray-900">
+                    <option value="__CREATE__" class="font-bold text-amber-700 dark:text-amber-400 bg-white dark:bg-gray-900 py-1">
                       ⊕ Créer un défi
                     </option>
                     <option
                       v-for="alt in swapCandidateChallenges"
                       :key="alt.id"
                       :value="alt.id"
-                      class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200"
+                      class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 py-1"
                     >
                       Rang {{ Number(alt.rank ?? 2.5).toFixed(1) }} - {{ alt.contact?.name ? alt.contact.name + ': ' : '' }}{{ alt.challengeText.slice(0, 45) }}...
                     </option>
@@ -870,41 +920,88 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               </div>
             </div>
 
-            <div class="pt-3 mt-4 border-t border-amber-200/60 dark:border-amber-900/50 flex items-center justify-between text-xs">
-              <div class="flex items-center gap-2">
-                <button
-                  v-if="slot.challenge.contact"
-                  @click="openContactDetailModal(slot.challenge.contact)"
-                  class="font-bold text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors cursor-pointer text-left"
-                  title="Afficher les détails du contact"
-                >
-                  {{ slot.challenge.contact.name }}
-                </button>
-                <span v-else class="font-bold text-amber-700 dark:text-amber-300">Contact</span>
-                <a
-                  v-if="slot.challenge.contact?.mapUrl"
-                  :href="slot.challenge.contact.mapUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
-                  title="Voir sur Google Maps"
-                >
-                  <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
-                </a>
+            <!-- Bottom Area of Yellow Card -->
+            <!-- Mobile View: Line 1 (Contact + En cours), Line 2 (Terminer button centered) -->
+            <div class="pt-3 mt-4 border-t border-amber-200/60 dark:border-amber-900/50 text-xs">
+              <!-- Desktop layout (>= md) -->
+              <div class="hidden md:flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <button
+                    v-if="slot.challenge.contact"
+                    @click="openContactDetailModal(slot.challenge.contact)"
+                    class="font-bold text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors cursor-pointer text-left"
+                    title="Afficher les détails du contact"
+                  >
+                    {{ slot.challenge.contact.name }}
+                  </button>
+                  <span v-else class="font-bold text-amber-700 dark:text-amber-300">Contact</span>
+                  <a
+                    v-if="slot.challenge.contact?.mapUrl"
+                    :href="slot.challenge.contact.mapUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                    title="Voir sur Google Maps"
+                  >
+                    <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+                  </a>
+                </div>
+                <div class="flex items-center gap-2.5">
+                  <button
+                    @click="openReflectModal(slot.challenge)"
+                    class="px-3.5 py-1.5 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/80 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
+                    title="Valider et faire le bilan"
+                  >
+                    <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-2" />
+                    <span>Terminer</span>
+                  </button>
+                  <span class="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                    <UIcon name="i-heroicons-arrow-path" class="w-3.5 h-3.5" />
+                    En cours
+                  </span>
+                </div>
               </div>
-              <div class="flex items-center gap-2.5">
-                <button
-                  @click="openReflectModal(slot.challenge)"
-                  class="px-3.5 py-1.5 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/80 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
-                  title="Valider et faire le bilan"
-                >
-                  <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-2" />
-                  <span>Terminer</span>
-                </button>
-                <span class="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1">
-                  <UIcon name="i-heroicons-arrow-path" class="w-3.5 h-3.5" />
-                  En cours
-                </span>
+
+              <!-- Mobile layout (< md): Line 1 (Contact + En cours), Line 2 (Centered Terminer button) -->
+              <div class="flex flex-col gap-2.5 md:hidden">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <button
+                      v-if="slot.challenge.contact"
+                      @click="openContactDetailModal(slot.challenge.contact)"
+                      class="font-bold text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors cursor-pointer text-left"
+                      title="Afficher les détails du contact"
+                    >
+                      {{ slot.challenge.contact.name }}
+                    </button>
+                    <span v-else class="font-bold text-amber-700 dark:text-amber-300">Contact</span>
+                    <a
+                      v-if="slot.challenge.contact?.mapUrl"
+                      :href="slot.challenge.contact.mapUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                      title="Voir sur Google Maps"
+                    >
+                      <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+                    </a>
+                  </div>
+                  <span class="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                    <UIcon name="i-heroicons-arrow-path" class="w-3.5 h-3.5" />
+                    En cours
+                  </span>
+                </div>
+
+                <div class="flex justify-center pt-1">
+                  <button
+                    @click="openReflectModal(slot.challenge)"
+                    class="w-full sm:w-auto px-6 py-2 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/60 dark:hover:bg-emerald-950/90 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center justify-center gap-1.5"
+                    title="Valider et faire le bilan"
+                  >
+                    <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-2" />
+                    <span>Terminer</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -930,54 +1027,68 @@ const formatTypeAndRank = (type: string, rank?: number) => {
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs (4 tabs, icon-friendly on mobile) -->
     <div class="border-b border-gray-200 dark:border-gray-800">
-      <div class="flex space-x-2 sm:space-x-6">
+      <div class="grid grid-cols-4 sm:flex sm:space-x-6">
         <!-- Tab 1: Contacts -->
         <button
           @click="activeTab = 'contacts'"
-          class="py-3.5 px-3 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
+          class="py-3 px-1 sm:py-3.5 sm:px-3 text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2"
           :class="activeTab === 'contacts'
             ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
             : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+          :title="`${contacts.length} Contacts`"
         >
-          <UIcon name="i-heroicons-user-group" class="w-4 h-4" />
-          <span>{{ contacts.length }} Contacts</span>
+          <UIcon name="i-heroicons-user-group" class="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+          <span class="hidden sm:inline">{{ contacts.length }} Contacts</span>
+          <span class="sm:hidden text-[11px] font-bold">({{ contacts.length }})</span>
         </button>
 
         <!-- Tab 2: Challenges finished -->
         <button
           @click="activeTab = 'finished'"
-          class="py-3.5 px-3 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
+          class="py-3 px-1 sm:py-3.5 sm:px-3 text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2"
           :class="activeTab === 'finished'
             ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
             : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+          :title="`${finishedChallenges.length} Défis terminés`"
         >
-          <UIcon name="i-heroicons-check-circle" class="w-4 h-4" />
-          <span>{{ finishedChallenges.length }} Défis terminés</span>
+          <UIcon name="i-heroicons-check-circle" class="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+          <span class="hidden sm:inline">{{ finishedChallenges.length }} Défis terminés</span>
+          <span class="sm:hidden text-[11px] font-bold">({{ finishedChallenges.length }})</span>
         </button>
 
         <!-- Tab 3: Challenges todo -->
         <button
           @click="activeTab = 'todo'"
-          class="py-3.5 px-3 text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-2"
+          class="py-3 px-1 sm:py-3.5 sm:px-3 text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2"
           :class="activeTab === 'todo'
             ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
             : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+          :title="`${todoChallenges.length} Défis à faire`"
         >
-          <UIcon name="i-heroicons-queue-list" class="w-4 h-4" />
-          <span>{{ todoChallenges.length }} Défis à faire</span>
+          <UIcon name="i-heroicons-queue-list" class="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+          <span class="hidden sm:inline">{{ todoChallenges.length }} Défis à faire</span>
+          <span class="sm:hidden text-[11px] font-bold">({{ todoChallenges.length }})</span>
+        </button>
+
+        <!-- Tab 4: History -->
+        <button
+          @click="activeTab = 'history'"
+          class="py-3 px-1 sm:py-3.5 sm:px-3 text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2"
+          :class="activeTab === 'history'
+            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+            : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+          title="Historique des défis accomplis par jour"
+        >
+          <UIcon name="i-heroicons-clock" class="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+          <span class="hidden sm:inline">Historique</span>
+          <span class="sm:hidden text-[11px] font-bold">Hist.</span>
         </button>
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="text-center py-12 text-gray-500">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin mx-auto text-indigo-600 mb-2" />
-      <p>Chargement des données...</p>
-    </div>
-
-    <div v-else class="space-y-4">
+    <div class="space-y-4">
       <!-- ============================================================ -->
       <!-- TAB 1 : CONTACTS                                             -->
       <!-- ============================================================ -->
@@ -1575,6 +1686,93 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                       >
                         <UIcon name="i-heroicons-trash" class="w-4 h-4" />
                       </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- TAB 4 : HISTORY (Challenges accomplished per day descending) -->
+      <!-- ============================================================ -->
+      <div v-if="activeTab === 'history'" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Historique du nombre de défis accomplis par jour, classé du plus récent au plus ancien.
+          </p>
+        </div>
+
+        <!-- History Card List -->
+        <div v-if="historyByDay.length === 0" class="p-8 text-center text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/80">
+          <UIcon name="i-heroicons-calendar" class="w-10 h-10 mx-auto text-gray-400 mb-2 opacity-60" />
+          <p class="font-medium">Aucun défi accompli pour l'instant.</p>
+          <p class="text-xs text-gray-400 mt-1">Les jours d'activité apparaîtront ici dès que tu auras validé des défis.</p>
+        </div>
+
+        <div v-else class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/80 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-900/60 text-xs uppercase text-gray-500 dark:text-gray-400 font-bold border-b border-gray-200 dark:border-gray-700">
+                <tr>
+                  <th class="px-5 py-3.5">Jour</th>
+                  <th class="px-5 py-3.5">Défis accomplis</th>
+                  <th class="px-5 py-3.5 text-right">Progression</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
+                <tr
+                  v-for="item in historyByDay"
+                  :key="item.dateKey"
+                  class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                >
+                  <!-- Day column -->
+                  <td class="px-5 py-4 font-semibold text-gray-900 dark:text-white whitespace-nowrap">
+                    <div class="flex items-center gap-2">
+                      <UIcon name="i-heroicons-calendar-days" class="w-4 h-4 text-indigo-500" />
+                      <span class="capitalize">{{ item.formattedDate }}</span>
+                      <span
+                        v-if="item.isToday"
+                        class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800"
+                      >
+                        Aujourd'hui
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Count column -->
+                  <td class="px-5 py-4 font-bold text-gray-800 dark:text-gray-200 whitespace-nowrap">
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-bold"
+                        :class="item.targetReached
+                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                          : 'bg-indigo-50 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300'"
+                      >
+                        <UIcon v-if="item.targetReached" name="i-heroicons-check" class="w-3.5 h-3.5 mr-1 text-emerald-600 dark:text-emerald-400" />
+                        {{ item.count }} {{ item.count > 1 ? 'défis accomplis' : 'défi accompli' }}
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Progress Bar / Target Reached -->
+                  <td class="px-5 py-4 text-right whitespace-nowrap text-xs">
+                    <div class="flex items-center justify-end gap-3">
+                      <div class="w-24 sm:w-32 bg-gray-100 dark:bg-gray-700 h-2 rounded-full overflow-hidden hidden sm:block">
+                        <div
+                          class="h-full rounded-full transition-all duration-300"
+                          :class="item.targetReached ? 'bg-emerald-500' : 'bg-indigo-600'"
+                          :style="{ width: `${Math.min(100, (item.count / (dailyTarget || 1)) * 100)}%` }"
+                        ></div>
+                      </div>
+                      <span
+                        class="font-mono font-bold"
+                        :class="item.targetReached ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'"
+                      >
+                        {{ Math.round((item.count / (dailyTarget || 1)) * 100) }}%
+                      </span>
                     </div>
                   </td>
                 </tr>
