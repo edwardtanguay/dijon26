@@ -26,3 +26,8 @@ logs
 # generated files
 output
 debug
+dev
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-info
