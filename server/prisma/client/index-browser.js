@@ -117,19 +117,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.DbTestScalarFieldEnum = {
-  id: 'id',
-  status: 'status',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.TaskScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  completed: 'completed',
-  createdAt: 'createdAt'
-};
-
 exports.Prisma.ContactScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -171,8 +158,6 @@ exports.Prisma.NullsOrder = {
 
 
 exports.Prisma.ModelName = {
-  DbTest: 'DbTest',
-  Task: 'Task',
   Contact: 'Contact',
   Challenge: 'Challenge',
   AppSetting: 'AppSetting'

@@ -10,6 +10,7 @@
 	- les gels
 	- tous les mots de passe
 - liste de tâches à accomplir
+	- professeur en ligne de Dijon
 	- demander ia pour meetups
 	- lancer les défis dès maintenant : 3 appels par jour, avec journal de bord
 	- enregistrer tous les événements Airbnb
@@ -64,6 +65,8 @@
 	- seulement certains jours
 		- https://caveaumarsannay.com/actualites.php?type=evenement
 			- plus un randonée
+	- théâtres
+		- https://www.darcycomedie.com/
 - façons de décrire le vin
 	- Ce vin est très aromatique, avec des notes de fruits rouges.
 	- Il a un nez assez expressif, avec des arômes de fruits mûrs.

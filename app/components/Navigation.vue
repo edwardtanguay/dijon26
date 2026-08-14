@@ -25,10 +25,9 @@ const toggleColorMode = () => {
 }
 
 const navItems = [
-  { name: 'Accueil', path: '/', icon: 'i-heroicons-home' },
-  { name: 'Défis', path: '/challenges', icon: 'i-heroicons-sparkles' },
   { name: 'Notes', path: '/notes', icon: 'i-heroicons-list-bullet' },
-  { name: 'Turso', path: '/turso', icon: 'i-heroicons-circle-stack' },
+  { name: 'Défis', path: '/challenges', icon: 'i-heroicons-sparkles' },
+  { name: 'Général', path: '/', icon: 'i-heroicons-home' },
   { name: 'À propos', path: '/about', icon: 'i-heroicons-document-text' },
 ]
 </script>
