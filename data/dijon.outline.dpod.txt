@@ -9,7 +9,27 @@
 	- tous les vêtements de course
 	- les gels
 	- tous les mots de passe
+- objectif
+- défis d'écriture avant le voyage
+	- à faire
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes
+		- appeler l'office de tourisme et demander des visites guidées
+		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
+		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
+		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours/
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
+	- en attente d'une réponse
+		- 2026-08-13 19:54:05 j'ai écrit Laurent		
+- défis oratoires avant le voyage
+	- à faire
+		- Appeler l'office de tourisme et demander des visites guidées
+		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
+		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
+		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
+	- accompli
 - liste de tâches à accomplir
+	- demander ia pour meetups
 	- lancer les défis dès maintenant : 3 appels par jour, avec journal de bord
 	- enregistrer tous les événements Airbnb
 	- écrire à http://cafe-polyglotte-dijon.fr/
@@ -45,11 +65,17 @@
 			- lire-le rapidement, noter les lieux et les noms
 - activités
 	- n'importe quel jour
+		- 1d / Besançon / 7:00-20:00
 		- 3h / FNAC / lun.–ven. 10:00–19:00, dim. 14:00–19:00
 			- livres en français pour apprendre d'autres langues, notamment des histoires bilingues et des livres de grammaire
 		- 2h / Cité Internationale de la Gastronomie et du Vin / tous les jours 9:30-23:00
+		- 2h / Dijon chasse au trésor / 
+			- https://www.booking.com/attractions/fr/prvbnyusozwk-dijon-scavenger-hunt-and-highlights-self-guided-tour.de.html?aid=2439976&label=product-attractions-NyWk8b5X57OM7eAmxgIY%2AQS754813487218%3Apl%3Ata%3Ap1%3Ap2%3Aac%3Aap%3Aneg%3Afi%3Atikwd-366792913629%3Alp9198313%3Ali%3Adec%3Adm%3Acid22520704034%3Aagid180616178353&source=searchresults-product-card&ufi=-1423981&date=2026-10-12&timeslot=ATS-PRvbNYusoZWk-202610120000-nullnull&ticket_type=OFzmZX51xY5L
+	
 	- presque tous les jours
 		- 2h / Musée de la Vie Bourguignonne / sauf le mardi 9:00-12:30, 13:30–18:00
+		- 1h / Dégustation de vins de Bourgogne / chaque jour 10-16 
+			- https://www.airbnb.de/rp/edwardt3930?checkin=2026-10-08&checkout=2026-10-17&location=dijon&currentTab=experience_tab&federatedSearchId=4e461e99-6930-45d1-806e-69cf12b4fd7a&searchId=0fa5a47f-e3eb-414d-80b0-589074cacf07&sectionId=baf245f9-7592-4273-b287-48b0ce057101&p=recommendations&product=experience&listing_id=6406846&s=67&unique_share_id=c1d360ed-4111-462f-8994-66ffdfc7ecb0
 	- n'importe quand
 		- 30m / Jardin botanique de l'Arquebuse
 		- 30m / La Source des Vins - dégustation de vins de Bourgogne (blog)
@@ -164,6 +190,7 @@
 	- je pèse 78 kilos
 	- j'ai un niveau B2 en français
 	- j'ai rencontré dix personnes avec qui je suis resté en contact
+	- j'ai atteint un niveau de maîtrise minimal en italien, en espagnol et en néerlandais
 - villes
 	- Ahuy [ah-EE]
 	- Bressey-sur-Tille [tee]
