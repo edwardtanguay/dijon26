@@ -8,18 +8,52 @@
 	- tous mes livres
 	- tous les vêtements de course
 	- les gels
+	- tous les mots de passe
+- objectif
+- défis d'écriture avant le voyage
+	- à faire
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes
+		- appeler l'office de tourisme et demander des visites guidées
+		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
+		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
+		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours/
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
+	- en attente d'une réponse
+		- 2026-08-13 19:54:05 j'ai écrit Laurent		
+- défis oratoires avant le voyage
+	- à faire
+		- Appeler l'office de tourisme et demander des visites guidées
+		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
+		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
+		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
+	- accompli
 - liste de tâches à accomplir
+	- demander ia pour meetups
+	- lancer les défis dès maintenant : 3 appels par jour, avec journal de bord
 	- enregistrer tous les événements Airbnb
 	- écrire à http://cafe-polyglotte-dijon.fr/
 		- existe-t-il d'autres groupes de ce genre pour pratiquer le français ?
+	- écrirer à 20 club de randonnées
+		- https://www.ffrandonnee.fr/nos-clubs/trouver-un-club/10697/afd21?department=21&postalCode=21000&activity=55&page=1
 	- réserver un appartement Airbnb pour la semaine
 	- lire les deux Topo Guides
+	- écrire à Diva Mobilités
+		- vélo
+		- bus/tramway
+	- un pass hebdomadaire pour tous les transports
 	- commander des gels sur Amazon
+	- développer l'application de manière à ce
+		- que les éléments essentiels soient immédiatement accessibles
+		- que vous puissiez la modifier, par exemple pour tenir un journal
+	- planifier toutes vos courses de la semaine
 	- acheter un livre sur Dijon en allemand ?
+	- découvrez où et comment louer un vélo pour une journée ou quelques jours
 	- rechercher des groupes qui se réunissent, comme des rencontres linguistiques
 	- écrire à tous les clubs de randonnée
 	- inscrire-toi à tous les cours de français
 	- acheter des billets de train
+	- chercher les meilleurs endroits pour le petit-déjeuner, etc.
 	- lire tous tes livres
 		- Topo Guides Dijon métropole 37
 			- enregistrer chaque promenade dans Google Earth
@@ -29,6 +63,40 @@
 			- lire-le rapidement, noter les lieux et les noms
 		- Dijon - Guide de Voyage 
 			- lire-le rapidement, noter les lieux et les noms
+- activités
+	- n'importe quel jour
+		- 1d / Besançon / 7:00-20:00
+		- 3h / FNAC / lun.–ven. 10:00–19:00, dim. 14:00–19:00
+			- livres en français pour apprendre d'autres langues, notamment des histoires bilingues et des livres de grammaire
+		- 2h / Cité Internationale de la Gastronomie et du Vin / tous les jours 9:30-23:00
+		- 2h / Dijon chasse au trésor / 
+			- https://www.booking.com/attractions/fr/prvbnyusozwk-dijon-scavenger-hunt-and-highlights-self-guided-tour.de.html?aid=2439976&label=product-attractions-NyWk8b5X57OM7eAmxgIY%2AQS754813487218%3Apl%3Ata%3Ap1%3Ap2%3Aac%3Aap%3Aneg%3Afi%3Atikwd-366792913629%3Alp9198313%3Ali%3Adec%3Adm%3Acid22520704034%3Aagid180616178353&source=searchresults-product-card&ufi=-1423981&date=2026-10-12&timeslot=ATS-PRvbNYusoZWk-202610120000-nullnull&ticket_type=OFzmZX51xY5L
+	
+	- presque tous les jours
+		- 2h / Musée de la Vie Bourguignonne / sauf le mardi 9:00-12:30, 13:30–18:00
+		- 1h / Dégustation de vins de Bourgogne / chaque jour 10-16 
+			- https://www.airbnb.de/rp/edwardt3930?checkin=2026-10-08&checkout=2026-10-17&location=dijon&currentTab=experience_tab&federatedSearchId=4e461e99-6930-45d1-806e-69cf12b4fd7a&searchId=0fa5a47f-e3eb-414d-80b0-589074cacf07&sectionId=baf245f9-7592-4273-b287-48b0ce057101&p=recommendations&product=experience&listing_id=6406846&s=67&unique_share_id=c1d360ed-4111-462f-8994-66ffdfc7ecb0
+	- n'importe quand
+		- 30m / Jardin botanique de l'Arquebuse
+		- 30m / La Source des Vins - dégustation de vins de Bourgogne (blog)
+- façons de décrire le vin
+	- Ce vin est très aromatique, avec des notes de fruits rouges.
+	- Il a un nez assez expressif, avec des arômes de fruits mûrs.
+	- Je trouve qu’il est très frais et agréable en bouche.
+	- Il est assez rond et équilibré.
+	- On sent une belle acidité, qui lui donne beaucoup de fraîcheur.
+	- Les tanins sont présents, mais ils restent assez souples.
+	- Il a une belle longueur en bouche.
+	- Je trouve qu’il est assez complexe : les arômes évoluent au fur et à mesure qu’on le déguste.
+	- C’est un vin assez élégant, avec une belle harmonie entre le fruit, l’acidité et les tanins.
+	- La finale est assez longue, avec une légère note épicée.
+- routes
+	- A1-10K-Hauteville-lès-Dijon
+	- A2-7K-Daix
+	- A3-5K-Ahuy
+	- A4-7K-Fontaine-lès-Dijon
+	- A5-4K-Ahuy
+	- A6-8K-Toison d'Or
 - Airbnb
 	- moins de 330 euros pour 9 nuits
 - videos about Dijon
@@ -61,13 +129,20 @@
 		- géographie
 - aliments
 	- pain d’épices
+- club de randonnée
+	- https://www.ffrandonnee.fr
+	- Dijon clubs: https://www.ffrandonnee.fr/nos-clubs/trouver-un-club?department=21&postalCode=21000&activity=55&page=1
 - calendrier
 	- mercredi 7 octobre
 		- préparer tout pour le voyage
 		- assurez d'avoir suffisamment d'argent pour payer votre compte Google ce mois-ci
 	- jeudi 8 octobre
 		- voyager en train de Berlin à Dijon
-		
+		- l’Agence DiviaMobilités
+			- prendre un pass hebdomadaire pour tous les transports
+			- tu peux aussi utiliser directement ta carte bancaire sans contact dans les bus et les tramways 
+				- le voyage coûte 2 € et permet des trajets illimités pendant 1 heure
+			- il existe aussi DiviaVélo, qui est différent : c'est une vraie location de vélo, que tu gardes avec toi. Une location de 7 jours est disponible
 	- vendredi 9 octobre
 	- samedi 10 octobre
 	- dimanche 11 octobre 
@@ -80,6 +155,27 @@
 	- vendredi 16 octobre
 	- samedi 17 octobre
 		- voyager en train de Dijon à Berlin
+- transports en commun
+	- chercher comment se rendre quelque part
+		- https://www.divia.fr
+	- les billets
+		- l’Agence DiviaMobilités, 16 place Darcy, du lundi au samedi de 9 h à 19 h
+	- il y a deux lignes de tramway
+		- T1: Dijon Gare ↔ Quetigny Centre
+		- T2: Chenôve Centre ↔ Dijon Valmy
+		- elles circulent approximativement de 5 h à 1 h
+		- avec une fréquence pouvant atteindre 4 minutes aux heures de pointe##dijontram
+	- Les bus
+		- lianes L3 à L9 sont les lignes principales
+			- L3: https://transitapp.com/fr/region/dijon/divia/bus-l3
+			- L9: https://transitapp.com/fr/region/dijon/divia/bus-l9
+	- Le vélo
+		- Louez un vélo pour 24h, 48h ou 7 jours et roulez en toute liberté
+			- https://information.divia.fr/sinformer/velo/diviavelo/
+			- 7 jours = 9 https://information.divia.fr/sinformer/velo/diviavelo/louer-un-vtc-courte-duree
+		- VTT = vélo tout terrain → vélo conçu pour les chemins, les sentiers, les terrains accidentés, etc. En anglais : mountain bike.
+		- VTC = vélo tout chemin → vélo polyvalent, adapté aux routes, pistes cyclables et chemins relativement faciles. En anglais : hybrid bike ou trekking bike.
+
 - activités linguistiques
 	- visite guidée
 		- https://www.withlocals.com/de/s/france/dijon/tours/walking/
@@ -94,6 +190,29 @@
 	- je pèse 78 kilos
 	- j'ai un niveau B2 en français
 	- j'ai rencontré dix personnes avec qui je suis resté en contact
+	- j'ai atteint un niveau de maîtrise minimal en italien, en espagnol et en néerlandais
+- villes
+	- Ahuy [ah-EE]
+	- Bressey-sur-Tille [tee]
+	- Bretenière [bruh]
+	- Chenôve [shuh-NOHV]
+	- Chevigny-Saint-Sauveur [nee]
+	- Crimolois
+	- Daix [deh]
+	- Fénay [fee]
+	- Fontaine-lès-Dijon [f(on)-ten-ah]
+	- Hauteville-lès-Dijon [oh-tuh-vee-luh-lay]
+	- Longvic [l(on)-veek]
+	- Magny-sur-Tille [mah-nee, tee]
+	- Marsannay-la-Côte
+	- Neuilly-lès-Dijon [noo-ee-lay]
+	- Ouges [oozh]
+	- Perrigny-lès-Dijon
+	- Plombières-lès-Dijon [bee-air]
+	- Quetigny [kuh-tee-nee]
+	- Saint-Apollinaire
+	- Sennecey-lès-Dijon [sen-eh-say]
+	- Talant [tah-l(an)]##dijontowns
 - personnalités importantes de Dijon
 	- 1404 Philippe II de Bourgogne (Philippe le Hardi)
 		- il a fondé la puissance de la maison de Bourgogne et a été le premier duc de Bourgogne de la dynastie des Valois
