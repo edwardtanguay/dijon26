@@ -228,18 +228,7 @@
 	- challengeCreationTodos
 		- +33 (0)3 80 44 11 44 et essayer toutes les choix de recording
 		- 
-	- before finish app
-		- Dijon Bourgogne Tourisme & Congrès
-			- va à https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes et explique que tu veux registrer pour octobre mais c'est impossible
-			- Tél. +33 (0)3 80 44 11 44
-			- 11 rue des Forges • 21000 Dijon
-			- "nouveau format « Flash »." quel est ça
-			- 2026-08-14 15:04:37
-				- j'ai parlé avec une femme pour 5 minutes, on peut payer seulement avec visa
-			- new challenge: ask to send something in the mail? get an overview of the tours before hand
-	- contacts
-		- Laurent
-			- CHALLENGE: 2026-08-13 19:54:05 j'ai écrit Laurent
+	- write to Suzi https://www.firedupinfrance.fr/
 	- infos
 		- intros
 			- Bonjour, Edward Tanguay à l’appareil. Je vous appelle au sujet de…
