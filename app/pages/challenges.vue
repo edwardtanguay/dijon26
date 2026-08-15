@@ -19,6 +19,7 @@ interface Contact {
   telephone: string | null
   description: string | null
   mapUrl?: string | null
+  url?: string | null
   createdAt: string
   updatedAt: string
   challenges?: Challenge[]
@@ -104,6 +105,7 @@ const contactForm = ref({
   telephone: '',
   description: '',
   mapUrl: '',
+  url: '',
 })
 const contactSubmitting = ref(false)
 
@@ -123,6 +125,7 @@ const challengeForm = ref({
   newContactPhone: '',
   newContactDescription: '',
   newContactMapUrl: '',
+  newContactUrl: '',
   challengeText: '',
   type: 'written' as 'written' | 'spoken',
   rank: 2.5,
@@ -226,6 +229,17 @@ const getLocalDateString = (d: Date | string | null = new Date()) => {
 }
 
 const todayStr = computed(() => getLocalDateString(new Date()))
+
+const todayDateFormatted = computed(() => {
+  const now = new Date()
+  const formatted = now.toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  })
+  // Capitalize first letter of the weekday (e.g. "samedi 15 août" -> "Samedi 15 août")
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1)
+})
 
 // Challenge Categories:
 const finishedChallenges = computed(() => {
@@ -424,6 +438,7 @@ const openCreateContactModal = () => {
     telephone: '',
     description: '',
     mapUrl: '',
+    url: '',
   }
   isContactModalOpen.value = true
 }
@@ -437,6 +452,7 @@ const openEditContactModal = (contact: Contact) => {
     telephone: contact.telephone || '',
     description: contact.description || '',
     mapUrl: contact.mapUrl || '',
+    url: contact.url || '',
   }
   isContactModalOpen.value = true
 }
@@ -454,6 +470,7 @@ const submitContactForm = async () => {
         telephone: contactForm.value.telephone.trim() || undefined,
         description: contactForm.value.description.trim() || undefined,
         mapUrl: contactForm.value.mapUrl.trim() || undefined,
+        url: contactForm.value.url.trim() || undefined,
       },
     })
     isContactModalOpen.value = false
@@ -506,6 +523,7 @@ const openCreateChallengeModal = (presetContactId?: string, defaultFinished = fa
     newContactPhone: '',
     newContactDescription: '',
     newContactMapUrl: '',
+    newContactUrl: '',
     challengeText: '',
     type: 'written',
     rank: 2.5,
@@ -528,6 +546,7 @@ const openEditChallengeModal = (challenge: Challenge) => {
     newContactPhone: '',
     newContactDescription: '',
     newContactMapUrl: '',
+    newContactUrl: '',
     challengeText: challenge.challengeText,
     type: challenge.type,
     rank: challenge.rank ?? 2.5,
@@ -575,6 +594,7 @@ const submitChallengeForm = async () => {
         payload.newContactPhone = challengeForm.value.newContactPhone.trim() || undefined
         payload.newContactDescription = challengeForm.value.newContactDescription.trim() || undefined
         payload.newContactMapUrl = challengeForm.value.newContactMapUrl.trim() || undefined
+        payload.newContactUrl = challengeForm.value.newContactUrl.trim() || undefined
       }
 
       const res = await $fetch<{ success: boolean; data: Challenge }>('/api/challenges', {
@@ -686,6 +706,45 @@ const formatTypeAndRank = (type: string, rank?: number) => {
   }
   return `${typeLabel} ${rankNum.toFixed(1)}`
 }
+
+// Normaliser l'URL pour les liens (s'assurer qu'il commence par http:// ou https://)
+const normalizeUrl = (url: string | null | undefined): string => {
+  if (!url) return ''
+  const trimmed = url.trim()
+  if (!trimmed) return ''
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed
+  }
+  return `https://${trimmed}`
+}
+
+// Formater pour l'affichage "nice url" (ex: https://en.destinationdijon.com/ -> destinationdijon.com)
+const formatNiceUrl = (url: string | null | undefined): string => {
+  if (!url) return ''
+  const trimmed = url.trim()
+  if (!trimmed) return ''
+
+  try {
+    const fullUrl = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
+    const parsed = new URL(fullUrl)
+    let hostname = parsed.hostname.toLowerCase()
+
+    // Retirer les sous-domaines courants : www., en., fr., de., es., it., etc.
+    const subdomainsToRemove = ['www.', 'en.', 'fr.', 'de.', 'es.', 'it.', 'm.']
+    for (const sub of subdomainsToRemove) {
+      if (hostname.startsWith(sub)) {
+        hostname = hostname.slice(sub.length)
+      }
+    }
+
+    return hostname || parsed.hostname
+  } catch {
+    // Si parsing échoue, nettoyage par regex
+    let clean = trimmed.replace(/^https?:\/\//i, '').replace(/\/.*$/, '')
+    clean = clean.replace(/^(www\.|en\.|fr\.|de\.|es\.|it\.|m\.)/i, '')
+    return clean
+  }
+}
 </script>
 
 <template>
@@ -717,7 +776,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
           <UIcon name="i-heroicons-calendar-days" class="hidden sm:block w-6 h-6 text-indigo-500 shrink-0 self-center" />
           <div class="text-center sm:text-left">
             <h2 class="text-lg font-bold text-gray-900 dark:text-white !mb-0 !leading-none text-center sm:text-left">
-              Tes défis pour aujourd'hui
+              Tes défis pour <span class="text-indigo-600 dark:text-indigo-400">{{ todayDateFormatted }}</span>
             </h2>
             <p v-if="!loading" class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center sm:text-left">
               Complète tes {{ dailyTarget }} défis pour atteindre ton objectif du jour
@@ -841,6 +900,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                 </button>
                 <span v-else class="font-bold text-emerald-700 dark:text-emerald-300">Contact</span>
                 <a
+                  v-if="slot.challenge.contact?.url"
+                  :href="normalizeUrl(slot.challenge.contact.url)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
+                  :title="slot.challenge.contact.url"
+                >
+                  <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+                </a>
+                <a
                   v-if="slot.challenge.contact?.mapUrl"
                   :href="slot.challenge.contact.mapUrl"
                   target="_blank"
@@ -945,6 +1014,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                   </button>
                   <span v-else class="font-bold text-amber-700 dark:text-amber-300">Contact</span>
                   <a
+                    v-if="slot.challenge.contact?.url"
+                    :href="normalizeUrl(slot.challenge.contact.url)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                    :title="slot.challenge.contact.url"
+                  >
+                    <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+                  </a>
+                  <a
                     v-if="slot.challenge.contact?.mapUrl"
                     :href="slot.challenge.contact.mapUrl"
                     target="_blank"
@@ -984,6 +1063,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                       {{ slot.challenge.contact.name }}
                     </button>
                     <span v-else class="font-bold text-amber-700 dark:text-amber-300">Contact</span>
+                    <a
+                      v-if="slot.challenge.contact?.url"
+                      :href="normalizeUrl(slot.challenge.contact.url)"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                      :title="slot.challenge.contact.url"
+                    >
+                      <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+                    </a>
                     <a
                       v-if="slot.challenge.contact?.mapUrl"
                       :href="slot.challenge.contact.mapUrl"
@@ -1156,7 +1245,7 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               </button>
             </div>
 
-            <div v-if="contact.email || contact.telephone" class="text-xs text-gray-600 dark:text-gray-300 space-y-1 bg-gray-50 dark:bg-gray-900/40 p-2.5 rounded-xl">
+            <div v-if="contact.email || contact.telephone || contact.url" class="text-xs text-gray-600 dark:text-gray-300 space-y-1 bg-gray-50 dark:bg-gray-900/40 p-2.5 rounded-xl">
               <div v-if="contact.email" class="flex items-center gap-1.5 truncate">
                 <UIcon name="i-heroicons-envelope" class="w-3.5 h-3.5 text-gray-400 shrink-0" />
                 <span class="truncate">{{ contact.email }}</span>
@@ -1164,6 +1253,17 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               <div v-if="contact.telephone" class="flex items-center gap-1.5">
                 <UIcon name="i-heroicons-phone" class="w-3.5 h-3.5 text-gray-400 shrink-0" />
                 <span>{{ contact.telephone }}</span>
+              </div>
+              <div v-if="contact.url" class="flex items-center gap-1.5 truncate">
+                <UIcon name="i-heroicons-globe-alt" class="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                <a
+                  :href="normalizeUrl(contact.url)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-indigo-600 dark:text-indigo-400 hover:underline truncate"
+                >
+                  {{ formatNiceUrl(contact.url) }}
+                </a>
               </div>
             </div>
 
@@ -1235,6 +1335,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                             {{ contact.name }}
                           </button>
                           <a
+                            v-if="contact.url"
+                            :href="normalizeUrl(contact.url)"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-gray-400 hover:text-indigo-600 inline-flex items-center"
+                            :title="contact.url"
+                          >
+                            <UIcon name="i-heroicons-globe-alt" class="w-3.5 h-3.5" />
+                          </a>
+                          <a
                             v-if="contact.mapUrl"
                             :href="contact.mapUrl"
                             target="_blank"
@@ -1293,10 +1403,21 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                         <span>{{ contact.email }}</span>
                       </div>
                       <div v-if="contact.telephone" class="flex items-center gap-1.5">
-                        <UIcon name="i-heroicons-phone" class="w-3.5 h-3.5 text-gray-400" />
+                        <UIcon name="i-heroicons-phone" class="w-3.5 h-3.5 text-gray-400 shrink-0" />
                         <span>{{ contact.telephone }}</span>
                       </div>
-                      <div v-if="!contact.email && !contact.telephone" class="text-gray-400 italic">
+                      <div v-if="contact.url" class="flex items-center gap-1.5 truncate">
+                        <UIcon name="i-heroicons-globe-alt" class="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                        <a
+                          :href="normalizeUrl(contact.url)"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="text-indigo-600 dark:text-indigo-400 hover:underline truncate"
+                        >
+                          {{ formatNiceUrl(contact.url) }}
+                        </a>
+                      </div>
+                      <div v-if="!contact.email && !contact.telephone && !contact.url" class="text-gray-400 italic">
                         Non renseigné
                       </div>
                     </div>
@@ -1451,6 +1572,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                         {{ challenge.contact.name }}
                       </button>
                       <span v-else>Contact inconnu</span>
+                      <a
+                        v-if="challenge.contact?.url"
+                        :href="normalizeUrl(challenge.contact.url)"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-indigo-600 ml-1 inline-flex items-center"
+                        :title="challenge.contact.url"
+                      >
+                        <UIcon name="i-heroicons-globe-alt" class="w-3.5 h-3.5" />
+                      </a>
                       <a
                         v-if="challenge.contact?.mapUrl"
                         :href="challenge.contact.mapUrl"
@@ -1646,6 +1777,16 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                       </button>
                       <span v-else>—</span>
                       <a
+                        v-if="challenge.contact?.url"
+                        :href="normalizeUrl(challenge.contact.url)"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-indigo-600 inline-flex items-center"
+                        :title="challenge.contact.url"
+                      >
+                        <UIcon name="i-heroicons-globe-alt" class="w-3.5 h-3.5" />
+                      </a>
+                      <a
                         v-if="challenge.contact?.mapUrl"
                         :href="challenge.contact.mapUrl"
                         target="_blank"
@@ -1825,16 +1966,30 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               </div>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
-                Lien Google Maps
-              </label>
-              <input
-                v-model="contactForm.mapUrl"
-                type="url"
-                placeholder="https://maps.google.com/..."
-                class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  Site Web
+                </label>
+                <input
+                  v-model="contactForm.url"
+                  type="text"
+                  placeholder="https://exemple.fr ou exemple.fr"
+                  class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  Lien Google Maps
+                </label>
+                <input
+                  v-model="contactForm.mapUrl"
+                  type="url"
+                  placeholder="https://maps.google.com/..."
+                  class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+              </div>
             </div>
 
             <div>
@@ -2071,12 +2226,20 @@ const formatTypeAndRank = (type: string, rank?: number) => {
                     class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
                   />
                 </div>
-                <input
-                  v-model="challengeForm.newContactMapUrl"
-                  type="url"
-                  placeholder="Lien Google Maps (optionnel)"
-                  class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
-                />
+                <div class="grid grid-cols-2 gap-2">
+                  <input
+                    v-model="challengeForm.newContactUrl"
+                    type="text"
+                    placeholder="Site Web (optionnel)"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
+                  />
+                  <input
+                    v-model="challengeForm.newContactMapUrl"
+                    type="url"
+                    placeholder="Lien Google Maps (optionnel)"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
+                  />
+                </div>
               </div>
             </div>
 
@@ -2407,19 +2570,37 @@ const formatTypeAndRank = (type: string, rank?: number) => {
               </div>
             </div>
 
-            <div v-if="selectedContactForDetail.mapUrl" class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
-              <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Plan d'accès</span>
-              <div>
-                <a
-                  :href="selectedContactForDetail.mapUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-medium text-xs"
-                >
-                  <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
-                  <span>Ouvrir dans Google Maps</span>
-                  <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-3.5 h-3.5" />
-                </a>
+            <div v-if="selectedContactForDetail.url || selectedContactForDetail.mapUrl" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div v-if="selectedContactForDetail.url" class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
+                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Site Web</span>
+                <div>
+                  <a
+                    :href="normalizeUrl(selectedContactForDetail.url)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-medium text-xs break-all"
+                  >
+                    <UIcon name="i-heroicons-globe-alt" class="w-4 h-4 shrink-0" />
+                    <span>{{ formatNiceUrl(selectedContactForDetail.url) }}</span>
+                    <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-3.5 h-3.5 shrink-0" />
+                  </a>
+                </div>
+              </div>
+
+              <div v-if="selectedContactForDetail.mapUrl" class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
+                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Plan d'accès</span>
+                <div>
+                  <a
+                    :href="selectedContactForDetail.mapUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-medium text-xs"
+                  >
+                    <UIcon name="i-heroicons-map-pin" class="w-4 h-4 shrink-0" />
+                    <span>Ouvrir dans Google Maps</span>
+                    <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-3.5 h-3.5 shrink-0" />
+                  </a>
+                </div>
               </div>
             </div>
 

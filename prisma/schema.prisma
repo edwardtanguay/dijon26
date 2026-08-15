@@ -16,6 +16,7 @@ model Contact {
   telephone   String?
   description String?
   mapUrl      String?
+  url         String?
   challenges  Challenge[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt

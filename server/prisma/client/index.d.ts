@@ -1123,6 +1123,7 @@ export namespace Prisma {
     telephone: string | null
     description: string | null
     mapUrl: string | null
+    url: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1134,6 +1135,7 @@ export namespace Prisma {
     telephone: string | null
     description: string | null
     mapUrl: string | null
+    url: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1145,6 +1147,7 @@ export namespace Prisma {
     telephone: number
     description: number
     mapUrl: number
+    url: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1158,6 +1161,7 @@ export namespace Prisma {
     telephone?: true
     description?: true
     mapUrl?: true
+    url?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1169,6 +1173,7 @@ export namespace Prisma {
     telephone?: true
     description?: true
     mapUrl?: true
+    url?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1180,6 +1185,7 @@ export namespace Prisma {
     telephone?: true
     description?: true
     mapUrl?: true
+    url?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1264,6 +1270,7 @@ export namespace Prisma {
     telephone: string | null
     description: string | null
     mapUrl: string | null
+    url: string | null
     createdAt: Date
     updatedAt: Date
     _count: ContactCountAggregateOutputType | null
@@ -1292,6 +1299,7 @@ export namespace Prisma {
     telephone?: boolean
     description?: boolean
     mapUrl?: boolean
+    url?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     challenges?: boolean | Contact$challengesArgs<ExtArgs>
@@ -1305,6 +1313,7 @@ export namespace Prisma {
     telephone?: boolean
     description?: boolean
     mapUrl?: boolean
+    url?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["contact"]>
@@ -1316,6 +1325,7 @@ export namespace Prisma {
     telephone?: boolean
     description?: boolean
     mapUrl?: boolean
+    url?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["contact"]>
@@ -1327,11 +1337,12 @@ export namespace Prisma {
     telephone?: boolean
     description?: boolean
     mapUrl?: boolean
+    url?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ContactOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "telephone" | "description" | "mapUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["contact"]>
+  export type ContactOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "telephone" | "description" | "mapUrl" | "url" | "createdAt" | "updatedAt", ExtArgs["result"]["contact"]>
   export type ContactInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     challenges?: boolean | Contact$challengesArgs<ExtArgs>
     _count?: boolean | ContactCountOutputTypeDefaultArgs<ExtArgs>
@@ -1351,6 +1362,7 @@ export namespace Prisma {
       telephone: string | null
       description: string | null
       mapUrl: string | null
+      url: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["contact"]>
@@ -1783,6 +1795,7 @@ export namespace Prisma {
     readonly telephone: FieldRef<"Contact", 'String'>
     readonly description: FieldRef<"Contact", 'String'>
     readonly mapUrl: FieldRef<"Contact", 'String'>
+    readonly url: FieldRef<"Contact", 'String'>
     readonly createdAt: FieldRef<"Contact", 'DateTime'>
     readonly updatedAt: FieldRef<"Contact", 'DateTime'>
   }
@@ -4355,6 +4368,7 @@ export namespace Prisma {
     telephone: 'telephone',
     description: 'description',
     mapUrl: 'mapUrl',
+    url: 'url',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -4448,6 +4462,7 @@ export namespace Prisma {
     telephone?: StringNullableFilter<"Contact"> | string | null
     description?: StringNullableFilter<"Contact"> | string | null
     mapUrl?: StringNullableFilter<"Contact"> | string | null
+    url?: StringNullableFilter<"Contact"> | string | null
     createdAt?: DateTimeFilter<"Contact"> | Date | string
     updatedAt?: DateTimeFilter<"Contact"> | Date | string
     challenges?: ChallengeListRelationFilter
@@ -4460,6 +4475,7 @@ export namespace Prisma {
     telephone?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     mapUrl?: SortOrderInput | SortOrder
+    url?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     challenges?: ChallengeOrderByRelationAggregateInput
@@ -4475,6 +4491,7 @@ export namespace Prisma {
     telephone?: StringNullableFilter<"Contact"> | string | null
     description?: StringNullableFilter<"Contact"> | string | null
     mapUrl?: StringNullableFilter<"Contact"> | string | null
+    url?: StringNullableFilter<"Contact"> | string | null
     createdAt?: DateTimeFilter<"Contact"> | Date | string
     updatedAt?: DateTimeFilter<"Contact"> | Date | string
     challenges?: ChallengeListRelationFilter
@@ -4487,6 +4504,7 @@ export namespace Prisma {
     telephone?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     mapUrl?: SortOrderInput | SortOrder
+    url?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ContactCountOrderByAggregateInput
@@ -4504,6 +4522,7 @@ export namespace Prisma {
     telephone?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     description?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     mapUrl?: StringNullableWithAggregatesFilter<"Contact"> | string | null
+    url?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Contact"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Contact"> | Date | string
   }
@@ -4634,6 +4653,7 @@ export namespace Prisma {
     telephone?: string | null
     description?: string | null
     mapUrl?: string | null
+    url?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     challenges?: ChallengeCreateNestedManyWithoutContactInput
@@ -4646,6 +4666,7 @@ export namespace Prisma {
     telephone?: string | null
     description?: string | null
     mapUrl?: string | null
+    url?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     challenges?: ChallengeUncheckedCreateNestedManyWithoutContactInput
@@ -4658,6 +4679,7 @@ export namespace Prisma {
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     challenges?: ChallengeUpdateManyWithoutContactNestedInput
@@ -4670,6 +4692,7 @@ export namespace Prisma {
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     challenges?: ChallengeUncheckedUpdateManyWithoutContactNestedInput
@@ -4682,6 +4705,7 @@ export namespace Prisma {
     telephone?: string | null
     description?: string | null
     mapUrl?: string | null
+    url?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4693,6 +4717,7 @@ export namespace Prisma {
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4704,6 +4729,7 @@ export namespace Prisma {
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4894,6 +4920,7 @@ export namespace Prisma {
     telephone?: SortOrder
     description?: SortOrder
     mapUrl?: SortOrder
+    url?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -4905,6 +4932,7 @@ export namespace Prisma {
     telephone?: SortOrder
     description?: SortOrder
     mapUrl?: SortOrder
+    url?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -4916,6 +4944,7 @@ export namespace Prisma {
     telephone?: SortOrder
     description?: SortOrder
     mapUrl?: SortOrder
+    url?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5397,6 +5426,7 @@ export namespace Prisma {
     telephone?: string | null
     description?: string | null
     mapUrl?: string | null
+    url?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5408,6 +5438,7 @@ export namespace Prisma {
     telephone?: string | null
     description?: string | null
     mapUrl?: string | null
+    url?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5435,6 +5466,7 @@ export namespace Prisma {
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5446,6 +5478,7 @@ export namespace Prisma {
     telephone?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     mapUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

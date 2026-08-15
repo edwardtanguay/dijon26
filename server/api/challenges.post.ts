@@ -9,6 +9,8 @@ export default defineEventHandler(async (event) => {
       newContactEmail,
       newContactPhone,
       newContactDescription,
+      newContactMapUrl,
+      newContactUrl,
       challengeText,
       text,
       type,
@@ -41,6 +43,8 @@ export default defineEventHandler(async (event) => {
           email: newContactEmail?.trim() || null,
           telephone: newContactPhone?.trim() || null,
           description: newContactDescription?.trim() || null,
+          mapUrl: newContactMapUrl?.trim() || null,
+          url: newContactUrl?.trim() || null,
         },
       })
       finalContactId = createdContact.id

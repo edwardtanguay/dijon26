@@ -124,6 +124,7 @@ exports.Prisma.ContactScalarFieldEnum = {
   telephone: 'telephone',
   description: 'description',
   mapUrl: 'mapUrl',
+  url: 'url',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
