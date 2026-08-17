@@ -295,23 +295,40 @@ const openSelectExistingModal = () => {
 const addSelectedChallengeToToday = async () => {
   if (!selectedChallengeToAddId.value) return
   const challengeId = selectedChallengeToAddId.value
+  const today = todayStr.value
+
+  // Optimistic update: close modal and mark challenge as selected for today immediately
+  isSelectExistingModalOpen.value = false
+  const targetChallenge = challenges.value.find((c) => c.id === challengeId)
+  if (targetChallenge) {
+    targetChallenge.selectedForDate = today
+  }
+
   try {
     const res = await $fetch<{ success: boolean; data: Challenge }>(`/api/challenges/${challengeId}`, {
       method: 'PUT',
       body: {
-        selectedForDate: todayStr.value,
+        selectedForDate: today,
       },
     })
-    if (res.success) {
-      isSelectExistingModalOpen.value = false
-      await fetchData()
+    if (res.success && res.data) {
+      const idx = challenges.value.findIndex((c) => c.id === challengeId)
+      if (idx !== -1) {
+        challenges.value[idx] = { ...challenges.value[idx], ...res.data }
+      }
     }
+    await fetchData()
   } catch (err) {
     console.error('Erreur lors de l’ajout du défi au jour:', err)
+    await fetchData()
   }
 }
 
 const deselectChallenge = async (challenge: Challenge) => {
+  // Optimistic update: immediately clear selectedForDate in memory
+  const previousSelectedDate = challenge.selectedForDate
+  challenge.selectedForDate = null
+
   try {
     const res = await $fetch<{ success: boolean; data: Challenge }>(`/api/challenges/${challenge.id}`, {
       method: 'PUT',
@@ -319,11 +336,17 @@ const deselectChallenge = async (challenge: Challenge) => {
         selectedForDate: null,
       },
     })
-    if (res.success) {
-      await fetchData()
+    if (res.success && res.data) {
+      const idx = challenges.value.findIndex((c) => c.id === challenge.id)
+      if (idx !== -1) {
+        challenges.value[idx] = { ...challenges.value[idx], ...res.data }
+      }
     }
+    await fetchData()
   } catch (err) {
     console.error('Erreur lors de la désélection du défi:', err)
+    challenge.selectedForDate = previousSelectedDate
+    await fetchData()
   }
 }
 
@@ -454,6 +477,11 @@ const selectedContactDetailChallenges = computed(() => {
 // Save Daily Target
 const saveDailyTarget = async () => {
   if (targetInput.value < 1) targetInput.value = 1
+  const prevTarget = dailyTarget.value
+  // Optimistic update
+  dailyTarget.value = targetInput.value
+  isEditingTarget.value = false
+
   try {
     await $fetch('/api/settings', {
       method: 'POST',
@@ -462,10 +490,9 @@ const saveDailyTarget = async () => {
         value: String(targetInput.value),
       },
     })
-    dailyTarget.value = targetInput.value
-    isEditingTarget.value = false
   } catch (err) {
     console.error('Erreur lors de la mise à jour de l’objectif:', err)
+    dailyTarget.value = prevTarget
   }
 }
 
@@ -501,26 +528,50 @@ const openEditContactModal = (contact: Contact) => {
 const submitContactForm = async () => {
   if (!contactForm.value.name.trim()) return
   contactSubmitting.value = true
+
+  const isEditing = isEditingContact.value
+  const formValues = { ...contactForm.value }
+  isContactModalOpen.value = false
+
+  // Optimistic update
+  if (isEditing) {
+    const existingIdx = contacts.value.findIndex((c) => c.id === formValues.id)
+    if (existingIdx !== -1) {
+      contacts.value[existingIdx] = {
+        ...contacts.value[existingIdx],
+        name: formValues.name.trim(),
+        email: formValues.email.trim() || null,
+        telephone: formValues.telephone.trim() || null,
+        description: formValues.description.trim() || null,
+        mapUrl: formValues.mapUrl.trim() || null,
+        url: formValues.url.trim() || null,
+      }
+      if (activeContactForChallenges.value?.id === formValues.id) {
+        activeContactForChallenges.value = contacts.value[existingIdx]
+      }
+    }
+  }
+
   try {
-    await $fetch('/api/contacts', {
+    const res = await $fetch<{ success: boolean; data: Contact }>('/api/contacts', {
       method: 'POST',
       body: {
-        id: isEditingContact.value ? contactForm.value.id : undefined,
-        name: contactForm.value.name.trim(),
-        email: contactForm.value.email.trim() || undefined,
-        telephone: contactForm.value.telephone.trim() || undefined,
-        description: contactForm.value.description.trim() || undefined,
-        mapUrl: contactForm.value.mapUrl.trim() || undefined,
-        url: contactForm.value.url.trim() || undefined,
+        id: isEditing ? formValues.id : undefined,
+        name: formValues.name.trim(),
+        email: formValues.email.trim() || undefined,
+        telephone: formValues.telephone.trim() || undefined,
+        description: formValues.description.trim() || undefined,
+        mapUrl: formValues.mapUrl.trim() || undefined,
+        url: formValues.url.trim() || undefined,
       },
     })
-    isContactModalOpen.value = false
     await fetchData()
-    if (activeContactForChallenges.value && isEditingContact.value && activeContactForChallenges.value.id === contactForm.value.id) {
-      activeContactForChallenges.value = contacts.value.find((c) => c.id === contactForm.value.id) || null
+    if (activeContactForChallenges.value && isEditing && activeContactForChallenges.value.id === formValues.id) {
+      activeContactForChallenges.value = contacts.value.find((c) => c.id === formValues.id) || null
     }
   } catch (err) {
     console.error('Erreur lors de l’enregistrement du contact:', err)
+    await fetchData()
   } finally {
     contactSubmitting.value = false
   }
@@ -534,15 +585,20 @@ const deleteContact = async (contact: Contact) => {
 
   if (!confirm(warning)) return
 
+  // Optimistic delete
+  contacts.value = contacts.value.filter((c) => c.id !== contact.id)
+  challenges.value = challenges.value.filter((c) => c.contactId !== contact.id)
+  if (activeContactForChallenges.value?.id === contact.id) {
+    isContactChallengesModalOpen.value = false
+    activeContactForChallenges.value = null
+  }
+
   try {
     await $fetch(`/api/contacts/${contact.id}`, { method: 'DELETE' })
-    if (activeContactForChallenges.value?.id === contact.id) {
-      isContactChallengesModalOpen.value = false
-      activeContactForChallenges.value = null
-    }
     await fetchData()
   } catch (err) {
     console.error('Erreur lors de la suppression du contact:', err)
+    await fetchData()
   }
 }
 
@@ -601,41 +657,68 @@ const openEditChallengeModal = (challenge: Challenge) => {
 const submitChallengeForm = async () => {
   if (!challengeForm.value.challengeText.trim()) return
   challengeSubmitting.value = true
+
+  const isEditing = isEditingChallenge.value
+  const challengeId = editingChallengeId.value
+  const formValues = { ...challengeForm.value }
+
+  // Optimistic update for edits
+  if (isEditing) {
+    const existingIdx = challenges.value.findIndex((c) => c.id === challengeId)
+    if (existingIdx !== -1) {
+      const contactObj = contacts.value.find((c) => c.id === formValues.contactId)
+      challenges.value[existingIdx] = {
+        ...challenges.value[existingIdx],
+        challengeText: formValues.challengeText.trim(),
+        type: formValues.type,
+        contactId: formValues.contactId,
+        contact: contactObj || challenges.value[existingIdx].contact,
+        rank: Number(formValues.rank) || 2.5,
+        afterChallengeNotes: formValues.afterChallengeNotes.trim() || null,
+        completedAt: formValues.isFinished && formValues.completedAt
+          ? new Date(formValues.completedAt).toISOString()
+          : (formValues.isFinished ? new Date().toISOString() : null),
+      }
+    }
+  }
+
+  isChallengeModalOpen.value = false
+
   try {
-    if (isEditingChallenge.value) {
+    if (isEditing) {
       // Update
       const payload: any = {
-        challengeText: challengeForm.value.challengeText.trim(),
-        type: challengeForm.value.type,
-        contactId: challengeForm.value.contactId,
-        rank: Number(challengeForm.value.rank) || 2.5,
-        afterChallengeNotes: challengeForm.value.afterChallengeNotes.trim() || null,
-        completedAt: challengeForm.value.isFinished && challengeForm.value.completedAt
-          ? new Date(challengeForm.value.completedAt).toISOString()
-          : (challengeForm.value.isFinished ? new Date().toISOString() : null),
+        challengeText: formValues.challengeText.trim(),
+        type: formValues.type,
+        contactId: formValues.contactId,
+        rank: Number(formValues.rank) || 2.5,
+        afterChallengeNotes: formValues.afterChallengeNotes.trim() || null,
+        completedAt: formValues.isFinished && formValues.completedAt
+          ? new Date(formValues.completedAt).toISOString()
+          : (formValues.isFinished ? new Date().toISOString() : null),
       }
 
-      await $fetch(`/api/challenges/${editingChallengeId.value}`, {
+      await $fetch(`/api/challenges/${challengeId}`, {
         method: 'PUT',
         body: payload,
       })
     } else {
       // Create
       const payload: any = {
-        challengeText: challengeForm.value.challengeText.trim(),
-        type: challengeForm.value.type,
-        rank: Number(challengeForm.value.rank) || 2.5,
+        challengeText: formValues.challengeText.trim(),
+        type: formValues.type,
+        rank: Number(formValues.rank) || 2.5,
       }
 
-      if (challengeForm.value.contactMode === 'existing') {
-        payload.contactId = challengeForm.value.contactId
+      if (formValues.contactMode === 'existing') {
+        payload.contactId = formValues.contactId
       } else {
-        payload.newContactName = challengeForm.value.newContactName.trim()
-        payload.newContactEmail = challengeForm.value.newContactEmail.trim() || undefined
-        payload.newContactPhone = challengeForm.value.newContactPhone.trim() || undefined
-        payload.newContactDescription = challengeForm.value.newContactDescription.trim() || undefined
-        payload.newContactMapUrl = challengeForm.value.newContactMapUrl.trim() || undefined
-        payload.newContactUrl = challengeForm.value.newContactUrl.trim() || undefined
+        payload.newContactName = formValues.newContactName.trim()
+        payload.newContactEmail = formValues.newContactEmail.trim() || undefined
+        payload.newContactPhone = formValues.newContactPhone.trim() || undefined
+        payload.newContactDescription = formValues.newContactDescription.trim() || undefined
+        payload.newContactMapUrl = formValues.newContactMapUrl.trim() || undefined
+        payload.newContactUrl = formValues.newContactUrl.trim() || undefined
       }
 
       const res = await $fetch<{ success: boolean; data: Challenge }>('/api/challenges', {
@@ -643,23 +726,23 @@ const submitChallengeForm = async () => {
         body: payload,
       })
 
-      if (res.success && challengeForm.value.isFinished && res.data?.id) {
+      if (res.success && formValues.isFinished && res.data?.id) {
         await $fetch(`/api/challenges/${res.data.id}/complete`, {
           method: 'POST',
           body: {
-            completedAt: challengeForm.value.completedAt
-              ? new Date(challengeForm.value.completedAt).toISOString()
+            completedAt: formValues.completedAt
+              ? new Date(formValues.completedAt).toISOString()
               : new Date().toISOString(),
-            afterChallengeNotes: challengeForm.value.afterChallengeNotes.trim() || null,
+            afterChallengeNotes: formValues.afterChallengeNotes.trim() || null,
           },
         })
       }
     }
 
-    isChallengeModalOpen.value = false
     await fetchData()
   } catch (err) {
     console.error('Erreur lors de l’enregistrement du défi:', err)
+    await fetchData()
   } finally {
     challengeSubmitting.value = false
   }
@@ -667,11 +750,16 @@ const submitChallengeForm = async () => {
 
 const deleteChallenge = async (challenge: Challenge) => {
   if (!confirm(`Es-tu sûr(e) de vouloir supprimer ce défi ?`)) return
+
+  // Optimistic delete
+  challenges.value = challenges.value.filter((c) => c.id !== challenge.id)
+
   try {
     await $fetch(`/api/challenges/${challenge.id}`, { method: 'DELETE' })
     await fetchData()
   } catch (err) {
     console.error('Erreur lors de la suppression du défi:', err)
+    await fetchData()
   }
 }
 
@@ -686,23 +774,31 @@ const openReflectModal = (challenge: Challenge) => {
 const submitReflection = async () => {
   if (!selectedChallengeForReflect.value) return
   reflectSubmitting.value = true
+
+  const targetChallenge = selectedChallengeForReflect.value
+  const notes = reflectNotes.value
+  const completedDate = new Date(reflectCompletedAt.value).toISOString()
+
+  // Optimistic update
+  targetChallenge.completedAt = completedDate
+  targetChallenge.afterChallengeNotes = notes || null
+  isReflectModalOpen.value = false
+
   try {
     const res = await $fetch<{ success: boolean; data: Challenge }>(
-      `/api/challenges/${selectedChallengeForReflect.value.id}/complete`,
+      `/api/challenges/${targetChallenge.id}/complete`,
       {
         method: 'POST',
         body: {
-          completedAt: new Date(reflectCompletedAt.value).toISOString(),
-          afterChallengeNotes: reflectNotes.value,
+          completedAt: completedDate,
+          afterChallengeNotes: notes,
         },
       }
     )
-    if (res.success) {
-      isReflectModalOpen.value = false
-      await fetchData()
-    }
+    await fetchData()
   } catch (err) {
     console.error('Erreur lors de l’enregistrement du bilan:', err)
+    await fetchData()
   } finally {
     reflectSubmitting.value = false
   }
