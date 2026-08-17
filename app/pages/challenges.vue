@@ -186,8 +186,10 @@ const formatDateForDisplay = (d: string | null | undefined) => {
 }
 
 // Fetch Data
-const fetchData = async () => {
-  loading.value = true
+const fetchData = async (showLoading = false) => {
+  if (showLoading) {
+    loading.value = true
+  }
   try {
     const [settingsRes, challengesRes, contactsRes, imagesRes] = await Promise.all([
       $fetch<{ success: boolean; data: any }>('/api/settings'),
@@ -212,12 +214,14 @@ const fetchData = async () => {
   } catch (err) {
     console.error('Erreur lors du chargement des données:', err)
   } finally {
-    loading.value = false
+    if (showLoading) {
+      loading.value = false
+    }
   }
 }
 
 onMounted(() => {
-  fetchData()
+  fetchData(true)
 })
 
 const getLocalDateString = (d: Date | string | null = new Date()) => {
@@ -966,7 +970,7 @@ const formatNiceUrl = (url: string | null | undefined): string => {
 
       <!-- Loaded State: 2 Flex Columns Maximum Grid for Challenges Cards -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-        <template v-for="(slot, index) in dailyGoalSlots" :key="index">
+        <template v-for="(slot, index) in dailyGoalSlots" :key="slot.challenge?.id ? `challenge-${slot.challenge.id}` : `slot-${index}`">
           <!-- 1. Finished Challenge Card (Green) -->
           <div
             v-if="slot.status === 'finished' && slot.challenge"
