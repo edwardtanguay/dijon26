@@ -136,6 +136,7 @@ exports.Prisma.ChallengeScalarFieldEnum = {
   type: 'type',
   rank: 'rank',
   completedAt: 'completedAt',
+  selectedForDate: 'selectedForDate',
   afterChallengeNotes: 'afterChallengeNotes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

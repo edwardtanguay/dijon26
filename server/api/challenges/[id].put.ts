@@ -51,6 +51,10 @@ export default defineEventHandler(async (event) => {
       updateData.afterChallengeNotes = body.afterChallengeNotes ? String(body.afterChallengeNotes).trim() : null
     }
 
+    if (body.selectedForDate !== undefined) {
+      updateData.selectedForDate = body.selectedForDate ? String(body.selectedForDate).trim() : null
+    }
+
     if (body.completedAt !== undefined) {
       updateData.completedAt = body.completedAt ? new Date(body.completedAt) : null
     }

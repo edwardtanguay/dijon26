@@ -2258,6 +2258,7 @@ export namespace Prisma {
     type: string | null
     rank: number | null
     completedAt: Date | null
+    selectedForDate: string | null
     afterChallengeNotes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2270,6 +2271,7 @@ export namespace Prisma {
     type: string | null
     rank: number | null
     completedAt: Date | null
+    selectedForDate: string | null
     afterChallengeNotes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2282,6 +2284,7 @@ export namespace Prisma {
     type: number
     rank: number
     completedAt: number
+    selectedForDate: number
     afterChallengeNotes: number
     createdAt: number
     updatedAt: number
@@ -2304,6 +2307,7 @@ export namespace Prisma {
     type?: true
     rank?: true
     completedAt?: true
+    selectedForDate?: true
     afterChallengeNotes?: true
     createdAt?: true
     updatedAt?: true
@@ -2316,6 +2320,7 @@ export namespace Prisma {
     type?: true
     rank?: true
     completedAt?: true
+    selectedForDate?: true
     afterChallengeNotes?: true
     createdAt?: true
     updatedAt?: true
@@ -2328,6 +2333,7 @@ export namespace Prisma {
     type?: true
     rank?: true
     completedAt?: true
+    selectedForDate?: true
     afterChallengeNotes?: true
     createdAt?: true
     updatedAt?: true
@@ -2427,6 +2433,7 @@ export namespace Prisma {
     type: string
     rank: number
     completedAt: Date | null
+    selectedForDate: string | null
     afterChallengeNotes: string | null
     createdAt: Date
     updatedAt: Date
@@ -2458,6 +2465,7 @@ export namespace Prisma {
     type?: boolean
     rank?: boolean
     completedAt?: boolean
+    selectedForDate?: boolean
     afterChallengeNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2471,6 +2479,7 @@ export namespace Prisma {
     type?: boolean
     rank?: boolean
     completedAt?: boolean
+    selectedForDate?: boolean
     afterChallengeNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2484,6 +2493,7 @@ export namespace Prisma {
     type?: boolean
     rank?: boolean
     completedAt?: boolean
+    selectedForDate?: boolean
     afterChallengeNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2497,12 +2507,13 @@ export namespace Prisma {
     type?: boolean
     rank?: boolean
     completedAt?: boolean
+    selectedForDate?: boolean
     afterChallengeNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ChallengeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "contactId" | "challengeText" | "type" | "rank" | "completedAt" | "afterChallengeNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["challenge"]>
+  export type ChallengeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "contactId" | "challengeText" | "type" | "rank" | "completedAt" | "selectedForDate" | "afterChallengeNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["challenge"]>
   export type ChallengeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     contact?: boolean | ContactDefaultArgs<ExtArgs>
   }
@@ -2525,6 +2536,7 @@ export namespace Prisma {
       type: string
       rank: number
       completedAt: Date | null
+      selectedForDate: string | null
       afterChallengeNotes: string | null
       createdAt: Date
       updatedAt: Date
@@ -2958,6 +2970,7 @@ export namespace Prisma {
     readonly type: FieldRef<"Challenge", 'String'>
     readonly rank: FieldRef<"Challenge", 'Float'>
     readonly completedAt: FieldRef<"Challenge", 'DateTime'>
+    readonly selectedForDate: FieldRef<"Challenge", 'String'>
     readonly afterChallengeNotes: FieldRef<"Challenge", 'String'>
     readonly createdAt: FieldRef<"Challenge", 'DateTime'>
     readonly updatedAt: FieldRef<"Challenge", 'DateTime'>
@@ -4383,6 +4396,7 @@ export namespace Prisma {
     type: 'type',
     rank: 'rank',
     completedAt: 'completedAt',
+    selectedForDate: 'selectedForDate',
     afterChallengeNotes: 'afterChallengeNotes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -4537,6 +4551,7 @@ export namespace Prisma {
     type?: StringFilter<"Challenge"> | string
     rank?: FloatFilter<"Challenge"> | number
     completedAt?: DateTimeNullableFilter<"Challenge"> | Date | string | null
+    selectedForDate?: StringNullableFilter<"Challenge"> | string | null
     afterChallengeNotes?: StringNullableFilter<"Challenge"> | string | null
     createdAt?: DateTimeFilter<"Challenge"> | Date | string
     updatedAt?: DateTimeFilter<"Challenge"> | Date | string
@@ -4550,6 +4565,7 @@ export namespace Prisma {
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrderInput | SortOrder
+    selectedForDate?: SortOrderInput | SortOrder
     afterChallengeNotes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -4566,6 +4582,7 @@ export namespace Prisma {
     type?: StringFilter<"Challenge"> | string
     rank?: FloatFilter<"Challenge"> | number
     completedAt?: DateTimeNullableFilter<"Challenge"> | Date | string | null
+    selectedForDate?: StringNullableFilter<"Challenge"> | string | null
     afterChallengeNotes?: StringNullableFilter<"Challenge"> | string | null
     createdAt?: DateTimeFilter<"Challenge"> | Date | string
     updatedAt?: DateTimeFilter<"Challenge"> | Date | string
@@ -4579,6 +4596,7 @@ export namespace Prisma {
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrderInput | SortOrder
+    selectedForDate?: SortOrderInput | SortOrder
     afterChallengeNotes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -4599,6 +4617,7 @@ export namespace Prisma {
     type?: StringWithAggregatesFilter<"Challenge"> | string
     rank?: FloatWithAggregatesFilter<"Challenge"> | number
     completedAt?: DateTimeNullableWithAggregatesFilter<"Challenge"> | Date | string | null
+    selectedForDate?: StringNullableWithAggregatesFilter<"Challenge"> | string | null
     afterChallengeNotes?: StringNullableWithAggregatesFilter<"Challenge"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Challenge"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Challenge"> | Date | string
@@ -4740,6 +4759,7 @@ export namespace Prisma {
     type: string
     rank?: number
     completedAt?: Date | string | null
+    selectedForDate?: string | null
     afterChallengeNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -4753,6 +4773,7 @@ export namespace Prisma {
     type: string
     rank?: number
     completedAt?: Date | string | null
+    selectedForDate?: string | null
     afterChallengeNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -4764,6 +4785,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    selectedForDate?: NullableStringFieldUpdateOperationsInput | string | null
     afterChallengeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4777,6 +4799,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    selectedForDate?: NullableStringFieldUpdateOperationsInput | string | null
     afterChallengeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4789,6 +4812,7 @@ export namespace Prisma {
     type: string
     rank?: number
     completedAt?: Date | string | null
+    selectedForDate?: string | null
     afterChallengeNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -4800,6 +4824,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    selectedForDate?: NullableStringFieldUpdateOperationsInput | string | null
     afterChallengeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4812,6 +4837,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    selectedForDate?: NullableStringFieldUpdateOperationsInput | string | null
     afterChallengeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5031,6 +5057,7 @@ export namespace Prisma {
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrder
+    selectedForDate?: SortOrder
     afterChallengeNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -5047,6 +5074,7 @@ export namespace Prisma {
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrder
+    selectedForDate?: SortOrder
     afterChallengeNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -5059,6 +5087,7 @@ export namespace Prisma {
     type?: SortOrder
     rank?: SortOrder
     completedAt?: SortOrder
+    selectedForDate?: SortOrder
     afterChallengeNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -5363,6 +5392,7 @@ export namespace Prisma {
     type: string
     rank?: number
     completedAt?: Date | string | null
+    selectedForDate?: string | null
     afterChallengeNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -5374,6 +5404,7 @@ export namespace Prisma {
     type: string
     rank?: number
     completedAt?: Date | string | null
+    selectedForDate?: string | null
     afterChallengeNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -5414,6 +5445,7 @@ export namespace Prisma {
     type?: StringFilter<"Challenge"> | string
     rank?: FloatFilter<"Challenge"> | number
     completedAt?: DateTimeNullableFilter<"Challenge"> | Date | string | null
+    selectedForDate?: StringNullableFilter<"Challenge"> | string | null
     afterChallengeNotes?: StringNullableFilter<"Challenge"> | string | null
     createdAt?: DateTimeFilter<"Challenge"> | Date | string
     updatedAt?: DateTimeFilter<"Challenge"> | Date | string
@@ -5489,6 +5521,7 @@ export namespace Prisma {
     type: string
     rank?: number
     completedAt?: Date | string | null
+    selectedForDate?: string | null
     afterChallengeNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -5500,6 +5533,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    selectedForDate?: NullableStringFieldUpdateOperationsInput | string | null
     afterChallengeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5511,6 +5545,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    selectedForDate?: NullableStringFieldUpdateOperationsInput | string | null
     afterChallengeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5522,6 +5557,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     rank?: FloatFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    selectedForDate?: NullableStringFieldUpdateOperationsInput | string | null
     afterChallengeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

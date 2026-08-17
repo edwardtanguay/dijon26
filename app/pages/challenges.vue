@@ -33,6 +33,7 @@ interface Challenge {
   type: 'written' | 'spoken'
   rank: number
   completedAt: string | null
+  selectedForDate?: string | null
   afterChallengeNotes: string | null
   createdAt: string
   updatedAt: string
@@ -264,32 +265,72 @@ const sortedTodoChallenges = computed(() => {
   })
 })
 
-// Active chosen challenge ID for the Doing card (supports swapping)
-const activeDoingChallengeId = ref<string | null>(null)
+// Challenges selected for today (not completed)
+const selectedTodayChallenges = computed(() => {
+  return todoChallenges.value.filter((c) => c.selectedForDate === todayStr.value)
+})
 
-// Current Doing challenge computed
-const currentDoingChallenge = computed(() => {
-  if (sortedTodoChallenges.value.length === 0) return null
-  if (activeDoingChallengeId.value) {
-    const found = sortedTodoChallenges.value.find((c) => c.id === activeDoingChallengeId.value)
-    if (found) return found
+// Challenges available to select (not completed and not selected for today)
+const availableUnselectedChallenges = computed(() => {
+  return [...todoChallenges.value.filter((c) => c.selectedForDate !== todayStr.value)].sort((a, b) => {
+    return (b.rank ?? 2.5) - (a.rank ?? 2.5)
+  })
+})
+
+// Modal: Select existing challenge state
+const isSelectExistingModalOpen = ref(false)
+const selectedChallengeToAddId = ref<string>('')
+
+const selectedChallengeToAdd = computed(() => {
+  if (!selectedChallengeToAddId.value) return null
+  return availableUnselectedChallenges.value.find((c) => c.id === selectedChallengeToAddId.value) || null
+})
+
+const openSelectExistingModal = () => {
+  if (availableUnselectedChallenges.value.length === 0) return
+  selectedChallengeToAddId.value = availableUnselectedChallenges.value[0]?.id ?? ''
+  isSelectExistingModalOpen.value = true
+}
+
+const addSelectedChallengeToToday = async () => {
+  if (!selectedChallengeToAddId.value) return
+  const challengeId = selectedChallengeToAddId.value
+  try {
+    const res = await $fetch<{ success: boolean; data: Challenge }>(`/api/challenges/${challengeId}`, {
+      method: 'PUT',
+      body: {
+        selectedForDate: todayStr.value,
+      },
+    })
+    if (res.success) {
+      isSelectExistingModalOpen.value = false
+      await fetchData()
+    }
+  } catch (err) {
+    console.error('Erreur lors de l’ajout du défi au jour:', err)
   }
-  return sortedTodoChallenges.value[0]
-})
+}
 
-// Other available challenges for swap dropdown
-const swapCandidateChallenges = computed(() => {
-  if (!currentDoingChallenge.value) return []
-  return sortedTodoChallenges.value.filter((c) => c.id !== currentDoingChallenge.value?.id)
-})
+const deselectChallenge = async (challenge: Challenge) => {
+  try {
+    const res = await $fetch<{ success: boolean; data: Challenge }>(`/api/challenges/${challenge.id}`, {
+      method: 'PUT',
+      body: {
+        selectedForDate: null,
+      },
+    })
+    if (res.success) {
+      await fetchData()
+    }
+  } catch (err) {
+    console.error('Erreur lors de la désélection du défi:', err)
+  }
+}
 
-// Top Panel: 5 daily goal slots
-// If all 5 completed => all 5 green
-// If not all 5 completed:
-//   - finished challenges today => green
-//   - if no todo challenges available => remaining are red ("Créer un défi")
-//   - if 1 or more available => exactly 1 slot is yellow ("En cours" / Doing)
-//   - remaining slots => red ("Créer un défi")
+// Top Panel: daily goal slots
+// 1. Finished challenges today (green)
+// 2. Selected challenges for today (yellow/amber "En cours")
+// 3. Remaining empty slots up to dailyTarget (gray with "Choisir un défi existant" and "Créer un défi")
 const dailyGoalSlots = computed(() => {
   const goalCount = Math.max(1, dailyTarget.value || 1)
   const slots: Array<{
@@ -305,15 +346,15 @@ const dailyGoalSlots = computed(() => {
     })
   }
 
-  // 2. If slots left and todo challenges available, add exactly 1 doing challenge (yellow)
-  if (slots.length < goalCount && currentDoingChallenge.value) {
+  // 2. Selected challenges for today
+  for (let i = 0; i < selectedTodayChallenges.value.length && slots.length < goalCount; i++) {
     slots.push({
       status: 'doing',
-      challenge: currentDoingChallenge.value,
+      challenge: selectedTodayChallenges.value[i],
     })
   }
 
-  // 3. All remaining slots are empty (red/gray)
+  // 3. All remaining slots are empty
   while (slots.length < goalCount) {
     slots.push({
       status: 'empty',
@@ -628,22 +669,9 @@ const deleteChallenge = async (challenge: Challenge) => {
   if (!confirm(`Es-tu sûr(e) de vouloir supprimer ce défi ?`)) return
   try {
     await $fetch(`/api/challenges/${challenge.id}`, { method: 'DELETE' })
-    if (activeDoingChallengeId.value === challenge.id) {
-      activeDoingChallengeId.value = null
-    }
     await fetchData()
   } catch (err) {
     console.error('Erreur lors de la suppression du défi:', err)
-  }
-}
-
-const handleDoingDropdownChange = (event: any, contactId?: string) => {
-  const val = event.target.value
-  if (val === '__CREATE__') {
-    event.target.value = activeDoingChallengeId.value || currentDoingChallenge.value?.id || ''
-    openCreateChallengeModal(contactId, false)
-  } else if (val) {
-    activeDoingChallengeId.value = val
   }
 }
 
@@ -671,9 +699,6 @@ const submitReflection = async () => {
     )
     if (res.success) {
       isReflectModalOpen.value = false
-      if (activeDoingChallengeId.value === selectedChallengeForReflect.value.id) {
-        activeDoingChallengeId.value = null
-      }
       await fetchData()
     }
   } catch (err) {
@@ -770,10 +795,10 @@ const formatNiceUrl = (url: string | null | undefined): string => {
 
     <!-- Top Panel: Tes défis pour aujourd'hui -->
     <div class="bg-white dark:bg-gray-800/90 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-700/60 shadow-sm">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-700/60 pb-4 text-center sm:text-left">
-        <div class="flex flex-col sm:flex-row sm:items-center items-center gap-2.5">
+      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-gray-100 dark:border-gray-700/60 pb-4 text-center sm:text-left">
+        <div class="flex flex-col sm:flex-row sm:items-start items-center gap-2.5">
           <!-- Calendar icon hidden on mobile, visible on sm and up -->
-          <UIcon name="i-heroicons-calendar-days" class="hidden sm:block w-6 h-6 text-indigo-500 shrink-0 self-center" />
+          <UIcon name="i-heroicons-calendar-days" class="hidden sm:block w-6 h-6 text-indigo-500 shrink-0 mt-0.5" />
           <div class="text-center sm:text-left">
             <h2 class="text-lg font-bold text-gray-900 dark:text-white !mb-0 !leading-none text-center sm:text-left">
               Tes défis pour <span class="text-indigo-600 dark:text-indigo-400">{{ todayDateFormatted }}</span>
@@ -788,7 +813,7 @@ const formatNiceUrl = (url: string | null | undefined): string => {
         </div>
 
         <!-- Target Setting (Centered on mobile) -->
-        <div class="flex items-center justify-center gap-3">
+        <div class="flex items-center justify-center gap-3 self-center sm:self-start">
           <div v-if="!loading && !isEditingTarget" class="flex items-center gap-2">
             <div class="flex flex-col items-center">
               <span class="text-4xl sm:text-5xl font-black text-indigo-600 dark:text-indigo-400 leading-none tracking-tight">
@@ -927,7 +952,7 @@ const formatNiceUrl = (url: string | null | undefined): string => {
             </div>
           </div>
 
-          <!-- 2. Doing / Active Available Todo Challenge Card (Yellow / Amber) -->
+          <!-- 2. Doing / Selected Challenge Card (Yellow / Amber) -->
           <div
             v-else-if="slot.status === 'doing' && slot.challenge"
             class="relative rounded-2xl p-5 border-2 transition-all flex flex-col justify-between min-h-[170px]"
@@ -950,6 +975,13 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                   >
                     <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
                   </button>
+                  <button
+                    @click="deselectChallenge(slot.challenge)"
+                    class="p-1 rounded-md text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200 hover:bg-amber-100/50 dark:hover:bg-amber-950/60 transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
+                    title="Désélectionner ce défi"
+                  >
+                    <UIcon name="i-heroicons-x-mark" class="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
@@ -957,49 +989,10 @@ const formatNiceUrl = (url: string | null | undefined): string => {
               <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                 <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
               </div>
-
-              <!-- Dropdown or Yellow Create Button -->
-              <div class="pt-2">
-                <!-- If only 1 challenge available (0 swap candidates): show centered yellow "Créer un défi" button -->
-                <div v-if="swapCandidateChallenges.length === 0" class="flex justify-center">
-                  <button
-                    @click="openCreateChallengeModal(slot.challenge?.contactId, false)"
-                    class="px-4 py-1.5 rounded-lg bg-amber-200/90 hover:bg-amber-300 dark:bg-amber-900/60 dark:hover:bg-amber-800/80 text-amber-950 dark:text-amber-100 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer border border-amber-400/80 dark:border-amber-700/80"
-                  >
-                    <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-amber-700 dark:text-amber-300" />
-                    <span>Créer un défi</span>
-                  </button>
-                </div>
-
-                <!-- If multiple challenges available: show swap dropdown -->
-                <div v-else class="relative w-full">
-                  <select
-                    :value="slot.challenge.id"
-                    @change="(e: any) => handleDoingDropdownChange(e, slot.challenge?.contactId)"
-                    class="w-full text-xs py-1.5 pl-3 pr-8 rounded-lg bg-amber-100/70 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-950/90 text-amber-950 dark:text-amber-100 font-medium border border-amber-300/80 dark:border-amber-700/80 cursor-pointer appearance-none focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors"
-                  >
-                    <option :value="slot.challenge.id" class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-semibold py-1">
-                      Changer de défi ({{ swapCandidateChallenges.length }} dispo)
-                    </option>
-                    <option value="__CREATE__" class="font-bold text-amber-700 dark:text-amber-400 bg-white dark:bg-gray-900 py-1">
-                      ⊕ Créer un défi
-                    </option>
-                    <option
-                      v-for="alt in swapCandidateChallenges"
-                      :key="alt.id"
-                      :value="alt.id"
-                      class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 py-1"
-                    >
-                      {{ Number(alt.rank ?? 2.5).toFixed(1) }} {{ alt.type === 'written' ? 'écrit' : 'oral' }} - {{ alt.contact?.name ? alt.contact.name + ': ' : '' }}{{ alt.challengeText.slice(0, 45) }}...
-                    </option>
-                  </select>
-                  <UIcon name="i-heroicons-chevron-up-down" class="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-amber-700 dark:text-amber-300" />
-                </div>
-              </div>
             </div>
 
             <!-- Bottom Area of Yellow Card -->
-            <!-- Mobile View: Line 1 (Contact + En cours), Line 2 (Terminer button centered) -->
+            <!-- Mobile View: Line 1 (Contact + En cours), Line 2 (Terminer & Deselect buttons) -->
             <div class="pt-3 mt-4 border-t border-amber-200/60 dark:border-amber-900/50 text-xs">
               <!-- Desktop layout (>= md) -->
               <div class="hidden md:flex items-center justify-between">
@@ -1036,6 +1029,14 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                 </div>
                 <div class="flex items-center gap-2.5">
                   <button
+                    @click="deselectChallenge(slot.challenge)"
+                    class="px-2.5 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 hover:bg-amber-100/60 dark:hover:bg-amber-900/40 text-amber-800 dark:text-amber-200 font-semibold text-xs transition-colors cursor-pointer flex items-center gap-1"
+                    title="Désélectionner ce défi de la journée"
+                  >
+                    <UIcon name="i-heroicons-arrow-uturn-left" class="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
+                    <span>Désélectionner</span>
+                  </button>
+                  <button
                     @click="openReflectModal(slot.challenge)"
                     class="px-3.5 py-1.5 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/80 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
                     title="Valider et faire le bilan"
@@ -1050,7 +1051,7 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                 </div>
               </div>
 
-              <!-- Mobile layout (< md): Line 1 (Contact + En cours), Line 2 (Centered Terminer button) -->
+              <!-- Mobile layout (< md): Line 1 (Contact + En cours), Line 2 (Action buttons) -->
               <div class="flex flex-col gap-2.5 md:hidden">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
@@ -1090,10 +1091,18 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                   </span>
                 </div>
 
-                <div class="flex justify-center pt-1">
+                <div class="flex items-center justify-center gap-2 pt-1">
+                  <button
+                    @click="deselectChallenge(slot.challenge)"
+                    class="px-3 py-2 rounded-lg border border-amber-300 dark:border-amber-700 hover:bg-amber-100/60 dark:hover:bg-amber-900/40 text-amber-800 dark:text-amber-200 font-semibold text-xs transition-colors cursor-pointer flex items-center gap-1"
+                    title="Désélectionner ce défi de la journée"
+                  >
+                    <UIcon name="i-heroicons-arrow-uturn-left" class="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
+                    <span>Désélectionner</span>
+                  </button>
                   <button
                     @click="openReflectModal(slot.challenge)"
-                    class="w-full sm:w-auto px-6 py-2 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/60 dark:hover:bg-emerald-950/90 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center justify-center gap-1.5"
+                    class="flex-1 sm:flex-initial px-5 py-2 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/60 dark:hover:bg-emerald-950/90 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center justify-center gap-1.5"
                     title="Valider et faire le bilan"
                   >
                     <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-2" />
@@ -1104,18 +1113,26 @@ const formatNiceUrl = (url: string | null | undefined): string => {
             </div>
           </div>
 
-          <!-- 3. Empty / Not Available Card (Gray) -->
+          <!-- 3. Empty Slot Card (Gray) -->
           <div
             v-else
-            class="relative rounded-2xl p-5 border-2 transition-all flex flex-col items-center justify-center text-center min-h-[170px]"
+            class="relative rounded-2xl p-5 border-2 transition-all flex flex-col items-center justify-center text-center min-h-[170px] gap-2.5"
             :class="getSlotCardBorderClass('empty')"
           >
-            <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
-              Emplacement #{{ index + 1 }} non disponible
-            </span>
+            <!-- Button: Select existing challenge (if available) -->
+            <button
+              v-if="availableUnselectedChallenges.length > 0"
+              @click="openSelectExistingModal"
+              class="px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-102"
+            >
+              <UIcon name="i-heroicons-list-bullet" class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <span>Choisir un défi existant ({{ availableUnselectedChallenges.length }})</span>
+            </button>
+
+            <!-- Button: Create a challenge -->
             <button
               @click="openCreateChallengeModal(undefined, false)"
-              class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-300 border border-gray-300 dark:border-gray-700 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105"
+              class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-300 border border-gray-300 dark:border-gray-700 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-102"
             >
               <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <span>Créer un défi</span>
@@ -2745,6 +2762,89 @@ const formatNiceUrl = (url: string | null | undefined): string => {
               class="px-5 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors cursor-pointer"
             >
               Fermer
+            </button>
+          </div>
+        </div>
+      </template>
+    </UModal>
+
+    <!-- ============================================================ -->
+    <!-- MODAL : CHOISIR UN DÉFI EXISTANT                             -->
+    <!-- ============================================================ -->
+    <UModal v-model:open="isSelectExistingModalOpen">
+      <template #content>
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                Défis disponibles ({{ availableUnselectedChallenges.length }})
+              </span>
+              <h3 class="text-xl font-extrabold text-gray-900 dark:text-white mt-1">
+                Choisir un défi existant
+              </h3>
+            </div>
+            <button
+              @click="isSelectExistingModalOpen = false"
+              class="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
+            >
+              <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Dropdown selector -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                Sélectionner un défi dans la liste
+              </label>
+              <select
+                v-model="selectedChallengeToAddId"
+                class="w-full text-sm py-2.5 px-3 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer"
+              >
+                <option
+                  v-for="ch in availableUnselectedChallenges"
+                  :key="ch.id"
+                  :value="ch.id"
+                >
+                  {{ Number(ch.rank ?? 2.5).toFixed(1) }} {{ ch.type === 'written' ? 'écrit' : 'oral' }} - {{ ch.contact?.name ? ch.contact.name + ' : ' : '' }}{{ ch.challengeText.slice(0, 60) }}...
+                </option>
+              </select>
+            </div>
+
+            <!-- Preview of the selected challenge -->
+            <div v-if="selectedChallengeToAdd" class="p-4 bg-gray-50 dark:bg-gray-900/60 rounded-xl border border-gray-200 dark:border-gray-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                  <UIcon name="i-heroicons-user" class="w-4 h-4" />
+                  {{ selectedChallengeToAdd.contact?.name || 'Contact sans nom' }}
+                </span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300">
+                  {{ Number(selectedChallengeToAdd.rank ?? 2.5).toFixed(1) }} {{ selectedChallengeToAdd.type === 'written' ? 'écrit' : 'oral' }}
+                </span>
+              </div>
+              <div class="text-sm font-medium text-gray-900 dark:text-white leading-relaxed">
+                <OutlineContent :text="selectedChallengeToAdd.challengeText" :available-images="availableImages" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+            <button
+              type="button"
+              @click="isSelectExistingModalOpen = false"
+              class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              @click="addSelectedChallengeToToday"
+              :disabled="!selectedChallengeToAdd"
+              class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-bold shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <UIcon name="i-heroicons-plus" class="w-4 h-4" />
+              <span>Ajouter ce défi</span>
             </button>
           </div>
         </div>
