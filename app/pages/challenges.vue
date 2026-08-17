@@ -537,17 +537,20 @@ const submitContactForm = async () => {
   if (isEditing) {
     const existingIdx = contacts.value.findIndex((c) => c.id === formValues.id)
     if (existingIdx !== -1) {
-      contacts.value[existingIdx] = {
-        ...contacts.value[existingIdx],
-        name: formValues.name.trim(),
-        email: formValues.email.trim() || null,
-        telephone: formValues.telephone.trim() || null,
-        description: formValues.description.trim() || null,
-        mapUrl: formValues.mapUrl.trim() || null,
-        url: formValues.url.trim() || null,
-      }
-      if (activeContactForChallenges.value?.id === formValues.id) {
-        activeContactForChallenges.value = contacts.value[existingIdx]
+      const existing = contacts.value[existingIdx]
+      if (existing) {
+        contacts.value[existingIdx] = {
+          ...existing,
+          name: formValues.name.trim(),
+          email: formValues.email.trim() || null,
+          telephone: formValues.telephone.trim() || null,
+          description: formValues.description.trim() || null,
+          mapUrl: formValues.mapUrl.trim() || null,
+          url: formValues.url.trim() || null,
+        }
+        if (activeContactForChallenges.value?.id === formValues.id) {
+          activeContactForChallenges.value = contacts.value[existingIdx]
+        }
       }
     }
   }
@@ -665,14 +668,15 @@ const submitChallengeForm = async () => {
   // Optimistic update for edits
   if (isEditing) {
     const existingIdx = challenges.value.findIndex((c) => c.id === challengeId)
-    if (existingIdx !== -1) {
+    const existingChallenge = challenges.value[existingIdx]
+    if (existingIdx !== -1 && existingChallenge) {
       const contactObj = contacts.value.find((c) => c.id === formValues.contactId)
       challenges.value[existingIdx] = {
-        ...challenges.value[existingIdx],
+        ...existingChallenge,
         challengeText: formValues.challengeText.trim(),
         type: formValues.type,
         contactId: formValues.contactId,
-        contact: contactObj || challenges.value[existingIdx].contact,
+        contact: contactObj || existingChallenge.contact,
         rank: Number(formValues.rank) || 2.5,
         afterChallengeNotes: formValues.afterChallengeNotes.trim() || null,
         completedAt: formValues.isFinished && formValues.completedAt
