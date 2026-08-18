@@ -9,13 +9,18 @@
 	- tous les vêtements de course
 	- les gels
 	- tous les mots de passe
+- les défis
+	- .. dijon.ffcam.fr, mardi et jeudi, groupes de randonées
+	- CIEF sur l'université
+	- toursbylocals
+	- gowithguide
 - liste de tâches à accomplir
+	- chatgpt: groupes similaires de polyglot café
+	- Quels sont les quartiers de Dijon, par exemple Quartier République
 	- professeur en ligne de Dijon
 	- demander ia pour meetups
 	- lancer les défis dès maintenant : 3 appels par jour, avec journal de bord
 	- enregistrer tous les événements Airbnb
-	- écrire à http://cafe-polyglotte-dijon.fr/
-		- existe-t-il d'autres groupes de ce genre pour pratiquer le français ?
 	- écrirer à 20 club de randonnées
 		- https://www.ffrandonnee.fr/nos-clubs/trouver-un-club/10697/afd21?department=21&postalCode=21000&activity=55&page=1
 	- réserver un appartement Airbnb pour la semaine
@@ -48,8 +53,23 @@
 			- lire-le rapidement, noter les lieux et les noms
 - idées de cadeaux
 	- Ours Blanc
+- les dix quartiers les plus populaires de Dijon
+	- **Centre-ville** - les Halles, le palais des Ducs, la rue de la Liberté##centreville
+	- **République** - autour de la place de la République ; important pour se repérer au nord-est du centre##republicquarter
+	- [Montchapet](https://fr.wikipedia.org/wiki/Quartier_Montchapet) - des quartiers les plus aisés de la ville##montchapet
+	- **Victor Hugo** - au nord-ouest, entre Montchapet et la gare.##quartiervictorhugo
+	- **Gare** - autour de la gare SNCF
+	- [Faubourg Raines](https://fr.wikipedia.org/wiki/Quartier_Fontaine_d%27Ouche-Faubourg_Raines-Larrey-Motte_Giron) - caractérisé par son relief et la présence de très grands espaces naturels dont certains ont été réaménagés et mis en valeur par la ville pour une meilleure utilisation des promeneurs##fountaineraines
+	- **Fontaine d’Ouche** - à l’ouest, près du lac Kir##fontainedouche
+	- **Wilson** - au sud du centre, autour de la place Wilson, est plutôt un quartier résidentiel et vivant, mais il n'a pas le caractère historique du centre de Dijon. Tu y trouveras davantage la vie quotidienne des habitants : commerces, cafés, restaurants, immeubles et maisons.##quartierwilson
+	- [Port du Canal](https://fr.wikipedia.org/wiki/Port_du_canal_de_Dijon) - au sud-ouest, autour du canal de Bourgogne##portducanalqua
+	- **Toison d’Or** - au nord, autour du centre commercial et du parc##toisondor
+	- **Universités** - à l’est, autour du campus universitaire (1722)##theunivquart
 - cartes memoires
 	- où trouve-t-on une crypte sous une église; Saint-Bénigne
+	- où se trouvent l'adresse et le bar du Café Polyglott; « L’Alhambra », 3 rue Marceau (comme Marcel Marceau)
+	- the parc that we will run through; Parc de Columbière, crée en 1672, ce parc à l'origine privé est créé au bord de l'Ouche 
+	- toutes les rues sur lesquelles nous courrons pendant le marathon;nnn
 - les endroits
 	- Lac Kir
 - activités
