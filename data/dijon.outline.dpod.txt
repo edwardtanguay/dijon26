@@ -11,9 +11,8 @@
 	- tous les mots de passe
 - les défis
 	- ,, dijon.ffcam.fr, mardi et jeudi, groupes de randonées
-	- .. CIEF sur l'université
-	- toursbylocals
-	- gowithguide
+	- ,,  CIEF sur l'université
+	- write to: https://preply.com/fr/tuteur/6636783
 - liste de tâches à accomplir
 	- chatgpt: groupes similaires de polyglot café
 	- Quels sont les quartiers de Dijon, par exemple Quartier République
@@ -28,6 +27,7 @@
 	- écrire à Diva Mobilités
 		- vélo
 		- bus/tramway
+	- tutors at https://preply.com
 	- trouver des théâtres, des pièces et des conférences, comme Urania.
 	- un pass hebdomadaire pour tous les transports
 	- commander des gels sur Amazon
