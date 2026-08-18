@@ -65,12 +65,18 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    let selectedForDateVal: string | null = null
+    if (body.selectedForDate !== undefined) {
+      selectedForDateVal = body.selectedForDate ? String(body.selectedForDate).trim() : null
+    }
+
     const challenge = await prisma.challenge.create({
       data: {
         contactId: finalContactId,
         challengeText: rawText.trim(),
         type,
         rank: parsedRank,
+        selectedForDate: selectedForDateVal,
       },
       include: {
         contact: true,

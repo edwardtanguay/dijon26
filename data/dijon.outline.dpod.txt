@@ -10,8 +10,8 @@
 	- les gels
 	- tous les mots de passe
 - les défis
-	- .. dijon.ffcam.fr, mardi et jeudi, groupes de randonées
-	- CIEF sur l'université
+	- ,, dijon.ffcam.fr, mardi et jeudi, groupes de randonées
+	- .. CIEF sur l'université
 	- toursbylocals
 	- gowithguide
 - liste de tâches à accomplir

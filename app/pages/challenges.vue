@@ -661,6 +661,19 @@ const openEditChallengeModal = (challenge: Challenge) => {
   isChallengeModalOpen.value = true
 }
 
+// History of challenges for the contact currently selected in the challenge creation modal
+const modalContactHistory = computed(() => {
+  const cId = challengeForm.value.contactId
+  if (!cId || challengeForm.value.contactMode !== 'existing') return []
+  return challenges.value
+    .filter((c) => c.contactId === cId)
+    .sort((a, b) => {
+      const dateA = a.completedAt || a.createdAt || ''
+      const dateB = b.completedAt || b.createdAt || ''
+      return dateB.localeCompare(dateA)
+    })
+})
+
 const submitChallengeForm = async () => {
   if (!challengeForm.value.challengeText.trim()) return
   challengeSubmitting.value = true
@@ -668,6 +681,12 @@ const submitChallengeForm = async () => {
   const isEditing = isEditingChallenge.value
   const challengeId = editingChallengeId.value
   const formValues = { ...challengeForm.value }
+
+  // Check if there are open slots today (finished today + selected doing today < dailyTarget)
+  const currentGoalCount = Math.max(1, dailyTarget.value || 1)
+  const occupiedSlots = finishedTodayChallenges.value.length + selectedTodayChallenges.value.length
+  const hasOpenSlots = occupiedSlots < currentGoalCount
+  const shouldSelectForToday = !formValues.isFinished && hasOpenSlots
 
   // Optimistic update for edits
   if (isEditing) {
@@ -688,6 +707,40 @@ const submitChallengeForm = async () => {
           : (formValues.isFinished ? new Date().toISOString() : null),
       }
     }
+  } else {
+    // Optimistic insert for new challenge
+    const tempId = `temp-${Date.now()}`
+    const contactObj = formValues.contactMode === 'existing'
+      ? contacts.value.find((c) => c.id === formValues.contactId)
+      : {
+          id: `temp-c-${Date.now()}`,
+          name: formValues.newContactName.trim() || 'Nouveau contact',
+          email: formValues.newContactEmail.trim() || null,
+          telephone: formValues.newContactPhone.trim() || null,
+          description: formValues.newContactDescription.trim() || null,
+          mapUrl: formValues.newContactMapUrl.trim() || null,
+          url: formValues.newContactUrl.trim() || null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+
+    const optimisticChallenge: Challenge = {
+      id: tempId,
+      contactId: contactObj?.id || formValues.contactId || '',
+      contact: contactObj,
+      challengeText: formValues.challengeText.trim(),
+      type: formValues.type,
+      rank: Number(formValues.rank) || 2.5,
+      selectedForDate: shouldSelectForToday ? todayStr.value : null,
+      afterChallengeNotes: formValues.afterChallengeNotes.trim() || null,
+      completedAt: formValues.isFinished && formValues.completedAt
+        ? new Date(formValues.completedAt).toISOString()
+        : (formValues.isFinished ? new Date().toISOString() : null),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+
+    challenges.value.unshift(optimisticChallenge)
   }
 
   isChallengeModalOpen.value = false
@@ -716,6 +769,11 @@ const submitChallengeForm = async () => {
         challengeText: formValues.challengeText.trim(),
         type: formValues.type,
         rank: Number(formValues.rank) || 2.5,
+      }
+
+      // Add to today's list if not completed and there are open slots
+      if (shouldSelectForToday) {
+        payload.selectedForDate = todayStr.value
       }
 
       if (formValues.contactMode === 'existing') {
@@ -1009,7 +1067,7 @@ const formatNiceUrl = (url: string | null | undefined): string => {
               >
                 <div class="font-bold mb-0.5 flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-300">
                   <UIcon name="i-heroicons-chat-bubble-bottom-center-text" class="w-3.5 h-3.5" />
-                  <span>Bilan :</span>
+                  <span>Notes :</span>
                 </div>
                 <div class="italic">
                   <OutlineContent :text="slot.challenge.afterChallengeNotes" :available-images="availableImages" />
@@ -1028,16 +1086,6 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                   {{ slot.challenge.contact.name }}
                 </button>
                 <span v-else class="font-bold text-emerald-700 dark:text-emerald-300">Contact</span>
-                <a
-                  v-if="slot.challenge.contact?.url"
-                  :href="normalizeUrl(slot.challenge.contact.url)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
-                  :title="slot.challenge.contact.url"
-                >
-                  <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
-                </a>
                 <a
                   v-if="slot.challenge.contact?.mapUrl"
                   :href="slot.challenge.contact.mapUrl"
@@ -1111,16 +1159,6 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                   </button>
                   <span v-else class="font-bold text-amber-700 dark:text-amber-300">Contact</span>
                   <a
-                    v-if="slot.challenge.contact?.url"
-                    :href="normalizeUrl(slot.challenge.contact.url)"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
-                    :title="slot.challenge.contact.url"
-                  >
-                    <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
-                  </a>
-                  <a
                     v-if="slot.challenge.contact?.mapUrl"
                     :href="slot.challenge.contact.mapUrl"
                     target="_blank"
@@ -1168,16 +1206,6 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                       {{ slot.challenge.contact.name }}
                     </button>
                     <span v-else class="font-bold text-amber-700 dark:text-amber-300">Contact</span>
-                    <a
-                      v-if="slot.challenge.contact?.url"
-                      :href="normalizeUrl(slot.challenge.contact.url)"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
-                      :title="slot.challenge.contact.url"
-                    >
-                      <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
-                    </a>
                     <a
                       v-if="slot.challenge.contact?.mapUrl"
                       :href="slot.challenge.contact.mapUrl"
@@ -1545,8 +1573,9 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                   </td>
 
                   <!-- Description -->
-                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 max-w-xs truncate">
-                    {{ contact.description || '—' }}
+                  <td class="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 max-w-xs">
+                    <OutlineContent v-if="contact.description" :text="contact.description" :available-images="availableImages" :max-lines="2" />
+                    <span v-else class="text-gray-400 italic">—</span>
                   </td>
                 </tr>
               </tbody>
@@ -2175,9 +2204,9 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                   <UIcon name="i-heroicons-map-pin" class="w-5 h-5" />
                 </a>
               </div>
-              <p v-if="activeContactForChallenges?.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {{ activeContactForChallenges.description }}
-              </p>
+              <div v-if="activeContactForChallenges?.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <OutlineContent :text="activeContactForChallenges.description" :available-images="availableImages" />
+              </div>
             </div>
             <button
               @click="isContactChallengesModalOpen = false"
@@ -2313,7 +2342,7 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                 </label>
               </div>
 
-              <div v-if="challengeForm.contactMode === 'existing' && contacts.length > 0">
+              <div v-if="challengeForm.contactMode === 'existing' && contacts.length > 0" class="space-y-2">
                 <select
                   v-model="challengeForm.contactId"
                   required
@@ -2323,6 +2352,59 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                     {{ c.name }} {{ c.email ? `(${c.email})` : '' }}
                   </option>
                 </select>
+
+                <!-- Compact Contact History -->
+                <div class="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    <span class="flex items-center gap-1">
+                      <UIcon name="i-heroicons-clock" class="w-3.5 h-3.5" />
+                      Historique du contact ({{ modalContactHistory.length }})
+                    </span>
+                    <span v-if="modalContactHistory.length > 0" class="text-[10px] font-normal text-gray-400">
+                      Plus récent en premier
+                    </span>
+                  </div>
+
+                  <div v-if="modalContactHistory.length === 0" class="text-[11px] text-gray-400 italic py-1">
+                    Aucune correspondance ou défi précédent avec ce contact.
+                  </div>
+
+                  <div v-else class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                    <div
+                      v-for="h in modalContactHistory"
+                      :key="h.id"
+                      class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/60 text-xs space-y-1"
+                    >
+                      <div class="flex items-center justify-between text-[11px]">
+                        <div class="flex items-center gap-1.5">
+                          <span
+                            class="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                            :class="h.completedAt
+                              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
+                              : 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'"
+                          >
+                            {{ h.completedAt ? '✓ Accompli' : '⏳ À faire' }}
+                          </span>
+                          <span class="font-mono text-[10px] text-gray-500 dark:text-gray-400">
+                            {{ Number(h.rank ?? 2.5).toFixed(1) }} {{ h.type === 'written' ? 'écrit' : 'oral' }}
+                          </span>
+                        </div>
+                        <span class="text-[10px] text-gray-400 font-mono">
+                          {{ formatDateForDisplay(h.completedAt || h.createdAt) }}
+                        </span>
+                      </div>
+
+                      <div class="text-[11px] text-gray-800 dark:text-gray-200">
+                        <OutlineContent :text="h.challengeText" :available-images="availableImages" />
+                      </div>
+
+                      <div v-if="h.afterChallengeNotes" class="text-[10px] italic text-gray-500 dark:text-gray-400 pt-0.5 border-t border-gray-50 dark:border-gray-700/40">
+                        <span class="font-semibold not-italic text-emerald-600 dark:text-emerald-400">Notes :</span>
+                        <OutlineContent :text="h.afterChallengeNotes" :available-images="availableImages" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div v-else class="space-y-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
@@ -2686,8 +2768,11 @@ const formatNiceUrl = (url: string | null | undefined): string => {
 
             <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
               <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Description</span>
-              <div class="text-gray-800 dark:text-gray-200 whitespace-pre-line">
-                {{ selectedContactForDetail.description || 'Aucune description fournie.' }}
+              <div v-if="selectedContactForDetail.description" class="text-gray-800 dark:text-gray-200">
+                <OutlineContent :text="selectedContactForDetail.description" :available-images="availableImages" />
+              </div>
+              <div v-else class="text-gray-400 italic text-xs">
+                Aucune description fournie.
               </div>
             </div>
 
