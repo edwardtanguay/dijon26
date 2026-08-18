@@ -1075,41 +1075,43 @@ const formatNiceUrl = (url: string | null | undefined): string => {
               </div>
             </div>
 
-            <div class="pt-3 mt-4 border-t border-emerald-200/50 dark:border-emerald-900/50 space-y-2.5 text-xs">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <button
-                    v-if="slot.challenge.contact"
-                    @click="openContactDetailModal(slot.challenge.contact)"
-                    class="font-bold text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors cursor-pointer text-left"
-                    title="Afficher les détails du contact"
-                  >
-                    {{ slot.challenge.contact.name }}
-                  </button>
-                  <span v-else class="font-bold text-emerald-700 dark:text-emerald-300">Contact</span>
-                  <a
-                    v-if="slot.challenge.contact?.url"
-                    :href="normalizeUrl(slot.challenge.contact.url)"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
-                    :title="slot.challenge.contact.url"
-                  >
-                    <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
-                  </a>
-                  <a
-                    v-if="slot.challenge.contact?.mapUrl"
-                    :href="slot.challenge.contact.mapUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
-                    title="Voir sur Google Maps"
-                  >
-                    <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
-                  </a>
-                </div>
+            <!-- Bottom Area of Green Card -->
+            <div class="mt-4 space-y-2.5 text-xs">
+              <!-- Contact row: Centered, larger text, top & bottom borders with light themed background -->
+              <div class="py-2 px-3 border-y border-emerald-200/70 dark:border-emerald-800/70 bg-emerald-50/60 dark:bg-emerald-950/40 rounded-sm flex items-center justify-center gap-2 text-center">
+                <button
+                  v-if="slot.challenge.contact"
+                  @click="openContactDetailModal(slot.challenge.contact)"
+                  class="font-bold text-base text-emerald-800 dark:text-emerald-200 hover:text-emerald-950 dark:hover:text-emerald-100 transition-colors cursor-pointer"
+                  title="Afficher les détails du contact"
+                >
+                  {{ slot.challenge.contact.name }}
+                </button>
+                <span v-else class="font-bold text-base text-emerald-800 dark:text-emerald-200">Contact</span>
+                <a
+                  v-if="slot.challenge.contact?.url"
+                  :href="normalizeUrl(slot.challenge.contact.url)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
+                  :title="slot.challenge.contact.url"
+                >
+                  <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+                </a>
+                <a
+                  v-if="slot.challenge.contact?.mapUrl"
+                  :href="slot.challenge.contact.mapUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
+                  title="Voir sur Google Maps"
+                >
+                  <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+                </a>
               </div>
-              <div class="flex items-center justify-end">
+
+              <!-- Terminé badge -->
+              <div class="flex items-center justify-end pt-1">
                 <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 whitespace-nowrap">
                   <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   Terminé
@@ -1158,46 +1160,44 @@ const formatNiceUrl = (url: string | null | undefined): string => {
             </div>
 
             <!-- Bottom Area of Yellow Card -->
-            <!-- Line 1: Contact + Link icons (web & maps) -->
+            <!-- Line 1: Contact + Link icons (web & maps) with top & bottom borders & light background -->
             <!-- Line 2: Deselectionner & Terminer buttons + En cours -->
-            <div class="pt-3 mt-4 border-t border-amber-200/60 dark:border-amber-900/50 space-y-2.5 text-xs">
-              <!-- Line 1: Contact name + link icons -->
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <button
-                    v-if="slot.challenge.contact"
-                    @click="openContactDetailModal(slot.challenge.contact)"
-                    class="font-bold text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors cursor-pointer text-left"
-                    title="Afficher les détails du contact"
-                  >
-                    {{ slot.challenge.contact.name }}
-                  </button>
-                  <span v-else class="font-bold text-amber-700 dark:text-amber-300">Contact</span>
-                  <a
-                    v-if="slot.challenge.contact?.url"
-                    :href="normalizeUrl(slot.challenge.contact.url)"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
-                    :title="slot.challenge.contact.url"
-                  >
-                    <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
-                  </a>
-                  <a
-                    v-if="slot.challenge.contact?.mapUrl"
-                    :href="slot.challenge.contact.mapUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
-                    title="Voir sur Google Maps"
-                  >
-                    <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
-                  </a>
-                </div>
+            <div class="mt-4 space-y-2.5 text-xs">
+              <!-- Contact row: Centered, larger text, top & bottom borders with light themed background -->
+              <div class="py-2 px-3 border-y border-amber-200/80 dark:border-amber-800/70 bg-amber-50/70 dark:bg-amber-950/40 rounded-sm flex items-center justify-center gap-2 text-center">
+                <button
+                  v-if="slot.challenge.contact"
+                  @click="openContactDetailModal(slot.challenge.contact)"
+                  class="font-bold text-base text-amber-800 dark:text-amber-200 hover:text-amber-950 dark:hover:text-amber-100 transition-colors cursor-pointer"
+                  title="Afficher les détails du contact"
+                >
+                  {{ slot.challenge.contact.name }}
+                </button>
+                <span v-else class="font-bold text-base text-amber-800 dark:text-amber-200">Contact</span>
+                <a
+                  v-if="slot.challenge.contact?.url"
+                  :href="normalizeUrl(slot.challenge.contact.url)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                  :title="slot.challenge.contact.url"
+                >
+                  <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+                </a>
+                <a
+                  v-if="slot.challenge.contact?.mapUrl"
+                  :href="slot.challenge.contact.mapUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                  title="Voir sur Google Maps"
+                >
+                  <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+                </a>
               </div>
 
-              <!-- Line 2: Action buttons + En cours -->
-              <div class="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+              <!-- Action buttons + En cours -->
+              <div class="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap pt-1">
                 <div class="flex items-center gap-2">
                   <button
                     @click="deselectChallenge(slot.challenge)"
@@ -1621,15 +1621,35 @@ const formatNiceUrl = (url: string | null | undefined): string => {
               <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
             </div>
 
-            <div class="text-xs">
+            <div class="py-2 px-3 border-y border-emerald-200/70 dark:border-emerald-800/70 bg-emerald-50/60 dark:bg-emerald-950/40 rounded-sm flex items-center justify-center gap-2 text-center text-xs">
               <button
                 v-if="challenge.contact"
                 @click="openContactDetailModal(challenge.contact)"
-                class="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors cursor-pointer text-left"
+                class="font-bold text-base text-emerald-800 dark:text-emerald-200 hover:text-emerald-950 dark:hover:text-emerald-100 transition-colors cursor-pointer"
               >
                 {{ challenge.contact.name }}
               </button>
-              <span v-else class="text-gray-400">Contact inconnu</span>
+              <span v-else class="font-bold text-base text-gray-400">Contact inconnu</span>
+              <a
+                v-if="challenge.contact?.url"
+                :href="normalizeUrl(challenge.contact.url)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
+                :title="challenge.contact.url"
+              >
+                <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+              </a>
+              <a
+                v-if="challenge.contact?.mapUrl"
+                :href="challenge.contact.mapUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
+                title="Google Maps"
+              >
+                <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+              </a>
             </div>
 
             <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60 text-xs text-gray-500 dark:text-gray-400">
@@ -1813,15 +1833,35 @@ const formatNiceUrl = (url: string | null | undefined): string => {
               <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
             </div>
 
-            <div class="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+            <div class="py-2 px-3 border-y border-amber-200/80 dark:border-amber-800/70 bg-amber-50/70 dark:bg-amber-950/40 rounded-sm flex items-center justify-center gap-2 text-center text-xs">
               <button
                 v-if="challenge.contact"
                 @click="openContactDetailModal(challenge.contact)"
-                class="hover:text-indigo-800 dark:hover:text-indigo-300 font-bold transition-colors cursor-pointer text-left"
+                class="font-bold text-base text-amber-800 dark:text-amber-200 hover:text-amber-950 dark:hover:text-amber-100 transition-colors cursor-pointer"
               >
                 {{ challenge.contact.name }}
               </button>
-              <span v-else>Contact inconnu</span>
+              <span v-else class="font-bold text-base text-gray-400">Contact inconnu</span>
+              <a
+                v-if="challenge.contact?.url"
+                :href="normalizeUrl(challenge.contact.url)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                :title="challenge.contact.url"
+              >
+                <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+              </a>
+              <a
+                v-if="challenge.contact?.mapUrl"
+                :href="challenge.contact.mapUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                title="Google Maps"
+              >
+                <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+              </a>
             </div>
 
             <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60 text-xs">
@@ -2866,17 +2906,37 @@ const formatNiceUrl = (url: string | null | undefined): string => {
 
           <!-- Content: Challenge Detail -->
           <div v-else-if="detailModalType === 'challenge' && selectedChallengeForDetail" class="space-y-4 text-sm">
-            <!-- Contact Bar -->
-            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
-              <div class="flex items-center gap-2">
-                <UIcon name="i-heroicons-user" class="w-4 h-4 text-indigo-500" />
-                <span class="font-bold text-gray-900 dark:text-white">{{ selectedChallengeForDetail.contact?.name || 'Contact' }}</span>
-              </div>
-              <div class="flex items-center gap-2 text-xs">
-                <span class="font-mono px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-semibold text-gray-800 dark:text-gray-200">
-                  {{ Number(selectedChallengeForDetail.rank ?? 2.5).toFixed(1) }} {{ selectedChallengeForDetail.type === 'written' ? 'écrit ✍️' : 'oral 🗣️' }}
-                </span>
-              </div>
+            <!-- Contact Bar: Centered, highlighted with top and bottom borders, larger font -->
+            <div class="flex items-center justify-center gap-2 p-3 border-y border-indigo-200/80 dark:border-indigo-800/80 bg-indigo-50/70 dark:bg-indigo-950/50 rounded-sm text-center">
+              <button
+                v-if="selectedChallengeForDetail.contact"
+                @click="openContactDetailModal(selectedChallengeForDetail.contact)"
+                class="font-bold text-base text-indigo-900 dark:text-indigo-100 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors cursor-pointer"
+                title="Afficher la fiche du contact"
+              >
+                {{ selectedChallengeForDetail.contact.name }}
+              </button>
+              <span v-else class="font-bold text-base text-indigo-900 dark:text-indigo-100">Contact</span>
+              <a
+                v-if="selectedChallengeForDetail.contact?.url"
+                :href="normalizeUrl(selectedChallengeForDetail.contact.url)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 inline-flex items-center"
+                :title="selectedChallengeForDetail.contact.url"
+              >
+                <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+              </a>
+              <a
+                v-if="selectedChallengeForDetail.contact?.mapUrl"
+                :href="selectedChallengeForDetail.contact.mapUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 inline-flex items-center"
+                title="Google Maps"
+              >
+                <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+              </a>
             </div>
 
             <!-- Challenge Text -->
