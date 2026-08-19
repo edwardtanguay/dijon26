@@ -51,6 +51,17 @@ const loading = ref(true)
 // Active Tab: contacts | finished | todo | history
 const activeTab = ref<'contacts' | 'finished' | 'todo' | 'history'>('contacts')
 
+// History accordion state (single day expanded at a time)
+const expandedHistoryDate = ref<string | null>(null)
+
+const toggleHistoryDate = (dateKey: string) => {
+  if (expandedHistoryDate.value === dateKey) {
+    expandedHistoryDate.value = null
+  } else {
+    expandedHistoryDate.value = dateKey
+  }
+}
+
 // Search states
 const searchContacts = ref('')
 const searchFinished = ref('')
@@ -202,14 +213,43 @@ const fetchData = async (showLoading = false) => {
       dailyTarget.value = Number(settingsRes.data.dailyChallengeTarget)
       targetInput.value = dailyTarget.value
     }
-    if (challengesRes.success) {
-      challenges.value = challengesRes.data
-    }
     if (contactsRes.success) {
       contacts.value = contactsRes.data
     }
     if (imagesRes && imagesRes.images) {
       availableImages.value = imagesRes.images
+    }
+
+    if (challengesRes.success) {
+      const allChallenges = challengesRes.data
+      const today = todayStr.value
+
+      // Find any unfinished challenges from the past selected for a previous date
+      const overdueChallenges = allChallenges.filter((c) => {
+        return !c.completedAt && c.selectedForDate && c.selectedForDate < today
+      })
+
+      // Roll them over to today
+      if (overdueChallenges.length > 0) {
+        for (const c of overdueChallenges) {
+          c.selectedForDate = today
+        }
+        challenges.value = allChallenges
+
+        // Persist rollover in the database asynchronously
+        Promise.all(
+          overdueChallenges.map((c) =>
+            $fetch(`/api/challenges/${c.id}`, {
+              method: 'PUT',
+              body: { selectedForDate: today },
+            }).catch((err) => {
+              console.error(`Erreur lors du report du défi ${c.id}:`, err)
+            })
+          )
+        )
+      } else {
+        challenges.value = allChallenges
+      }
     }
   } catch (err) {
     console.error('Erreur lors du chargement des données:', err)
@@ -2036,40 +2076,93 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
-                <tr
-                  v-for="item in historyByDay"
-                  :key="item.dateKey"
-                  class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
-                >
-                  <!-- Day column -->
-                  <td class="px-5 py-4 font-semibold text-gray-900 dark:text-white whitespace-nowrap">
-                    <div class="flex items-center gap-2">
-                      <UIcon name="i-heroicons-calendar-days" class="w-4 h-4 text-indigo-500" />
-                      <span class="capitalize">{{ item.formattedDate }}</span>
-                      <span
-                        v-if="item.isToday"
-                        class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800"
-                      >
-                        Aujourd'hui
-                      </span>
-                    </div>
-                  </td>
+                <template v-for="item in historyByDay" :key="item.dateKey">
+                  <!-- Main Day Row (Clickable) -->
+                  <tr
+                    @click="toggleHistoryDate(item.dateKey)"
+                    class="hover:bg-gray-50/70 dark:hover:bg-gray-700/40 transition-colors cursor-pointer select-none"
+                    :class="{ 'bg-indigo-50/40 dark:bg-indigo-950/20': expandedHistoryDate === item.dateKey }"
+                  >
+                    <!-- Day column -->
+                    <td class="px-5 py-4 font-semibold text-gray-900 dark:text-white whitespace-nowrap">
+                      <div class="flex items-center gap-2">
+                        <UIcon
+                          :name="expandedHistoryDate === item.dateKey ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'"
+                          class="w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform"
+                        />
+                        <UIcon name="i-heroicons-calendar-days" class="w-4 h-4 text-indigo-500" />
+                        <span class="capitalize">{{ item.formattedDate }}</span>
+                        <span
+                          v-if="item.isToday"
+                          class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800"
+                        >
+                          Aujourd'hui
+                        </span>
+                      </div>
+                    </td>
 
-                  <!-- Count column -->
-                  <td class="px-5 py-4 font-bold text-gray-800 dark:text-gray-200 whitespace-nowrap">
-                    <div class="flex items-center gap-2">
-                      <span
-                        class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-bold"
-                        :class="item.targetReached
-                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
-                          : 'bg-indigo-50 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300'"
-                      >
-                        <UIcon v-if="item.targetReached" name="i-heroicons-check" class="w-3.5 h-3.5 mr-1 text-emerald-600 dark:text-emerald-400" />
-                        {{ item.count }} {{ item.count > 1 ? 'défis accomplis' : 'défi accompli' }}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
+                    <!-- Count column -->
+                    <td class="px-5 py-4 font-bold text-gray-800 dark:text-gray-200 whitespace-nowrap">
+                      <div class="flex items-center justify-between gap-2">
+                        <span
+                          class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-bold"
+                          :class="item.targetReached
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                            : 'bg-indigo-50 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300'"
+                        >
+                          <UIcon v-if="item.targetReached" name="i-heroicons-check" class="w-3.5 h-3.5 mr-1 text-emerald-600 dark:text-emerald-400" />
+                          {{ item.count }} {{ item.count > 1 ? 'défis accomplis' : 'défi accompli' }}
+                        </span>
+                        <span class="text-xs text-gray-400 font-normal">
+                          {{ expandedHistoryDate === item.dateKey ? 'Masquer les défis' : 'Voir les défis' }}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Expanded Accordion Row: Minimalist List of Challenges -->
+                  <tr v-if="expandedHistoryDate === item.dateKey" class="bg-gray-50/60 dark:bg-gray-900/40">
+                    <td colspan="2" class="px-5 py-3">
+                      <div class="space-y-2">
+                        <div
+                          v-for="challenge in item.challenges"
+                          :key="'history-c-' + challenge.id"
+                          class="flex items-center justify-between gap-4 py-2 px-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200/70 dark:border-gray-700/60 text-sm shadow-2xs hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                        >
+                          <!-- Minimalist text -->
+                          <div class="flex-1 min-w-0 pr-2">
+                            <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
+                          </div>
+
+                          <!-- 3 Standard Actions: View, Edit, Delete -->
+                          <div class="flex items-center gap-1 shrink-0">
+                            <button
+                              @click.stop="openChallengeDetailModal(challenge)"
+                              class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                              title="Afficher les détails"
+                            >
+                              <UIcon name="i-heroicons-eye" class="w-4 h-4" />
+                            </button>
+                            <button
+                              @click.stop="openEditChallengeModal(challenge)"
+                              class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                              title="Modifier le défi"
+                            >
+                              <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+                            </button>
+                            <button
+                              @click.stop="deleteChallenge(challenge)"
+                              class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                              title="Supprimer le défi"
+                            >
+                              <UIcon name="i-heroicons-trash" class="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
               </tbody>
             </table>
           </div>
