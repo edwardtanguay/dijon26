@@ -309,9 +309,13 @@ const sortedTodoChallenges = computed(() => {
   })
 })
 
-// Challenges selected for today (not completed)
+// Challenges selected for today (not completed), sorted with newest first to prevent reordering jumps
 const selectedTodayChallenges = computed(() => {
-  return todoChallenges.value.filter((c) => c.selectedForDate === todayStr.value)
+  return [...todoChallenges.value.filter((c) => c.selectedForDate === todayStr.value)].sort((a, b) => {
+    const timeA = new Date(a.createdAt).getTime() || 0
+    const timeB = new Date(b.createdAt).getTime() || 0
+    return timeB - timeA
+  })
 })
 
 // Challenges available to select (not completed and not selected for today)
@@ -2187,8 +2191,8 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
                           <!-- Separator -->
                           <span class="text-gray-300 dark:text-gray-600 select-none shrink-0">—</span>
 
-                          <!-- Action du défi (Single Line with Ellipsis) -->
-                          <span class="flex-1 min-w-0 truncate text-gray-700 dark:text-gray-200 font-medium group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                          <!-- Action du défi (Single Line with Ellipsis and responsive max width) -->
+                          <span class="flex-1 min-w-0 max-w-[80%] truncate text-gray-700 dark:text-gray-200 font-medium group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
                             {{ cleanSingleLineText(challenge.challengeText) }}
                           </span>
                         </div>
@@ -2419,8 +2423,8 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
                 </div>
 
                 <div class="space-y-1 px-1">
-                  <div class="text-gray-900 dark:text-white">
-                    <OutlineContent :text="ch.challengeText" :available-images="availableImages" />
+                  <div>
+                    <OutlineContent :text="ch.challengeText" :available-images="availableImages" text-class="font-mono text-yellow-600 dark:text-yellow-400 font-medium" />
                   </div>
                   <div v-if="ch.afterChallengeNotes" class="text-gray-600 dark:text-gray-300 italic pt-1">
                     <OutlineContent :text="ch.afterChallengeNotes" :available-images="availableImages" />
@@ -2539,8 +2543,8 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
                         </span>
                       </div>
 
-                      <div class="text-[11px] text-gray-800 dark:text-gray-200">
-                        <OutlineContent :text="h.challengeText" :available-images="availableImages" />
+                      <div>
+                        <OutlineContent :text="h.challengeText" :available-images="availableImages" text-class="text-[11px] font-mono text-yellow-600 dark:text-yellow-400 font-medium" />
                       </div>
 
                       <div v-if="h.afterChallengeNotes" class="text-[10px] italic text-gray-500 dark:text-gray-400 pt-0.5 border-t border-gray-50 dark:border-gray-700/40">
@@ -3013,8 +3017,8 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
                   </div>
 
                   <div class="space-y-1 px-1">
-                    <div class="text-gray-900 dark:text-white">
-                      <OutlineContent :text="ch.challengeText" :available-images="availableImages" />
+                    <div>
+                      <OutlineContent :text="ch.challengeText" :available-images="availableImages" text-class="font-mono text-yellow-600 dark:text-yellow-400 font-medium" />
                     </div>
                     <div v-if="ch.afterChallengeNotes" class="text-gray-600 dark:text-gray-300 italic pt-1">
                       <OutlineContent :text="ch.afterChallengeNotes" :available-images="availableImages" />

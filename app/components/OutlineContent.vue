@@ -11,7 +11,8 @@
       </span>
       <div class="flex-1 min-w-0">
         <span
-          class="inline text-gray-800 dark:text-gray-200 leading-relaxed break-words"
+          class="inline leading-relaxed break-words"
+          :class="textClass || 'text-gray-800 dark:text-gray-200'"
           v-html="renderFormattedContent(item.body)"
         />
         <div v-if="item.image" class="mt-2">
@@ -41,6 +42,7 @@ const props = defineProps<{
   text?: string | null
   availableImages?: string[]
   maxLines?: number
+  textClass?: string
 }>()
 
 interface ParsedOutlineLine {
