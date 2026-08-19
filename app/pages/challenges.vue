@@ -972,6 +972,19 @@ const formatNiceUrl = (url: string | null | undefined): string => {
     return clean
   }
 }
+
+// Nettoyer le texte du défi pour l'affichage en une seule ligne (retire les puces, formatages outline et tags images)
+const cleanSingleLineText = (text: string | null | undefined): string => {
+  if (!text) return ''
+  return text
+    .split('\n')
+    .map((l) => l.trim().replace(/^[-*•]\s+/, ''))
+    .filter((l) => l.length > 0)
+    .join(' — ')
+    .replace(/##[a-zA-Z0-9_\-]+/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .trim()
+}
 </script>
 
 <template>
@@ -2120,44 +2133,64 @@ const formatNiceUrl = (url: string | null | undefined): string => {
                     </td>
                   </tr>
 
-                  <!-- Expanded Accordion Row: Minimalist List of Challenges -->
-                  <tr v-if="expandedHistoryDate === item.dateKey" class="bg-gray-50/60 dark:bg-gray-900/40">
-                    <td colspan="2" class="px-5 py-3">
-                      <div class="space-y-2">
+                  <!-- Expanded Accordion Row: Single Line per Challenge with Visual Hierarchy (Indigo Left Border) -->
+                  <tr v-if="expandedHistoryDate === item.dateKey" class="bg-indigo-50/20 dark:bg-indigo-950/20">
+                    <td colspan="2" class="p-0">
+                      <div class="py-3 px-5 sm:px-6 border-l-4 border-indigo-500/80 dark:border-indigo-400/80 space-y-2 bg-indigo-50/15 dark:bg-indigo-950/10">
                         <div
                           v-for="challenge in item.challenges"
                           :key="'history-c-' + challenge.id"
-                          class="flex items-center justify-between gap-4 py-2 px-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200/70 dark:border-gray-700/60 text-sm shadow-2xs hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                          @click="openChallengeDetailModal(challenge)"
+                          class="group flex items-center gap-2.5 py-2 px-3.5 rounded-xl bg-white dark:bg-gray-800/90 border border-indigo-100/80 dark:border-indigo-900/40 hover:border-indigo-300 dark:hover:border-indigo-600/80 text-xs shadow-2xs hover:shadow-xs transition-all cursor-pointer overflow-hidden select-none"
+                          title="Cliquer pour afficher les détails du défi"
                         >
-                          <!-- Minimalist text -->
-                          <div class="flex-1 min-w-0 pr-2">
-                            <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
+                          <!-- Contact Section (Clickable name + Website & Map icons) -->
+                          <div class="flex items-center gap-1.5 shrink-0">
+                            <UIcon name="i-heroicons-user" class="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
+                            <button
+                              v-if="challenge.contact"
+                              @click.stop="openContactDetailModal(challenge.contact)"
+                              class="font-bold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors cursor-pointer hover:underline"
+                              title="Afficher la fiche du contact"
+                            >
+                              {{ challenge.contact.name }}
+                            </button>
+                            <span v-else class="font-semibold text-gray-400 italic">Contact inconnu</span>
+
+                            <!-- External Website Icon -->
+                            <a
+                              v-if="challenge.contact?.url"
+                              :href="normalizeUrl(challenge.contact.url)"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              @click.stop
+                              class="text-gray-400 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-300 inline-flex items-center p-0.5"
+                              :title="challenge.contact.url"
+                            >
+                              <UIcon name="i-heroicons-globe-alt" class="w-3.5 h-3.5" />
+                            </a>
+
+                            <!-- Map Icon -->
+                            <a
+                              v-if="challenge.contact?.mapUrl"
+                              :href="challenge.contact.mapUrl"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              @click.stop
+                              class="text-gray-400 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-300 inline-flex items-center p-0.5"
+                              title="Google Maps"
+                            >
+                              <UIcon name="i-heroicons-map-pin" class="w-3.5 h-3.5" />
+                            </a>
                           </div>
 
-                          <!-- 3 Standard Actions: View, Edit, Delete -->
-                          <div class="flex items-center gap-1 shrink-0">
-                            <button
-                              @click.stop="openChallengeDetailModal(challenge)"
-                              class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                              title="Afficher les détails"
-                            >
-                              <UIcon name="i-heroicons-eye" class="w-4 h-4" />
-                            </button>
-                            <button
-                              @click.stop="openEditChallengeModal(challenge)"
-                              class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                              title="Modifier le défi"
-                            >
-                              <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
-                            </button>
-                            <button
-                              @click.stop="deleteChallenge(challenge)"
-                              class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                              title="Supprimer le défi"
-                            >
-                              <UIcon name="i-heroicons-trash" class="w-4 h-4" />
-                            </button>
-                          </div>
+                          <!-- Separator -->
+                          <span class="text-gray-300 dark:text-gray-600 select-none shrink-0">—</span>
+
+                          <!-- Action du défi (Single Line with Ellipsis) -->
+                          <span class="flex-1 min-w-0 truncate text-gray-700 dark:text-gray-200 font-medium group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                            {{ cleanSingleLineText(challenge.challengeText) }}
+                          </span>
                         </div>
                       </div>
                     </td>
