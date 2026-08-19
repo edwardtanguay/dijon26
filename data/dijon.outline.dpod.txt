@@ -15,6 +15,7 @@
 	- write to: https://preply.com/fr/tuteur/6636783
 - liste de tâches à accomplir
 	- chatgpt: groupes similaires de polyglot café
+	- est-ce qu'il y a un VHS en france ?
 	- Quels sont les quartiers de Dijon, par exemple Quartier République
 	- professeur en ligne de Dijon
 	- demander ia pour meetups
