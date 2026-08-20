@@ -1056,6 +1056,34 @@ const copyChallengeText = async (challenge: Challenge) => {
     console.error('Erreur lors de la copie dans le presse-papier:', err)
   }
 }
+
+const copiedNotesId = ref<string | null>(null)
+let copyNotesTimeout: ReturnType<typeof setTimeout> | null = null
+
+const copyNotes = async (challenge: Challenge) => {
+  if (!challenge || !challenge.afterChallengeNotes) return
+  try {
+    if (navigator?.clipboard?.writeText) {
+      await navigator.clipboard.writeText(challenge.afterChallengeNotes)
+    } else {
+      const textarea = document.createElement('textarea')
+      textarea.value = challenge.afterChallengeNotes
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
+    copiedNotesId.value = challenge.id
+    if (copyNotesTimeout) clearTimeout(copyNotesTimeout)
+    copyNotesTimeout = setTimeout(() => {
+      if (copiedNotesId.value === challenge.id) {
+        copiedNotesId.value = null
+      }
+    }, 2000)
+  } catch (err) {
+    console.error('Erreur lors de la copie des notes dans le presse-papier:', err)
+  }
+}
 </script>
 
 <template>
@@ -1213,33 +1241,27 @@ const copyChallengeText = async (challenge: Challenge) => {
                   </a>
                 </div>
 
-                <!-- Full Challenge Content without truncation + Copy to clipboard -->
-                <div class="flex items-start justify-between gap-2">
-                  <div class="flex-1 min-w-0">
-                    <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" text-class="text-yellow-600 dark:text-yellow-400 font-medium" />
-                  </div>
-                  <button
-                    @click.stop="copyChallengeText(slot.challenge)"
-                    class="p-1 rounded-md text-yellow-600/80 hover:text-yellow-700 dark:text-yellow-400/80 dark:hover:text-yellow-300 hover:bg-yellow-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center mt-0.5"
-                    :title="copiedChallengeId === slot.challenge.id ? 'Copié dans le presse-papier !' : 'Copier l\'action du défi'"
-                  >
-                    <UIcon v-if="copiedChallengeId === slot.challenge.id" name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    <UIcon v-else name="i-heroicons-clipboard-document" class="w-4 h-4" />
-                  </button>
+                <!-- Full Challenge Content without truncation -->
+                <div>
+                  <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" text-class="text-yellow-600 dark:text-yellow-400 font-medium" />
                 </div>
 
                 <!-- After Challenge Notes -->
                 <div
                   v-if="slot.challenge.afterChallengeNotes"
-                  class="mt-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200"
+                  class="relative mt-2 p-2.5 pb-7 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200"
                 >
-                  <div class="font-bold mb-0.5 flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-300">
-                    <UIcon name="i-heroicons-chat-bubble-bottom-center-text" class="w-3.5 h-3.5" />
-                    <span>Notes :</span>
-                  </div>
                   <div class="italic">
                     <OutlineContent :text="slot.challenge.afterChallengeNotes" :available-images="availableImages" />
                   </div>
+                  <button
+                    @click.stop="copyNotes(slot.challenge)"
+                    class="absolute bottom-1.5 right-1.5 p-1 rounded-md text-emerald-700/80 hover:text-emerald-800 dark:text-emerald-300/80 dark:hover:text-emerald-200 hover:bg-emerald-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center"
+                    :title="copiedNotesId === slot.challenge.id ? 'Copié dans le presse-papier !' : 'Copier les notes'"
+                  >
+                    <UIcon v-if="copiedNotesId === slot.challenge.id" name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <UIcon v-else name="i-heroicons-clipboard-document" class="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
@@ -1329,7 +1351,7 @@ const copyChallengeText = async (challenge: Challenge) => {
                     class="p-1 rounded-md text-yellow-600/80 hover:text-yellow-700 dark:text-yellow-400/80 dark:hover:text-yellow-300 hover:bg-yellow-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center mt-0.5"
                     :title="copiedChallengeId === slot.challenge.id ? 'Copié dans le presse-papier !' : 'Copier l\'action du défi'"
                   >
-                    <UIcon v-if="copiedChallengeId === slot.challenge.id" name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <UIcon v-if="copiedChallengeId === slot.challenge.id" name="i-heroicons-check" class="w-4 h-4 text-amber-500 dark:text-yellow-400" />
                     <UIcon v-else name="i-heroicons-clipboard-document" class="w-4 h-4" />
                   </button>
                 </div>
