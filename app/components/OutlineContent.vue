@@ -1,37 +1,39 @@
 <template>
   <div v-if="text" class="outline-content space-y-1">
-    <div
-      v-for="item in parsedItems"
-      :key="item.id"
-      class="outline-item flex items-start group"
-      :style="{ paddingLeft: `${item.indent * 1.25}rem` }"
-    >
-      <span v-if="item.isBullet" class="text-gray-400 dark:text-gray-500 mr-2 select-none font-bold">
-        •
-      </span>
-      <div class="flex-1 min-w-0">
-        <span
-          class="inline leading-relaxed break-words"
-          :class="textClass || 'text-gray-800 dark:text-gray-200'"
-          v-html="renderFormattedContent(item.body)"
-        />
-        <div v-if="item.image" class="mt-2">
-          <div
-            v-if="item.image.startsWith('NOT_FOUND:')"
-            class="bg-black/90 text-amber-300 font-mono text-xs font-semibold px-3 py-2 rounded-lg inline-flex items-center gap-2 border border-amber-500/30"
-          >
-            <span>Image introuvable : {{ item.image.replace('NOT_FOUND:', '') }}</span>
-          </div>
-          <img
-            v-else
-            :src="`/images/outline/${item.image}`"
-            :alt="item.image"
-            class="max-w-full max-h-64 object-contain rounded-xl shadow-md border border-gray-200 dark:border-gray-700 my-1 block"
-            loading="lazy"
+    <template v-for="item in parsedItems" :key="item.id">
+      <div v-if="item.isEmpty" class="h-3 select-none" />
+      <div
+        v-else
+        class="outline-item flex items-start group"
+        :style="{ paddingLeft: `${item.indent * 1.25}rem` }"
+      >
+        <span v-if="item.isBullet" class="text-gray-400 dark:text-gray-500 mr-2 select-none font-bold">
+          •
+        </span>
+        <div class="flex-1 min-w-0">
+          <span
+            class="inline leading-relaxed break-words"
+            :class="textClass || 'text-gray-800 dark:text-gray-200'"
+            v-html="renderFormattedContent(item.body)"
           />
+          <div v-if="item.image" class="mt-2">
+            <div
+              v-if="item.image.startsWith('NOT_FOUND:')"
+              class="bg-black/90 text-amber-300 font-mono text-xs font-semibold px-3 py-2 rounded-lg inline-flex items-center gap-2 border border-amber-500/30"
+            >
+              <span>Image introuvable : {{ item.image.replace('NOT_FOUND:', '') }}</span>
+            </div>
+            <img
+              v-else
+              :src="`/images/outline/${item.image}`"
+              :alt="item.image"
+              class="max-w-full max-h-64 object-contain rounded-xl shadow-md border border-gray-200 dark:border-gray-700 my-1 block"
+              loading="lazy"
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -50,6 +52,7 @@ interface ParsedOutlineLine {
   body: string
   indent: number
   isBullet: boolean
+  isEmpty?: boolean
   image?: string
 }
 
@@ -131,7 +134,20 @@ const parsedItems = computed<ParsedOutlineLine[]>(() => {
   const items: ParsedOutlineLine[] = []
 
   rawLines.forEach((line, idx) => {
-    if (!line.trim()) return
+    if (!line.trim()) {
+      // Préserver la ligne vide comme espacement s'il ne s'agit pas de lignes vides consécutives inutiles
+      const prev = items[items.length - 1]
+      if (items.length > 0 && prev && !prev.isEmpty) {
+        items.push({
+          id: `line-empty-${idx}-${Date.now()}`,
+          body: '',
+          indent: 0,
+          isBullet: false,
+          isEmpty: true,
+        })
+      }
+      return
+    }
 
     // Calculate indent (tabs or multiples of 2/4 spaces)
     let indent = 0
@@ -180,6 +196,11 @@ const parsedItems = computed<ParsedOutlineLine[]>(() => {
       image,
     })
   })
+
+  // Supprimer toute ligne vide traînante en fin
+  while (items.length > 0 && items[items.length - 1]?.isEmpty) {
+    items.pop()
+  }
 
   if (props.maxLines && props.maxLines > 0 && items.length > props.maxLines) {
     const truncated = items.slice(0, props.maxLines)
