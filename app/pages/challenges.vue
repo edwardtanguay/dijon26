@@ -409,23 +409,23 @@ const dailyGoalSlots = computed(() => {
     challenge?: Challenge
   }> = []
 
-  // 1. Finished challenges today
-  for (let i = 0; i < finishedTodayChallenges.value.length && slots.length < goalCount; i++) {
+  // 1. All Finished challenges today (no cap)
+  for (let i = 0; i < finishedTodayChallenges.value.length; i++) {
     slots.push({
       status: 'finished',
       challenge: finishedTodayChallenges.value[i],
     })
   }
 
-  // 2. Selected challenges for today
-  for (let i = 0; i < selectedTodayChallenges.value.length && slots.length < goalCount; i++) {
+  // 2. All Selected challenges for today (no cap)
+  for (let i = 0; i < selectedTodayChallenges.value.length; i++) {
     slots.push({
       status: 'doing',
       challenge: selectedTodayChallenges.value[i],
     })
   }
 
-  // 3. All remaining slots are empty
+  // 3. Remaining empty slots up to dailyTarget (if below target)
   while (slots.length < goalCount) {
     slots.push({
       status: 'empty',
@@ -433,6 +433,12 @@ const dailyGoalSlots = computed(() => {
   }
 
   return slots
+})
+
+const allSlotsFilled = computed(() => {
+  const goalCount = Math.max(1, dailyTarget.value || 1)
+  const totalOccupied = finishedTodayChallenges.value.length + selectedTodayChallenges.value.length
+  return totalOccupied >= goalCount
 })
 
 // Relative date formatter (in French)
@@ -659,9 +665,12 @@ const openContactChallengesModal = (contact: Contact) => {
 }
 
 // Challenge CRUD Handlers
-const openCreateChallengeModal = (presetContactId?: string, defaultFinished = false) => {
+const createChallengeAssignToToday = ref<boolean | null>(null)
+
+const openCreateChallengeModal = (presetContactId?: string, defaultFinished = false, assignToToday?: boolean) => {
   isEditingChallenge.value = false
   editingChallengeId.value = ''
+  createChallengeAssignToToday.value = assignToToday !== undefined ? assignToToday : null
   
   challengeForm.value = {
     contactMode: contacts.value.length > 0 ? 'existing' : 'new',
@@ -726,11 +735,12 @@ const submitChallengeForm = async () => {
   const challengeId = editingChallengeId.value
   const formValues = { ...challengeForm.value }
 
-  // Check if there are open slots today (finished today + selected doing today < dailyTarget)
+  // Check if should be selected for today:
+  // If explicitly requested (via createChallengeAssignToToday === true), or if not finished and there are open slots today
   const currentGoalCount = Math.max(1, dailyTarget.value || 1)
   const occupiedSlots = finishedTodayChallenges.value.length + selectedTodayChallenges.value.length
   const hasOpenSlots = occupiedSlots < currentGoalCount
-  const shouldSelectForToday = !formValues.isFinished && hasOpenSlots
+  const shouldSelectForToday = !formValues.isFinished && (createChallengeAssignToToday.value === true || (createChallengeAssignToToday.value !== false && hasOpenSlots))
 
   // Optimistic update for edits
   if (isEditing) {
@@ -1031,15 +1041,15 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
           </div>
         </div>
 
-        <!-- Target Setting (Centered on mobile) -->
+        <!-- Target Progress / Setting (Centered on mobile) -->
         <div class="flex items-center justify-center gap-3 self-center sm:self-start">
           <div v-if="!loading && !isEditingTarget" class="flex items-center gap-2">
             <div class="flex flex-col items-center">
-              <span class="text-4xl sm:text-5xl font-black text-indigo-600 dark:text-indigo-400 leading-none tracking-tight">
-                {{ dailyTarget }}
+              <span class="text-3xl sm:text-4xl font-black text-indigo-600 dark:text-indigo-400 leading-none tracking-tight">
+                {{ finishedTodayChallenges.length }} sur {{ dailyTarget }}
               </span>
-              <span class="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mt-0.5">
-                par jour
+              <span class="text-[11px] font-semibold tracking-wide text-gray-500 dark:text-gray-400 mt-1">
+                terminés aujourd'hui
               </span>
             </div>
             <button
@@ -1084,229 +1094,257 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
       </div>
 
       <!-- Loaded State: 2 Flex Columns Maximum Grid for Challenges Cards -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-        <template v-for="(slot, index) in dailyGoalSlots" :key="slot.challenge?.id ? `challenge-${slot.challenge.id}` : `slot-${index}`">
-          <!-- 1. Finished Challenge Card (Green) -->
-          <div
-            v-if="slot.status === 'finished' && slot.challenge"
-            class="relative rounded-2xl p-5 border-2 transition-all flex flex-col justify-between min-h-[170px]"
-            :class="getSlotCardBorderClass('finished')"
-          >
-            <div class="space-y-3">
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1.5 leading-none">
-                  <UIcon name="i-heroicons-check-circle" class="w-4 h-4 text-emerald-500 shrink-0" />
-                  Défi #{{ index + 1 }} accompli
-                </span>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 inline-flex items-center leading-none">
-                    {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }} {{ slot.challenge.type === 'written' ? 'écrit' : 'oral' }}
+      <div v-else class="space-y-4 mt-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <template v-for="(slot, index) in dailyGoalSlots" :key="slot.challenge?.id ? `challenge-${slot.challenge.id}` : `slot-${index}`">
+            <!-- 1. Finished Challenge Card (Green) -->
+            <div
+              v-if="slot.status === 'finished' && slot.challenge"
+              class="relative rounded-2xl p-5 border-2 transition-all flex flex-col justify-between min-h-[170px]"
+              :class="getSlotCardBorderClass('finished')"
+            >
+              <div class="space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1.5 leading-none">
+                    <UIcon name="i-heroicons-check-circle" class="w-4 h-4 text-emerald-500 shrink-0" />
+                    Défi #{{ index + 1 }} accompli
                   </span>
-                  <button
-                    @click="openEditChallengeModal(slot.challenge)"
-                    class="p-1 rounded-md text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200 hover:bg-emerald-100/50 dark:hover:bg-emerald-950/60 transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
-                    title="Modifier le défi"
-                  >
-                    <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
-                  </button>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 inline-flex items-center leading-none">
+                      {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }} {{ slot.challenge.type === 'written' ? 'écrit' : 'oral' }}
+                    </span>
+                    <button
+                      @click="openEditChallengeModal(slot.challenge)"
+                      class="p-1 rounded-md text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200 hover:bg-emerald-100/50 dark:hover:bg-emerald-950/60 transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
+                      title="Modifier le défi"
+                    >
+                      <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Full Challenge Content without truncation -->
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
+                </div>
+
+                <!-- After Challenge Notes -->
+                <div
+                  v-if="slot.challenge.afterChallengeNotes"
+                  class="mt-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200"
+                >
+                  <div class="font-bold mb-0.5 flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-300">
+                    <UIcon name="i-heroicons-chat-bubble-bottom-center-text" class="w-3.5 h-3.5" />
+                    <span>Notes :</span>
+                  </div>
+                  <div class="italic">
+                    <OutlineContent :text="slot.challenge.afterChallengeNotes" :available-images="availableImages" />
+                  </div>
                 </div>
               </div>
 
-              <!-- Full Challenge Content without truncation -->
-              <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
+              <!-- Bottom Area of Green Card -->
+              <div class="mt-4 space-y-2.5 text-xs">
+                <!-- Contact row: Centered, larger text, top & bottom borders with light themed background -->
+                <div class="py-2 px-3 border-y border-emerald-200/70 dark:border-emerald-800/70 bg-emerald-50/60 dark:bg-emerald-950/40 rounded-sm flex items-center justify-center gap-2 text-center">
+                  <button
+                    v-if="slot.challenge.contact"
+                    @click="openContactDetailModal(slot.challenge.contact)"
+                    class="font-bold text-base text-emerald-800 dark:text-emerald-200 hover:text-emerald-950 dark:hover:text-emerald-100 transition-colors cursor-pointer"
+                    title="Afficher les détails du contact"
+                  >
+                    {{ slot.challenge.contact.name }}
+                  </button>
+                  <span v-else class="font-bold text-base text-emerald-800 dark:text-emerald-200">Contact</span>
+                  <a
+                    v-if="slot.challenge.contact?.url"
+                    :href="normalizeUrl(slot.challenge.contact.url)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
+                    :title="slot.challenge.contact.url"
+                  >
+                    <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+                  </a>
+                  <a
+                    v-if="slot.challenge.contact?.mapUrl"
+                    :href="slot.challenge.contact.mapUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
+                    title="Voir sur Google Maps"
+                  >
+                    <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+                  </a>
+                </div>
+
+                <!-- Terminé badge -->
+                <div class="flex items-center justify-end pt-1">
+                  <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 whitespace-nowrap">
+                    <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    Terminé
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Doing / Selected Challenge Card (Yellow / Amber) -->
+            <div
+              v-else-if="slot.status === 'doing' && slot.challenge"
+              class="relative rounded-2xl p-5 border-2 transition-all flex flex-col justify-between min-h-[170px]"
+              :class="getSlotCardBorderClass('doing')"
+            >
+              <div class="space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs font-bold text-amber-600 dark:text-amber-400 inline-flex items-center gap-1.5 leading-none">
+                    <UIcon name="i-heroicons-sparkles" class="w-4 h-4 text-amber-500 shrink-0" />
+                    Défi #{{ index + 1 }}
+                  </span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 inline-flex items-center leading-none">
+                      {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }} {{ slot.challenge.type === 'written' ? 'écrit' : 'oral' }}
+                    </span>
+                    <button
+                      @click="openEditChallengeModal(slot.challenge)"
+                      class="p-1 rounded-md text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200 hover:bg-amber-100/50 dark:hover:bg-amber-950/60 transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
+                      title="Modifier le défi"
+                    >
+                      <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+                    </button>
+                    <button
+                      @click="deselectChallenge(slot.challenge)"
+                      class="p-1 rounded-md text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200 hover:bg-amber-100/50 dark:hover:bg-amber-950/60 transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
+                      title="Désélectionner ce défi"
+                    >
+                      <UIcon name="i-heroicons-x-mark" class="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Full Challenge Content without truncation -->
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
+                </div>
               </div>
 
-              <!-- After Challenge Notes -->
-              <div
-                v-if="slot.challenge.afterChallengeNotes"
-                class="mt-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200"
+              <!-- Bottom Area of Yellow Card -->
+              <!-- Line 1: Contact + Link icons (web & maps) with top & bottom borders & light background -->
+              <!-- Line 2: Deselectionner & Terminer buttons + En cours -->
+              <div class="mt-4 space-y-2.5 text-xs">
+                <!-- Contact row: Centered, larger text, top & bottom borders with light themed background -->
+                <div class="py-2 px-3 border-y border-amber-200/80 dark:border-amber-800/70 bg-amber-50/70 dark:bg-amber-950/40 rounded-sm flex items-center justify-center gap-2 text-center">
+                  <button
+                    v-if="slot.challenge.contact"
+                    @click="openContactDetailModal(slot.challenge.contact)"
+                    class="font-bold text-base text-amber-800 dark:text-amber-200 hover:text-amber-950 dark:hover:text-amber-100 transition-colors cursor-pointer"
+                    title="Afficher les détails du contact"
+                  >
+                    {{ slot.challenge.contact.name }}
+                  </button>
+                  <span v-else class="font-bold text-base text-amber-800 dark:text-amber-200">Contact</span>
+                  <a
+                    v-if="slot.challenge.contact?.url"
+                    :href="normalizeUrl(slot.challenge.contact.url)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                    :title="slot.challenge.contact.url"
+                  >
+                    <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+                  </a>
+                  <a
+                    v-if="slot.challenge.contact?.mapUrl"
+                    :href="slot.challenge.contact.mapUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
+                    title="Voir sur Google Maps"
+                  >
+                    <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+                  </a>
+                </div>
+
+                <!-- Action buttons + En cours -->
+                <div class="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap pt-1">
+                  <div class="flex items-center gap-2">
+                    <button
+                      @click="deselectChallenge(slot.challenge)"
+                      class="px-2.5 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 hover:bg-amber-100/60 dark:hover:bg-amber-900/40 text-amber-800 dark:text-amber-200 font-semibold text-xs transition-colors cursor-pointer flex items-center gap-1"
+                      title="Désélectionner ce défi de la journée"
+                    >
+                      <UIcon name="i-heroicons-arrow-uturn-left" class="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
+                      <span>Désélectionner</span>
+                    </button>
+                    <button
+                      @click="openReflectModal(slot.challenge)"
+                      class="px-3.5 py-1.5 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/80 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
+                      title="Valider et faire le bilan"
+                    >
+                      <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-2" />
+                      <span>Terminer</span>
+                    </button>
+                  </div>
+                  <span class="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 whitespace-nowrap">
+                    <UIcon name="i-heroicons-arrow-path" class="w-3.5 h-3.5" />
+                    En&nbsp;cours
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Empty Slot Card (Gray) -->
+            <div
+              v-else
+              class="relative rounded-2xl p-5 border-2 transition-all flex flex-col items-center justify-center text-center min-h-[170px] gap-2.5"
+              :class="getSlotCardBorderClass('empty')"
+            >
+              <!-- Button: Select existing challenge (if available) -->
+              <button
+                v-if="availableUnselectedChallenges.length > 0"
+                @click="openSelectExistingModal"
+                class="px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-102"
               >
-                <div class="font-bold mb-0.5 flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-300">
-                  <UIcon name="i-heroicons-chat-bubble-bottom-center-text" class="w-3.5 h-3.5" />
-                  <span>Notes :</span>
-                </div>
-                <div class="italic">
-                  <OutlineContent :text="slot.challenge.afterChallengeNotes" :available-images="availableImages" />
-                </div>
-              </div>
+                <UIcon name="i-heroicons-list-bullet" class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <span>Choisir un défi existant ({{ availableUnselectedChallenges.length }})</span>
+              </button>
+
+              <!-- Button: Create a challenge -->
+              <button
+                @click="openCreateChallengeModal(undefined, false, true)"
+                class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-300 border border-gray-300 dark:border-gray-700 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-102"
+              >
+                <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <span>Créer un défi</span>
+              </button>
             </div>
+          </template>
+        </div>
 
-            <!-- Bottom Area of Green Card -->
-            <div class="mt-4 space-y-2.5 text-xs">
-              <!-- Contact row: Centered, larger text, top & bottom borders with light themed background -->
-              <div class="py-2 px-3 border-y border-emerald-200/70 dark:border-emerald-800/70 bg-emerald-50/60 dark:bg-emerald-950/40 rounded-sm flex items-center justify-center gap-2 text-center">
-                <button
-                  v-if="slot.challenge.contact"
-                  @click="openContactDetailModal(slot.challenge.contact)"
-                  class="font-bold text-base text-emerald-800 dark:text-emerald-200 hover:text-emerald-950 dark:hover:text-emerald-100 transition-colors cursor-pointer"
-                  title="Afficher les détails du contact"
-                >
-                  {{ slot.challenge.contact.name }}
-                </button>
-                <span v-else class="font-bold text-base text-emerald-800 dark:text-emerald-200">Contact</span>
-                <a
-                  v-if="slot.challenge.contact?.url"
-                  :href="normalizeUrl(slot.challenge.contact.url)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
-                  :title="slot.challenge.contact.url"
-                >
-                  <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
-                </a>
-                <a
-                  v-if="slot.challenge.contact?.mapUrl"
-                  :href="slot.challenge.contact.mapUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 inline-flex items-center"
-                  title="Voir sur Google Maps"
-                >
-                  <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
-                </a>
-              </div>
-
-              <!-- Terminé badge -->
-              <div class="flex items-center justify-end pt-1">
-                <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 whitespace-nowrap">
-                  <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  Terminé
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 2. Doing / Selected Challenge Card (Yellow / Amber) -->
-          <div
-            v-else-if="slot.status === 'doing' && slot.challenge"
-            class="relative rounded-2xl p-5 border-2 transition-all flex flex-col justify-between min-h-[170px]"
-            :class="getSlotCardBorderClass('doing')"
+        <!-- Extra Challenge Buttons: Displayed side-to-side full width when all card slots are filled -->
+        <div
+          v-if="allSlotsFilled"
+          class="grid gap-3 pt-1"
+          :class="availableUnselectedChallenges.length > 0 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'"
+        >
+          <!-- Button 1: Choisir un défi existant -->
+          <button
+            v-if="availableUnselectedChallenges.length > 0"
+            @click="openSelectExistingModal"
+            class="w-full py-3 px-4 rounded-xl bg-indigo-50/80 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer hover:scale-[1.01]"
           >
-            <div class="space-y-3">
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-xs font-bold text-amber-600 dark:text-amber-400 inline-flex items-center gap-1.5 leading-none">
-                  <UIcon name="i-heroicons-sparkles" class="w-4 h-4 text-amber-500 shrink-0" />
-                  Défi #{{ index + 1 }}
-                </span>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 inline-flex items-center leading-none">
-                    {{ Number(slot.challenge.rank ?? 2.5).toFixed(1) }} {{ slot.challenge.type === 'written' ? 'écrit' : 'oral' }}
-                  </span>
-                  <button
-                    @click="openEditChallengeModal(slot.challenge)"
-                    class="p-1 rounded-md text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200 hover:bg-amber-100/50 dark:hover:bg-amber-950/60 transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
-                    title="Modifier le défi"
-                  >
-                    <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
-                  </button>
-                  <button
-                    @click="deselectChallenge(slot.challenge)"
-                    class="p-1 rounded-md text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200 hover:bg-amber-100/50 dark:hover:bg-amber-950/60 transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
-                    title="Désélectionner ce défi"
-                  >
-                    <UIcon name="i-heroicons-x-mark" class="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+            <UIcon name="i-heroicons-list-bullet" class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <span>Choisir un défi existant ({{ availableUnselectedChallenges.length }})</span>
+          </button>
 
-              <!-- Full Challenge Content without truncation -->
-              <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
-              </div>
-            </div>
-
-            <!-- Bottom Area of Yellow Card -->
-            <!-- Line 1: Contact + Link icons (web & maps) with top & bottom borders & light background -->
-            <!-- Line 2: Deselectionner & Terminer buttons + En cours -->
-            <div class="mt-4 space-y-2.5 text-xs">
-              <!-- Contact row: Centered, larger text, top & bottom borders with light themed background -->
-              <div class="py-2 px-3 border-y border-amber-200/80 dark:border-amber-800/70 bg-amber-50/70 dark:bg-amber-950/40 rounded-sm flex items-center justify-center gap-2 text-center">
-                <button
-                  v-if="slot.challenge.contact"
-                  @click="openContactDetailModal(slot.challenge.contact)"
-                  class="font-bold text-base text-amber-800 dark:text-amber-200 hover:text-amber-950 dark:hover:text-amber-100 transition-colors cursor-pointer"
-                  title="Afficher les détails du contact"
-                >
-                  {{ slot.challenge.contact.name }}
-                </button>
-                <span v-else class="font-bold text-base text-amber-800 dark:text-amber-200">Contact</span>
-                <a
-                  v-if="slot.challenge.contact?.url"
-                  :href="normalizeUrl(slot.challenge.contact.url)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
-                  :title="slot.challenge.contact.url"
-                >
-                  <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
-                </a>
-                <a
-                  v-if="slot.challenge.contact?.mapUrl"
-                  :href="slot.challenge.contact.mapUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-amber-600 hover:text-amber-700 dark:text-amber-400 inline-flex items-center"
-                  title="Voir sur Google Maps"
-                >
-                  <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
-                </a>
-              </div>
-
-              <!-- Action buttons + En cours -->
-              <div class="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap pt-1">
-                <div class="flex items-center gap-2">
-                  <button
-                    @click="deselectChallenge(slot.challenge)"
-                    class="px-2.5 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 hover:bg-amber-100/60 dark:hover:bg-amber-900/40 text-amber-800 dark:text-amber-200 font-semibold text-xs transition-colors cursor-pointer flex items-center gap-1"
-                    title="Désélectionner ce défi de la journée"
-                  >
-                    <UIcon name="i-heroicons-arrow-uturn-left" class="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
-                    <span>Désélectionner</span>
-                  </button>
-                  <button
-                    @click="openReflectModal(slot.challenge)"
-                    class="px-3.5 py-1.5 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/80 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
-                    title="Valider et faire le bilan"
-                  >
-                    <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-2" />
-                    <span>Terminer</span>
-                  </button>
-                </div>
-                <span class="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 whitespace-nowrap">
-                  <UIcon name="i-heroicons-arrow-path" class="w-3.5 h-3.5" />
-                  En&nbsp;cours
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 3. Empty Slot Card (Gray) -->
-          <div
-            v-else
-            class="relative rounded-2xl p-5 border-2 transition-all flex flex-col items-center justify-center text-center min-h-[170px] gap-2.5"
-            :class="getSlotCardBorderClass('empty')"
+          <!-- Button 2: Créer un défi -->
+          <button
+            @click="openCreateChallengeModal(undefined, false, true)"
+            class="w-full py-3 px-4 rounded-xl bg-gray-100/90 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-300 border border-gray-300 dark:border-gray-700 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer hover:scale-[1.01]"
           >
-            <!-- Button: Select existing challenge (if available) -->
-            <button
-              v-if="availableUnselectedChallenges.length > 0"
-              @click="openSelectExistingModal"
-              class="px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-102"
-            >
-              <UIcon name="i-heroicons-list-bullet" class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-              <span>Choisir un défi existant ({{ availableUnselectedChallenges.length }})</span>
-            </button>
-
-            <!-- Button: Create a challenge -->
-            <button
-              @click="openCreateChallengeModal(undefined, false)"
-              class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-300 border border-gray-300 dark:border-gray-700 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-102"
-            >
-              <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <span>Créer un défi</span>
-            </button>
-          </div>
-        </template>
+            <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            <span>Créer un défi</span>
+          </button>
+        </div>
       </div>
     </div>
 
