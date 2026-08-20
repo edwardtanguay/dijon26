@@ -550,6 +550,9 @@ const saveDailyTarget = async () => {
   }
 }
 
+// Return to challenge modal after contact edit flag
+const returnToChallengeModalAfterContact = ref(false)
+
 // Contact CRUD Handlers
 const openCreateContactModal = () => {
   isEditingContact.value = false
@@ -579,6 +582,24 @@ const openEditContactModal = (contact: Contact) => {
   isContactModalOpen.value = true
 }
 
+const openEditContactFromChallengeModal = () => {
+  const cId = challengeForm.value.contactId
+  if (!cId) return
+  const contact = contacts.value.find((c) => c.id === cId)
+  if (!contact) return
+  returnToChallengeModalAfterContact.value = true
+  isChallengeModalOpen.value = false
+  openEditContactModal(contact)
+}
+
+const closeContactModal = () => {
+  isContactModalOpen.value = false
+  if (returnToChallengeModalAfterContact.value) {
+    returnToChallengeModalAfterContact.value = false
+    isChallengeModalOpen.value = true
+  }
+}
+
 const submitContactForm = async () => {
   if (!contactForm.value.name.trim()) return
   contactSubmitting.value = true
@@ -586,6 +607,9 @@ const submitContactForm = async () => {
   const isEditing = isEditingContact.value
   const formValues = { ...contactForm.value }
   isContactModalOpen.value = false
+
+  const shouldReturnToChallenge = returnToChallengeModalAfterContact.value
+  returnToChallengeModalAfterContact.value = false
 
   // Optimistic update
   if (isEditing) {
@@ -607,6 +631,10 @@ const submitContactForm = async () => {
         }
       }
     }
+  }
+
+  if (shouldReturnToChallenge) {
+    isChallengeModalOpen.value = true
   }
 
   try {
@@ -999,6 +1027,35 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .trim()
 }
+
+// État et logique de copie dans le presse-papier
+const copiedChallengeId = ref<string | null>(null)
+let copyTimeout: ReturnType<typeof setTimeout> | null = null
+
+const copyChallengeText = async (challenge: Challenge) => {
+  if (!challenge || !challenge.challengeText) return
+  try {
+    if (navigator?.clipboard?.writeText) {
+      await navigator.clipboard.writeText(challenge.challengeText)
+    } else {
+      const textarea = document.createElement('textarea')
+      textarea.value = challenge.challengeText
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
+    copiedChallengeId.value = challenge.id
+    if (copyTimeout) clearTimeout(copyTimeout)
+    copyTimeout = setTimeout(() => {
+      if (copiedChallengeId.value === challenge.id) {
+        copiedChallengeId.value = null
+      }
+    }, 2000)
+  } catch (err) {
+    console.error('Erreur lors de la copie dans le presse-papier:', err)
+  }
+}
 </script>
 
 <template>
@@ -1123,30 +1180,8 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
                   </div>
                 </div>
 
-                <!-- Full Challenge Content without truncation -->
-                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
-                </div>
-
-                <!-- After Challenge Notes -->
-                <div
-                  v-if="slot.challenge.afterChallengeNotes"
-                  class="mt-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200"
-                >
-                  <div class="font-bold mb-0.5 flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-300">
-                    <UIcon name="i-heroicons-chat-bubble-bottom-center-text" class="w-3.5 h-3.5" />
-                    <span>Notes :</span>
-                  </div>
-                  <div class="italic">
-                    <OutlineContent :text="slot.challenge.afterChallengeNotes" :available-images="availableImages" />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Bottom Area of Green Card -->
-              <div class="mt-4 space-y-2.5 text-xs">
                 <!-- Contact row: Centered, larger text, top & bottom borders with light themed background -->
-                <div class="py-2 px-3 border-y border-emerald-200/70 dark:border-emerald-800/70 bg-emerald-50/60 dark:bg-emerald-950/40 rounded-sm flex items-center justify-center gap-2 text-center">
+                <div class="py-2 px-3 border-y border-emerald-200/70 dark:border-emerald-800/70 bg-emerald-50/60 dark:bg-emerald-950/40 rounded-sm flex items-center justify-center gap-2 text-center text-xs">
                   <button
                     v-if="slot.challenge.contact"
                     @click="openContactDetailModal(slot.challenge.contact)"
@@ -1178,13 +1213,43 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
                   </a>
                 </div>
 
-                <!-- Terminé badge -->
-                <div class="flex items-center justify-end pt-1">
-                  <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 whitespace-nowrap">
-                    <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    Terminé
-                  </span>
+                <!-- Full Challenge Content without truncation + Copy to clipboard -->
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex-1 min-w-0">
+                    <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" text-class="text-yellow-600 dark:text-yellow-400 font-medium" />
+                  </div>
+                  <button
+                    @click.stop="copyChallengeText(slot.challenge)"
+                    class="p-1 rounded-md text-yellow-600/80 hover:text-yellow-700 dark:text-yellow-400/80 dark:hover:text-yellow-300 hover:bg-yellow-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center mt-0.5"
+                    :title="copiedChallengeId === slot.challenge.id ? 'Copié dans le presse-papier !' : 'Copier l\'action du défi'"
+                  >
+                    <UIcon v-if="copiedChallengeId === slot.challenge.id" name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <UIcon v-else name="i-heroicons-clipboard-document" class="w-4 h-4" />
+                  </button>
                 </div>
+
+                <!-- After Challenge Notes -->
+                <div
+                  v-if="slot.challenge.afterChallengeNotes"
+                  class="mt-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200"
+                >
+                  <div class="font-bold mb-0.5 flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-300">
+                    <UIcon name="i-heroicons-chat-bubble-bottom-center-text" class="w-3.5 h-3.5" />
+                    <span>Notes :</span>
+                  </div>
+                  <div class="italic">
+                    <OutlineContent :text="slot.challenge.afterChallengeNotes" :available-images="availableImages" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Area of Green Card -->
+              <div class="mt-4 flex items-center justify-end text-xs">
+                <!-- Terminé badge -->
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 whitespace-nowrap">
+                  <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  Terminé
+                </span>
               </div>
             </div>
 
@@ -1221,18 +1286,8 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
                   </div>
                 </div>
 
-                <!-- Full Challenge Content without truncation -->
-                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" />
-                </div>
-              </div>
-
-              <!-- Bottom Area of Yellow Card -->
-              <!-- Line 1: Contact + Link icons (web & maps) with top & bottom borders & light background -->
-              <!-- Line 2: Deselectionner & Terminer buttons + En cours -->
-              <div class="mt-4 space-y-2.5 text-xs">
                 <!-- Contact row: Centered, larger text, top & bottom borders with light themed background -->
-                <div class="py-2 px-3 border-y border-amber-200/80 dark:border-amber-800/70 bg-amber-50/70 dark:bg-amber-950/40 rounded-sm flex items-center justify-center gap-2 text-center">
+                <div class="py-2 px-3 border-y border-amber-200/80 dark:border-amber-800/70 bg-amber-50/70 dark:bg-amber-950/40 rounded-sm flex items-center justify-center gap-2 text-center text-xs">
                   <button
                     v-if="slot.challenge.contact"
                     @click="openContactDetailModal(slot.challenge.contact)"
@@ -1264,31 +1319,47 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
                   </a>
                 </div>
 
-                <!-- Action buttons + En cours -->
-                <div class="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap pt-1">
-                  <div class="flex items-center gap-2">
-                    <button
-                      @click="deselectChallenge(slot.challenge)"
-                      class="px-2.5 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 hover:bg-amber-100/60 dark:hover:bg-amber-900/40 text-amber-800 dark:text-amber-200 font-semibold text-xs transition-colors cursor-pointer flex items-center gap-1"
-                      title="Désélectionner ce défi de la journée"
-                    >
-                      <UIcon name="i-heroicons-arrow-uturn-left" class="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
-                      <span>Désélectionner</span>
-                    </button>
-                    <button
-                      @click="openReflectModal(slot.challenge)"
-                      class="px-3.5 py-1.5 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/80 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
-                      title="Valider et faire le bilan"
-                    >
-                      <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-2" />
-                      <span>Terminer</span>
-                    </button>
+                <!-- Full Challenge Content without truncation + Copy to clipboard -->
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex-1 min-w-0">
+                    <OutlineContent :text="slot.challenge.challengeText" :available-images="availableImages" text-class="text-yellow-600 dark:text-yellow-400 font-medium" />
                   </div>
-                  <span class="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 whitespace-nowrap">
-                    <UIcon name="i-heroicons-arrow-path" class="w-3.5 h-3.5" />
-                    En&nbsp;cours
-                  </span>
+                  <button
+                    @click.stop="copyChallengeText(slot.challenge)"
+                    class="p-1 rounded-md text-yellow-600/80 hover:text-yellow-700 dark:text-yellow-400/80 dark:hover:text-yellow-300 hover:bg-yellow-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center mt-0.5"
+                    :title="copiedChallengeId === slot.challenge.id ? 'Copié dans le presse-papier !' : 'Copier l\'action du défi'"
+                  >
+                    <UIcon v-if="copiedChallengeId === slot.challenge.id" name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <UIcon v-else name="i-heroicons-clipboard-document" class="w-4 h-4" />
+                  </button>
                 </div>
+              </div>
+
+              <!-- Bottom Area of Yellow Card -->
+              <!-- Action buttons + En cours -->
+              <div class="mt-4 flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap text-xs">
+                <div class="flex items-center gap-2">
+                  <button
+                    @click="deselectChallenge(slot.challenge)"
+                    class="px-2.5 py-1.5 rounded-lg border border-amber-300 dark:border-amber-700 hover:bg-amber-100/60 dark:hover:bg-amber-900/40 text-amber-800 dark:text-amber-200 font-semibold text-xs transition-colors cursor-pointer flex items-center gap-1"
+                    title="Désélectionner ce défi de la journée"
+                  >
+                    <UIcon name="i-heroicons-arrow-uturn-left" class="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
+                    <span>Désélectionner</span>
+                  </button>
+                  <button
+                    @click="openReflectModal(slot.challenge)"
+                    class="px-3.5 py-1.5 rounded-lg border border-emerald-500 hover:border-emerald-600 text-emerald-700 hover:text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/80 dark:border-emerald-500/80 dark:text-emerald-300 dark:hover:text-emerald-200 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 font-bold text-xs shadow-xs cursor-pointer transition-colors flex items-center gap-1.5"
+                    title="Valider et faire le bilan"
+                  >
+                    <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-2" />
+                    <span>Terminer</span>
+                  </button>
+                </div>
+                <span class="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 whitespace-nowrap">
+                  <UIcon name="i-heroicons-arrow-path" class="w-3.5 h-3.5" />
+                  En&nbsp;cours
+                </span>
               </div>
             </div>
 
@@ -1712,8 +1783,18 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
               </div>
             </div>
 
-            <div class="text-sm font-medium text-gray-900 dark:text-white">
-              <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex-1 min-w-0">
+                <OutlineContent :text="challenge.challengeText" :available-images="availableImages" text-class="text-yellow-600 dark:text-yellow-400 font-medium" />
+              </div>
+              <button
+                @click.stop="copyChallengeText(challenge)"
+                class="p-1 rounded-md text-yellow-600/80 hover:text-yellow-700 dark:text-yellow-400/80 dark:hover:text-yellow-300 hover:bg-yellow-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center mt-0.5"
+                :title="copiedChallengeId === challenge.id ? 'Copié dans le presse-papier !' : 'Copier l\'action du défi'"
+              >
+                <UIcon v-if="copiedChallengeId === challenge.id" name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <UIcon v-else name="i-heroicons-clipboard-document" class="w-4 h-4" />
+              </button>
             </div>
 
             <div class="py-2 px-3 border-y border-emerald-200/70 dark:border-emerald-800/70 bg-emerald-50/60 dark:bg-emerald-950/40 rounded-sm flex items-center justify-center gap-2 text-center text-xs">
@@ -1804,7 +1885,19 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
 
                   <!-- 2. Text & Contact (Contact link opens detail modal without underline) -->
                   <td class="px-5 py-4 max-w-md">
-                    <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="flex-1 min-w-0">
+                        <OutlineContent :text="challenge.challengeText" :available-images="availableImages" text-class="text-yellow-600 dark:text-yellow-400 font-medium" />
+                      </div>
+                      <button
+                        @click.stop="copyChallengeText(challenge)"
+                        class="p-1 rounded-md text-yellow-600/80 hover:text-yellow-700 dark:text-yellow-400/80 dark:hover:text-yellow-300 hover:bg-yellow-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center"
+                        :title="copiedChallengeId === challenge.id ? 'Copié dans le presse-papier !' : 'Copier l\'action du défi'"
+                      >
+                        <UIcon v-if="copiedChallengeId === challenge.id" name="i-heroicons-check" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <UIcon v-else name="i-heroicons-clipboard-document" class="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                     <div class="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-2 flex items-center gap-1.5">
                       <UIcon name="i-heroicons-user" class="w-3.5 h-3.5" />
                       <button
@@ -1924,10 +2017,7 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
               </button>
             </div>
 
-            <div class="text-sm font-medium text-gray-900 dark:text-white">
-              <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
-            </div>
-
+            <!-- Contact row: Centered, larger text, top & bottom borders with light themed background -->
             <div class="py-2 px-3 border-y border-amber-200/80 dark:border-amber-800/70 bg-amber-50/70 dark:bg-amber-950/40 rounded-sm flex items-center justify-center gap-2 text-center text-xs">
               <button
                 v-if="challenge.contact"
@@ -1957,6 +2047,20 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
               >
                 <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
               </a>
+            </div>
+
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex-1 min-w-0">
+                <OutlineContent :text="challenge.challengeText" :available-images="availableImages" text-class="text-yellow-600 dark:text-yellow-400 font-medium" />
+              </div>
+              <button
+                @click.stop="copyChallengeText(challenge)"
+                class="p-1 rounded-md text-yellow-600/80 hover:text-yellow-700 dark:text-yellow-400/80 dark:hover:text-yellow-300 hover:bg-yellow-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center mt-0.5"
+                :title="copiedChallengeId === challenge.id ? 'Copié dans le presse-papier !' : 'Copier l\'action du défi'"
+              >
+                <UIcon v-if="copiedChallengeId === challenge.id" name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <UIcon v-else name="i-heroicons-clipboard-document" class="w-4 h-4" />
+              </button>
             </div>
 
             <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60 text-xs">
@@ -2023,9 +2127,21 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
                     </div>
                   </td>
 
-                  <!-- Text (Outline content rendered without truncation) -->
-                  <td class="px-5 py-4 text-gray-900 dark:text-white max-w-md">
-                    <OutlineContent :text="challenge.challengeText" :available-images="availableImages" />
+                  <!-- Text (Outline content rendered without truncation) + Copy to clipboard -->
+                  <td class="px-5 py-4 max-w-md">
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="flex-1 min-w-0">
+                        <OutlineContent :text="challenge.challengeText" :available-images="availableImages" text-class="text-yellow-600 dark:text-yellow-400 font-medium" />
+                      </div>
+                      <button
+                        @click.stop="copyChallengeText(challenge)"
+                        class="p-1 rounded-md text-yellow-600/80 hover:text-yellow-700 dark:text-yellow-400/80 dark:hover:text-yellow-300 hover:bg-yellow-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center"
+                        :title="copiedChallengeId === challenge.id ? 'Copié dans le presse-papier !' : 'Copier l\'action du défi'"
+                      >
+                        <UIcon v-if="copiedChallengeId === challenge.id" name="i-heroicons-check" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <UIcon v-else name="i-heroicons-clipboard-document" class="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
 
                   <!-- Contact -->
@@ -2256,7 +2372,7 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
               {{ isEditingContact ? 'Modifier le contact' : 'Créer un nouveau contact' }}
             </h3>
             <button
-              @click="isContactModalOpen = false"
+              @click="closeContactModal"
               class="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
             >
               <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
@@ -2344,7 +2460,7 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
             <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
               <button
                 type="button"
-                @click="isContactModalOpen = false"
+                @click="closeContactModal"
                 class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
               >
                 Annuler
@@ -2530,15 +2646,26 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
               </div>
 
               <div v-if="challengeForm.contactMode === 'existing' && contacts.length > 0" class="space-y-2">
-                <select
-                  v-model="challengeForm.contactId"
-                  required
-                  class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                >
-                  <option v-for="c in contacts" :key="c.id" :value="c.id">
-                    {{ c.name }} {{ c.email ? `(${c.email})` : '' }}
-                  </option>
-                </select>
+                <div class="flex items-center gap-2">
+                  <select
+                    v-model="challengeForm.contactId"
+                    required
+                    class="flex-1 min-w-0 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  >
+                    <option v-for="c in contacts" :key="c.id" :value="c.id">
+                      {{ c.name }} {{ c.email ? `(${c.email})` : '' }}
+                    </option>
+                  </select>
+                  <button
+                    type="button"
+                    @click="openEditContactFromChallengeModal"
+                    :disabled="!challengeForm.contactId"
+                    class="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-750 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer shrink-0"
+                    title="Modifier les informations de ce contact"
+                  >
+                    <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+                  </button>
+                </div>
 
                 <!-- Compact Contact History -->
                 <div class="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 space-y-1.5">
@@ -2638,15 +2765,26 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
               <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                 Contact associé
               </label>
-              <select
-                v-model="challengeForm.contactId"
-                required
-                class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              >
-                <option v-for="c in contacts" :key="c.id" :value="c.id">
-                  {{ c.name }} {{ c.email ? `(${c.email})` : '' }}
-                </option>
-              </select>
+              <div class="flex items-center gap-2">
+                <select
+                  v-model="challengeForm.contactId"
+                  required
+                  class="flex-1 min-w-0 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                >
+                  <option v-for="c in contacts" :key="c.id" :value="c.id">
+                    {{ c.name }} {{ c.email ? `(${c.email})` : '' }}
+                  </option>
+                </select>
+                <button
+                  type="button"
+                  @click="openEditContactFromChallengeModal"
+                  :disabled="!challengeForm.contactId"
+                  class="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-750 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer shrink-0"
+                  title="Modifier les informations de ce contact"
+                >
+                  <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             <!-- Challenge Action Text (Textarea for outline syntax) -->
@@ -3109,9 +3247,19 @@ const cleanSingleLineText = (text: string | null | undefined): string => {
 
             <!-- Challenge Text -->
             <div class="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Texte du défi</span>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Texte du défi</span>
+                <button
+                  @click="copyChallengeText(selectedChallengeForDetail)"
+                  class="p-1 rounded-md text-yellow-600/80 hover:text-yellow-700 dark:text-yellow-400/80 dark:hover:text-yellow-300 hover:bg-yellow-500/10 transition-colors cursor-pointer shrink-0 inline-flex items-center justify-center"
+                  :title="copiedChallengeId === selectedChallengeForDetail.id ? 'Copié dans le presse-papier !' : 'Copier l\'action du défi'"
+                >
+                  <UIcon v-if="copiedChallengeId === selectedChallengeForDetail.id" name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <UIcon v-else name="i-heroicons-clipboard-document" class="w-4 h-4" />
+                </button>
+              </div>
               <div class="text-base text-gray-900 dark:text-white leading-relaxed">
-                <OutlineContent :text="selectedChallengeForDetail.challengeText" :available-images="availableImages" />
+                <OutlineContent :text="selectedChallengeForDetail.challengeText" :available-images="availableImages" text-class="text-yellow-600 dark:text-yellow-400 font-medium" />
               </div>
             </div>
 
