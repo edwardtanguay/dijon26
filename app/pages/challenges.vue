@@ -2434,7 +2434,7 @@ const copyNotes = async (challenge: Challenge) => {
                 </label>
                 <input
                   v-model="contactForm.email"
-                  type="email"
+                  type="text"
                   placeholder="contact@domaine.fr"
                   class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
@@ -2776,7 +2776,7 @@ const copyNotes = async (challenge: Challenge) => {
                 <div class="grid grid-cols-2 gap-2">
                   <input
                     v-model="challengeForm.newContactEmail"
-                    type="email"
+                    type="text"
                     placeholder="E-mail (optionnel)"
                     class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-white"
                   />
