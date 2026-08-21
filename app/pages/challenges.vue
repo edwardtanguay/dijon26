@@ -1223,7 +1223,7 @@ const copyNotes = async (challenge: Challenge) => {
                     v-if="slot.challenge.contact"
                     @click="openContactDetailModal(slot.challenge.contact)"
                     class="font-bold text-base text-emerald-800 dark:text-emerald-200 hover:text-emerald-950 dark:hover:text-emerald-100 transition-colors cursor-pointer"
-                    title="Afficher les détails du contact"
+                    :title="slot.challenge.contact.description?.trim() || 'Afficher les détails du contact'"
                   >
                     {{ slot.challenge.contact.name }}
                   </button>
@@ -1333,7 +1333,7 @@ const copyNotes = async (challenge: Challenge) => {
                     v-if="slot.challenge.contact"
                     @click="openContactDetailModal(slot.challenge.contact)"
                     class="font-bold text-base text-amber-800 dark:text-amber-200 hover:text-amber-950 dark:hover:text-amber-100 transition-colors cursor-pointer"
-                    title="Afficher les détails du contact"
+                    :title="slot.challenge.contact.description?.trim() || 'Afficher les détails du contact'"
                   >
                     {{ slot.challenge.contact.name }}
                   </button>
@@ -1843,6 +1843,7 @@ const copyNotes = async (challenge: Challenge) => {
                 v-if="challenge.contact"
                 @click="openContactDetailModal(challenge.contact)"
                 class="font-bold text-base text-emerald-800 dark:text-emerald-200 hover:text-emerald-950 dark:hover:text-emerald-100 transition-colors cursor-pointer"
+                :title="challenge.contact.description?.trim() || 'Afficher les détails du contact'"
               >
                 {{ challenge.contact.name }}
               </button>
@@ -1945,7 +1946,7 @@ const copyNotes = async (challenge: Challenge) => {
                         v-if="challenge.contact"
                         @click="openContactDetailModal(challenge.contact)"
                         class="hover:text-indigo-800 dark:hover:text-indigo-300 font-bold transition-colors cursor-pointer text-left"
-                        title="Afficher la fiche du contact"
+                        :title="challenge.contact.description?.trim() || 'Afficher les détails du contact'"
                       >
                         {{ challenge.contact.name }}
                       </button>
@@ -2076,6 +2077,7 @@ const copyNotes = async (challenge: Challenge) => {
                 v-if="challenge.contact"
                 @click="openContactDetailModal(challenge.contact)"
                 class="font-bold text-base text-amber-800 dark:text-amber-200 hover:text-amber-950 dark:hover:text-amber-100 transition-colors cursor-pointer"
+                :title="challenge.contact.description?.trim() || 'Afficher les détails du contact'"
               >
                 {{ challenge.contact.name }}
               </button>
@@ -2204,7 +2206,7 @@ const copyNotes = async (challenge: Challenge) => {
                         v-if="challenge.contact"
                         @click="openContactDetailModal(challenge.contact)"
                         class="hover:text-indigo-800 dark:hover:text-indigo-300 font-bold transition-colors cursor-pointer text-left"
-                        title="Afficher la fiche du contact"
+                        :title="challenge.contact.description?.trim() || 'Afficher les détails du contact'"
                       >
                         {{ challenge.contact.name }}
                       </button>
@@ -2362,7 +2364,7 @@ const copyNotes = async (challenge: Challenge) => {
                               v-if="challenge.contact"
                               @click.stop="openContactDetailModal(challenge.contact)"
                               class="font-bold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors cursor-pointer hover:underline"
-                              title="Afficher la fiche du contact"
+                              :title="challenge.contact.description?.trim() || 'Afficher les détails du contact'"
                             >
                               {{ challenge.contact.name }}
                             </button>
