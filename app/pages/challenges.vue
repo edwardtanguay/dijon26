@@ -399,9 +399,7 @@ const deselectChallenge = async (challenge: Challenge) => {
 }
 
 // Top Panel: daily goal slots
-// 1. Finished challenges today (green)
-// 2. Selected challenges for today (yellow/amber "En cours")
-// 3. Remaining empty slots up to dailyTarget (gray with "Choisir un défi existant" and "Créer un défi")
+// All challenges today (finished and doing) sorted by rank descending, followed by empty slots up to dailyTarget
 const dailyGoalSlots = computed(() => {
   const goalCount = Math.max(1, dailyTarget.value || 1)
   const slots: Array<{
@@ -409,23 +407,38 @@ const dailyGoalSlots = computed(() => {
     challenge?: Challenge
   }> = []
 
-  // 1. All Finished challenges today (no cap)
-  for (let i = 0; i < finishedTodayChallenges.value.length; i++) {
-    slots.push({
+  const todayList: Array<{
+    status: 'finished' | 'doing'
+    challenge: Challenge
+  }> = []
+
+  // Finished challenges today
+  for (const c of finishedTodayChallenges.value) {
+    todayList.push({
       status: 'finished',
-      challenge: finishedTodayChallenges.value[i],
+      challenge: c,
     })
   }
 
-  // 2. All Selected challenges for today (no cap)
-  for (let i = 0; i < selectedTodayChallenges.value.length; i++) {
-    slots.push({
+  // Selected challenges for today
+  for (const c of selectedTodayChallenges.value) {
+    todayList.push({
       status: 'doing',
-      challenge: selectedTodayChallenges.value[i],
+      challenge: c,
     })
   }
 
-  // 3. Remaining empty slots up to dailyTarget (if below target)
+  // Sort by rank descending
+  todayList.sort((a, b) => {
+    return (b.challenge.rank ?? 2.5) - (a.challenge.rank ?? 2.5)
+  })
+
+  // Add all sorted challenges to slots
+  for (const item of todayList) {
+    slots.push(item)
+  }
+
+  // Remaining empty slots up to dailyTarget (if below target)
   while (slots.length < goalCount) {
     slots.push({
       status: 'empty',
