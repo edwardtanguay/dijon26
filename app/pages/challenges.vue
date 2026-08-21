@@ -763,12 +763,8 @@ const submitChallengeForm = async () => {
   const challengeId = editingChallengeId.value
   const formValues = { ...challengeForm.value }
 
-  // Check if should be selected for today:
-  // If explicitly requested (via createChallengeAssignToToday === true), or if not finished and there are open slots today
-  const currentGoalCount = Math.max(1, dailyTarget.value || 1)
-  const occupiedSlots = finishedTodayChallenges.value.length + selectedTodayChallenges.value.length
-  const hasOpenSlots = occupiedSlots < currentGoalCount
-  const shouldSelectForToday = !formValues.isFinished && (createChallengeAssignToToday.value === true || (createChallengeAssignToToday.value !== false && hasOpenSlots))
+  // Tout défi créé non terminé est toujours assigné à aujourd'hui
+  const shouldSelectForToday = !formValues.isFinished
 
   // Optimistic update for edits
   if (isEditing) {
@@ -1266,7 +1262,17 @@ const copyNotes = async (challenge: Challenge) => {
               </div>
 
               <!-- Bottom Area of Green Card -->
-              <div class="mt-4 flex items-center justify-end text-xs">
+              <div class="mt-4 flex items-center justify-between gap-2 flex-wrap text-xs">
+                <button
+                  v-if="slot.challenge.contact"
+                  @click="openCreateChallengeModal(slot.challenge.contactId)"
+                  class="text-xs font-semibold text-emerald-700 hover:text-emerald-900 dark:text-emerald-300 dark:hover:text-emerald-100 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                >
+                  <UIcon name="i-heroicons-plus-circle" class="w-3.5 h-3.5" />
+                  <span>Créer un autre défi pour ce contact</span>
+                </button>
+                <div v-else></div>
+
                 <!-- Terminé badge -->
                 <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 whitespace-nowrap">
                   <UIcon name="i-heroicons-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -1404,7 +1410,7 @@ const copyNotes = async (challenge: Challenge) => {
               <!-- Button: Create a challenge -->
               <button
                 @click="openCreateChallengeModal(undefined, false, true)"
-                class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-300 border border-gray-300 dark:border-gray-700 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-102"
+                class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700/70 dark:text-gray-200 dark:hover:text-white border border-gray-300 dark:border-gray-700 dark:hover:border-gray-600 text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-102"
               >
                 <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 <span>Créer un défi</span>
@@ -1432,7 +1438,7 @@ const copyNotes = async (challenge: Challenge) => {
           <!-- Button 2: Créer un défi -->
           <button
             @click="openCreateChallengeModal(undefined, false, true)"
-            class="w-full py-3 px-4 rounded-xl bg-gray-100/90 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-300 border border-gray-300 dark:border-gray-700 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer hover:scale-[1.01]"
+            class="w-full py-3 px-4 rounded-xl bg-gray-100/90 hover:bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700/70 dark:text-gray-200 dark:hover:text-white border border-gray-300 dark:border-gray-700 dark:hover:border-gray-600 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer hover:scale-[1.01]"
           >
             <UIcon name="i-heroicons-plus-circle" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
             <span>Créer un défi</span>
