@@ -399,7 +399,9 @@ const deselectChallenge = async (challenge: Challenge) => {
 }
 
 // Top Panel: daily goal slots
-// All challenges today (finished and doing) sorted by rank descending, followed by empty slots up to dailyTarget
+// 1. Unfinished challenges (doing) sorted by rank descending
+// 2. Finished challenges today sorted by rank descending
+// 3. Empty slots up to dailyTarget
 const dailyGoalSlots = computed(() => {
   const goalCount = Math.max(1, dailyTarget.value || 1)
   const slots: Array<{
@@ -407,34 +409,47 @@ const dailyGoalSlots = computed(() => {
     challenge?: Challenge
   }> = []
 
-  const todayList: Array<{
-    status: 'finished' | 'doing'
+  // 1. Selected / Doing challenges for today (non terminés)
+  const doingList: Array<{
+    status: 'doing'
     challenge: Challenge
-  }> = []
+  }> = selectedTodayChallenges.value.map((c) => ({
+    status: 'doing' as const,
+    challenge: c,
+  }))
 
-  // Finished challenges today
-  for (const c of finishedTodayChallenges.value) {
-    todayList.push({
-      status: 'finished',
-      challenge: c,
-    })
-  }
-
-  // Selected challenges for today
-  for (const c of selectedTodayChallenges.value) {
-    todayList.push({
-      status: 'doing',
-      challenge: c,
-    })
-  }
-
-  // Sort by rank descending
-  todayList.sort((a, b) => {
-    return (b.challenge.rank ?? 2.5) - (a.challenge.rank ?? 2.5)
+  doingList.sort((a, b) => {
+    const rankDiff = (b.challenge.rank ?? 2.5) - (a.challenge.rank ?? 2.5)
+    if (Math.abs(rankDiff) > 0.001) return rankDiff
+    const timeA = new Date(a.challenge.createdAt).getTime() || 0
+    const timeB = new Date(b.challenge.createdAt).getTime() || 0
+    return timeB - timeA
   })
 
-  // Add all sorted challenges to slots
-  for (const item of todayList) {
+  // 2. Finished challenges today (déjà terminés)
+  const finishedList: Array<{
+    status: 'finished'
+    challenge: Challenge
+  }> = finishedTodayChallenges.value.map((c) => ({
+    status: 'finished' as const,
+    challenge: c,
+  }))
+
+  finishedList.sort((a, b) => {
+    const rankDiff = (b.challenge.rank ?? 2.5) - (a.challenge.rank ?? 2.5)
+    if (Math.abs(rankDiff) > 0.001) return rankDiff
+    const timeA = a.challenge.completedAt ? new Date(a.challenge.completedAt).getTime() : (new Date(a.challenge.createdAt).getTime() || 0)
+    const timeB = b.challenge.completedAt ? new Date(b.challenge.completedAt).getTime() : (new Date(b.challenge.createdAt).getTime() || 0)
+    return timeB - timeA
+  })
+
+  // Add non terminés en premier
+  for (const item of doingList) {
+    slots.push(item)
+  }
+
+  // Ensuite les déjà terminés
+  for (const item of finishedList) {
     slots.push(item)
   }
 
