@@ -630,7 +630,7 @@ const submitContactForm = async () => {
     if (existingIdx !== -1) {
       const existing = contacts.value[existingIdx]
       if (existing) {
-        contacts.value[existingIdx] = {
+        const updatedContact: Contact = {
           ...existing,
           name: formValues.name.trim(),
           email: formValues.email.trim() || null,
@@ -639,8 +639,30 @@ const submitContactForm = async () => {
           mapUrl: formValues.mapUrl.trim() || null,
           url: formValues.url.trim() || null,
         }
+        contacts.value[existingIdx] = updatedContact
+
+        // Mettre à jour immédiatement la référence de contact dans tous les défis associés
+        challenges.value = challenges.value.map((ch) => {
+          if (ch.contactId === formValues.id) {
+            return {
+              ...ch,
+              contact: updatedContact,
+            }
+          }
+          return ch
+        })
+
         if (activeContactForChallenges.value?.id === formValues.id) {
-          activeContactForChallenges.value = contacts.value[existingIdx]
+          activeContactForChallenges.value = updatedContact
+        }
+        if (selectedContactForDetail.value?.id === formValues.id) {
+          selectedContactForDetail.value = updatedContact
+        }
+        if (selectedChallengeForDetail.value?.contactId === formValues.id) {
+          selectedChallengeForDetail.value = {
+            ...selectedChallengeForDetail.value,
+            contact: updatedContact,
+          }
         }
       }
     }
@@ -666,6 +688,18 @@ const submitContactForm = async () => {
     await fetchData()
     if (activeContactForChallenges.value && isEditing && activeContactForChallenges.value.id === formValues.id) {
       activeContactForChallenges.value = contacts.value.find((c) => c.id === formValues.id) || null
+    }
+    if (selectedContactForDetail.value && isEditing && selectedContactForDetail.value.id === formValues.id) {
+      selectedContactForDetail.value = contacts.value.find((c) => c.id === formValues.id) || null
+    }
+    if (selectedChallengeForDetail.value && isEditing && selectedChallengeForDetail.value.contactId === formValues.id) {
+      const freshContact = contacts.value.find((c) => c.id === formValues.id)
+      if (freshContact) {
+        selectedChallengeForDetail.value = {
+          ...selectedChallengeForDetail.value,
+          contact: freshContact,
+        }
+      }
     }
   } catch (err) {
     console.error('Erreur lors de l’enregistrement du contact:', err)
@@ -1160,6 +1194,9 @@ const copyNotes = async (challenge: Challenge) => {
               type="number"
               min="1"
               max="100"
+              @keydown.ctrl.enter.prevent="saveDailyTarget"
+              @keydown.meta.enter.prevent="saveDailyTarget"
+              @keydown.enter.prevent="saveDailyTarget"
               class="w-16 px-2 py-1 text-sm font-bold border rounded-lg border-indigo-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-center"
             />
             <button
@@ -2434,7 +2471,7 @@ const copyNotes = async (challenge: Challenge) => {
             </button>
           </div>
 
-          <form @submit.prevent="submitContactForm" class="space-y-4">
+          <form @submit.prevent="submitContactForm" @keydown.ctrl.enter.prevent="submitContactForm" @keydown.meta.enter.prevent="submitContactForm" class="space-y-4">
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                 Nom du contact *
@@ -2683,7 +2720,7 @@ const copyNotes = async (challenge: Challenge) => {
             </button>
           </div>
 
-          <form @submit.prevent="submitChallengeForm" class="space-y-4">
+          <form @submit.prevent="submitChallengeForm" @keydown.ctrl.enter.prevent="submitChallengeForm" @keydown.meta.enter.prevent="submitChallengeForm" class="space-y-4">
             <!-- Contact Selector -->
             <div v-if="!isEditingChallenge" class="space-y-2">
               <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -3042,7 +3079,7 @@ const copyNotes = async (challenge: Challenge) => {
             </button>
           </div>
 
-          <form @submit.prevent="submitReflection" class="space-y-4">
+          <form @submit.prevent="submitReflection" @keydown.ctrl.enter.prevent="submitReflection" @keydown.meta.enter.prevent="submitReflection" class="space-y-4">
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                 Date & heure d'accomplissement
