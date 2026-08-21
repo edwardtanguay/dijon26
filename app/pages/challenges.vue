@@ -2905,13 +2905,23 @@ const copyNotes = async (challenge: Challenge) => {
               </label>
             </div>
 
-            <!-- Rank Slider: easy (0, green) -> challenging (5, red) -->
+            <!-- Rank Slider: less important (0, green) -> more important (5, red) -->
             <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-2">
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Rang de priorité
-              </label>
+              <div class="flex items-center justify-between">
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Rang de priorité
+                </label>
+                <input
+                  v-model.number="challengeForm.rank"
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  class="w-20 px-2 py-1 text-sm font-semibold text-right bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-gray-100"
+                />
+              </div>
 
-              <!-- Range Slider: Easy 0 (Green) to Challenging 5 (Red) -->
+              <!-- Range Slider: Less important 0 (Green) to More important 5 (Red) -->
               <input
                 v-model.number="challengeForm.rank"
                 type="range"
@@ -2921,9 +2931,9 @@ const copyNotes = async (challenge: Challenge) => {
                 class="w-full h-2 rounded-lg cursor-pointer appearance-none bg-linear-to-r from-emerald-500 via-amber-400 to-rose-500"
               />
               <div class="flex justify-between text-xs font-medium">
-                <span class="text-emerald-600 dark:text-emerald-400">Facile</span>
-                <span class="text-amber-600 dark:text-amber-400">Moyen</span>
-                <span class="text-rose-600 dark:text-rose-400">Difficile</span>
+                <span class="text-emerald-600 dark:text-emerald-400">moins important</span>
+                <span class="text-amber-600 dark:text-amber-400">moyen</span>
+                <span class="text-rose-600 dark:text-rose-400">plus important</span>
               </div>
             </div>
 
