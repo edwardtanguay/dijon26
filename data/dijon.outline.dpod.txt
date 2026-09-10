@@ -1,3 +1,5 @@
+- todo
+	- make room on phone
 - marathon
 	- https://www.marathondesgrandscrus.com
 	- [Marathon des grands crus 17/10/2021 à Dijon](https://www.youtube.com/watch?v=qQCA4KLtdog)
@@ -16,6 +18,9 @@
 	- ,,  CIEF sur l'université
 	- write to: https://preply.com/fr/tuteur/6636783
 - liste de tâches à accomplir
+	- livres: CLE International
+		- ISBN 3125301017
+		- Grammaire progressive du français etc.
 	- chatgpt: groupes similaires de polyglot café
 	- est-ce qu'il y a un VHS en france ?
 	- Quels sont les quartiers de Dijon, par exemple Quartier République
@@ -116,6 +121,17 @@
 	- A6-8K-Toison d'Or
 - Airbnb
 	- moins de 330 euros pour 9 nuits
+	- 
+		- Danke für den Kaffee und das Gebäck jeden Morgen. 
+		- Je suis totalement disposée à accueillir mes voyageurs de façon chaleureuse dans un esprit de partage et d'échange.
+		- The lady is only can speak french
+		- She is a very  nice lady and even invited me to have lunch with her
+		- Meine Arbeit: A la retraite
+		- Spricht Französisch
+		- 5éme étage avec ascenseur
+		- Également ne pas manger dans la chambre
+		- Pour les voyageurs qui viennent chez moi, mettez au moins une photo de vôtre tête s'il vous plais
+		- Accès à la cuisine et sdb. Bémol : ascenseur capricieux. Liliane aime qu'on lui tienne compagnie et n'a pas la langue dans sa poche, mais reste néanmoins serviable.
 - videos about Dijon
 	- [Histoire et gastronomie](https://www.youtube.com/watch?v=jMpkd1bWFyw) - 12:10
 - lieux à visiter
@@ -152,18 +168,23 @@
 - calendrier
 	- mercredi 7 octobre
 		- préparer tout pour le voyage
+		- all passwords
+			- airbnb
+			- paypal
 		- assurez d'avoir suffisamment d'argent pour payer votre compte Google ce mois-ci
 	- jeudi 8 octobre
-		- voyager en train de Berlin à Dijon
+		- 06:43-13:48 Berlin Hbf - Basel
+		- 14:34-15:58 Basel - Dijon
 		- l’Agence DiviaMobilités
 			- prendre un pass hebdomadaire pour tous les transports
 			- tu peux aussi utiliser directement ta carte bancaire sans contact dans les bus et les tramways 
 				- le voyage coûte 2 € et permet des trajets illimités pendant 1 heure
 			- il existe aussi DiviaVélo, qui est différent : c'est une vraie location de vélo, que tu gardes avec toi. Une location de 7 jours est disponible
 	- vendredi 9 octobre
+		- acheter le billet de train pour Berlin
+		- sortir dîner pour un anniversaire
 	- samedi 10 octobre
 	- dimanche 11 octobre 
-		- 
 	- lundi 12 octobre
 		- Laurent? 0630773248
 	- mardi 13 octobre
@@ -173,8 +194,14 @@
 		- 18:00 Café Polyglotte de Dijon
 	- jeudi 15 octobre
 	- vendredi 16 octobre
-	- samedi 17 octobre
-		- voyager en train de Dijon à Berlin
+		- ,, Dijon-Straßburg-Berlin
+			- 10:07-12:24 Straßburg
+			- 14:52-15:22 Offenburg
+			- 15:27-21:17 Berlin
+		- ,, Dijon-Basel-Berlin
+			- 12:01-13:23 Dijon-Basel
+			- 14:16-21:17 Basel-Berlin
+
 - transports en commun
 	- chercher comment se rendre quelque part
 		- https://www.divia.fr
