@@ -37,6 +37,16 @@ export class OutlineParser {
 		let ignoredIndent: number | null = null;
 		let currentFlashcardHeaderIndent: number | null = null;
 		let currentQuestionId: string | null = null;
+		let currentHeaderItem: OutlineItem | null = null;
+		let currentSectionFlashcardCount = 0;
+
+		const finalizeCurrentFlashcardHeader = () => {
+			if (currentHeaderItem) {
+				currentHeaderItem.body = `${currentHeaderItem.body} (${currentSectionFlashcardCount})`;
+				currentHeaderItem = null;
+			}
+			currentSectionFlashcardCount = 0;
+		};
 
 		for (const line of lines) {
 			if (qstr.isEmpty(line)) {
@@ -75,6 +85,7 @@ export class OutlineParser {
 
 			// Check flashcard scope
 			if (currentFlashcardHeaderIndent !== null && indent <= currentFlashcardHeaderIndent) {
+				finalizeCurrentFlashcardHeader();
 				currentFlashcardHeaderIndent = null;
 				currentQuestionId = null;
 			}
@@ -86,6 +97,7 @@ export class OutlineParser {
 
 			// Check if line ends with %%flashcards
 			if (/%%flashcards\s*$/.test(content)) {
+				finalizeCurrentFlashcardHeader();
 				content = content.replace(/%%flashcards\s*$/, "").trimEnd();
 				isFlashcardHeader = true;
 				currentFlashcardHeaderIndent = indent;
@@ -131,6 +143,13 @@ export class OutlineParser {
 				}
 			}
 
+			if (isFlashcardQuestion) {
+				currentSectionFlashcardCount++;
+				// Strip any existing number prefix like "1. ", "1) ", etc.
+				content = content.replace(/^(\d+[\.\)]\s*)+/, "").trimStart();
+				content = `${currentSectionFlashcardCount}. ${content}`;
+			}
+
 			const id = qstr.generateSuuid();
 			if (isFlashcardQuestion) {
 				currentQuestionId = id;
@@ -143,7 +162,11 @@ export class OutlineParser {
 				image
 			};
 
-			if (isFlashcardHeader) item.isFlashcardHeader = true;
+			if (isFlashcardHeader) {
+				item.isFlashcardHeader = true;
+				currentHeaderItem = item;
+				currentSectionFlashcardCount = 0;
+			}
 			if (isFlashcardQuestion) item.isFlashcardQuestion = true;
 			if (isFlashcardAnswer) {
 				item.isFlashcardAnswer = true;
@@ -152,6 +175,8 @@ export class OutlineParser {
 
 			items.push(item);
 		}
+
+		finalizeCurrentFlashcardHeader();
 
 		if (!qfil.directoryExists(outputDir)) {
 			qfil.createDirectory(outputDir);
