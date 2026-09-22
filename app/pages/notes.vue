@@ -74,8 +74,10 @@ const createFormattedLinkHtml = (url: string, linkText?: string): string => {
   const isYoutube = url.toLowerCase().includes('youtube.com') || url.toLowerCase().includes('youtu.be')
   
   let displayText = ''
-  if (isYoutube) {
-    displayText = (linkText && linkText.trim()) ? escapeHtml(linkText.trim()) : 'youtube.com'
+  if (linkText && linkText.trim()) {
+    displayText = linkText.trim()
+  } else if (isYoutube) {
+    displayText = 'youtube.com'
   } else {
     displayText = escapeHtml(simplifyUrl(url))
   }
