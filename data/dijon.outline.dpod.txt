@@ -33,6 +33,22 @@
 		- [Port du Canal / Bourroches](https://patrimoine.dijon.fr/le-patrimoine-dijonnais-en-ligne/123-quartiers/quartier-bourroches-valendons-port-du-canal-montagne-sainte-anne/)##bourrouchescanal
 	- un quartier intéressant à Dijon pour comprendre une autre facette de Dijon : urbanisme des années 1960-70, grands ensembles, espaces verts et lac
 		- [Fontaine d'Ouche / lac Kir](https://fr.wikipedia.org/wiki/Lac_Kir)##fontaindoudud
+	- nnn
+		- [République / Drapeau / Clémenceau](nnn)##nnn
+	- nnn
+		- [Chevreul-Parc](nnn)##nnn
+	- nnn
+		- [Grésilles](nnn)##nnn
+	- nnn
+		- [Varennes / Toison d’Or](nnn)##nnn
+	- nnn
+		- [nnn](nnn)##nnn
+	- nnn
+		- [nnn](nnn)##nnn
+	- nnn
+		- [nnn](nnn)##nnn
+	- nnn
+		- [nnn](nnn)##nnn
 - info todo
 	- Nathalie Koenders
 	- areas of town
