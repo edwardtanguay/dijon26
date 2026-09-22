@@ -46,8 +46,41 @@
 	- quartier résidentiel au nord-est du centre-ville, autour du boulevard de la Marne et de l’avenue de Langres; immeubles d’habitation, mais aussi des maisons, des commerces et services de proximité, 
 		- le stade Gaston-Gérard
 		- [Maladière-Drapeau-Clemenceau](https://fr.wikipedia.org/wiki/Quartier_Maladi%C3%A8re-Drapeau-Clemenceau)##maladieresdf
+	- il doit son nom à la proximité de l'église Saint-Michel
+		- [Faubourg Saint-Michel](https://fr.wikipedia.org/wiki/Anciens_faubourgs_de_Dijon)##faubourgstmichel
+	- un ancien quartier de Dijon qui a donné son nom à l'Hôpital de ______, ou Centre gériatrique de ______, un ses sites du Centre hospitalier universitaire de Dijon
+		- [Champmaillot](https://fr.wikipedia.org/wiki/Champmaillot)##champmaillot
+	- ce quartier à taille humaine rejoint les enjeux de la ville de demain : privilégier le vivre ensemble, un habitat plus dense
+		- [yah-s(in)-v(in)-s(en)]
+		- [Eco quartier Hyacinthe Vincent](https://mayottoussaint.fr/portfolio/dijon-eco-quartier-hyacinthe-vincent-2/)##hyacinthevincent
+	- le quartier se distingue par son cadre résidentiel et ses équipements de proximité, les habitants profitent d’une atmosphère conviviale, renforcée par la présence d’écoles et de commerces
+		- sa bonne desserte contribue à son attractivité
+		- [Poussots](https://www.stadiumtraveller.com/stade-des-poussots-dijon-france-football)##poussots
+	- aménagé vers 1670 par Antoine de Maerle, élève du fameux jardinier de Louis XIV, André le Nôtre, le parc de la Colombière est le plus vaste jardin public de Dijon.
+		- [Le parc de la Colombière](https://patrimoine.dijon.fr/lieu-remarquable/le-parc-de-la-colombiere/)##parccolombiere
+	- jusqu'en 1955, c'était un village viticole de petite taille, avant d'être intégré à l'agglomération dijonnaise
+		- c'est aujourd'hui la banlieue la plus peuplée de Dijon
+		- [Chenôve](https://fr.wikipedia.org/wiki/Chen%C3%B4ve)##chenove
+	- une grande rivière, non loin de Dijon à l'est
+		- [Saône](https://fr.wikipedia.org/wiki/Sa%C3%B4ne)##saone
+	- une petite commune située à l’ouest de Dijon, entourée de collines et de verdure, ce qui lui donne une ambiance assez paisible
+		- [Plombières-lès-Dijon](https://fr.wikipedia.org/wiki/Plombi%C3%A8res-l%C3%A8s-Dijon)##plombieres
 	- nnn
-		- [nnn](nnn)##nnn
+		- [Talant](nnn)##nnn
+	- nnn
+		- [Daix](nnn)##nnn
+	- nnn
+		- [Fontaine-lès-Dijon](nnn)##nnn
+	- nnn
+		- [Saint-Apollinaire](nnn)##nnn
+	- nnn
+		- [Quetigny](nnn)##nnn
+	- nnn
+		- [Longvic](nnn)##nnn
+	- nnn
+		- [Marsannay-la-Côte](nnn)##nnn
+	- nnn
+		- [Couchey](nnn)##nnn
 	- nnn
 		- [nnn](nnn)##nnn
 	- nnn
@@ -75,21 +108,14 @@
 			- Clos de Pouilly
 			- La Toison d'Or
 			- Port du Canal
-			- 
-			- Faubourg Saint-Michel, Champmaillot, Hyacinthe Vincent, Mansart, Montmuzard et Université
+			- Faubourg Saint-Michel
+			- Champmaillot
+			- Mansart
+			- Hyacinthe Vincent 
 			- Poussots
 			- Le parc de la Colombière
 			- Chenôve
 			- Plombières-lès-Dijon
-			- Talant
-			- Daix
-			- Fontaine-lès-Dijon
-			- Saint-Apollinaire
-			- Quetigny
-			- Longvic
-			- Marsannay-la-Côte
-			- Couchey
-			- 
 		- vélo, tram, à pied
 
 
