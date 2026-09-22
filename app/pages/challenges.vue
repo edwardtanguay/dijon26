@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { cleanSingleLineText } from '~/utils/outline-format'
 
 useHead({
   title: 'Défis de communication réelle - Dijon 26',
@@ -1073,18 +1074,7 @@ const formatNiceUrl = (url: string | null | undefined): string => {
   }
 }
 
-// Nettoyer le texte du défi pour l'affichage en une seule ligne (retire les puces, formatages outline et tags images)
-const cleanSingleLineText = (text: string | null | undefined): string => {
-  if (!text) return ''
-  return text
-    .split('\n')
-    .map((l) => l.trim().replace(/^[-*•]\s+/, ''))
-    .filter((l) => l.length > 0)
-    .join(' — ')
-    .replace(/##[a-zA-Z0-9_\-]+/g, '')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .trim()
-}
+
 
 // État et logique de copie dans le presse-papier
 const copiedChallengeId = ref<string | null>(null)

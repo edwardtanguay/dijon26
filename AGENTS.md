@@ -3,6 +3,10 @@
 - all content for this site should be in French
 - address the user with "tu", not with "vous"
 
+## making changes
+
+- you don't have to test the changes in a browser, just make the changes
+
 ## npm scripts
 
 - if you make an npm script, create a file in /cli/commands called e.g. "cmd-name.ts" 
