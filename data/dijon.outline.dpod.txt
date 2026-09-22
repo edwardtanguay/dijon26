@@ -1,8 +1,10 @@
 - Informations de base sur Dijon%%flashcards
 	- Quel sculpteur médiéval a réalisé le célèbre « Puits de Moïse » 
 		- [pee-de-moh-ee-yah]
-		- La chartreuse de Champmol 
+		- La chartreuse de Champmol
 		- [Claus Sluter](https://fr.wikipedia.org/wiki/Claus_Sluter)##sluterart33
+	- Quel architecte du roi a conçu la place Royale 
+		- [Jules Hardouin-Mansart](https://fr.wikipedia.org/wiki/Jules_Hardouin-Mansart)##juleshardouin
 - todo
 	- make room on phone
 	- la maison de Rhenanie Palatinat
