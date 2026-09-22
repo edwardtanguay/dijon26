@@ -20,14 +20,6 @@
             <div class="inline-flex items-center gap-1.5 text-xs">
               <button
                 type="button"
-                @click="expandSectionFlashcards(item.id)"
-                class="px-2 py-0.5 text-xs font-medium rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-700 transition cursor-pointer"
-                title="Déplier toutes les cartes non masquées de cette section"
-              >
-                Tout déplier
-              </button>
-              <button
-                type="button"
                 @click="resetSectionFlashcards(item.id)"
                 class="px-2 py-0.5 text-xs font-medium rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-700 transition cursor-pointer"
                 title="Réafficher et replier toutes les cartes de cette section"
@@ -185,17 +177,6 @@ const getSectionStats = (headerId: string) => {
     learned,
     allLearned: total > 0 && learned === total
   }
-}
-
-const expandSectionFlashcards = (headerId: string) => {
-  const sectionQuestions = notes.filter(
-    item => item.isFlashcardQuestion && item.flashcardHeaderId === headerId && !learnedQuestionIds.value.has(item.id)
-  )
-  for (const q of sectionQuestions) {
-    expandedQuestionIds.value.add(q.id)
-  }
-  expandedQuestionIds.value = new Set(expandedQuestionIds.value)
-  saveState()
 }
 
 const resetSectionFlashcards = (headerId: string) => {
