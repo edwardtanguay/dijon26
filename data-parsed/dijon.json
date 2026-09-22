@@ -1,2371 +1,2406 @@
 [
   {
-    "id": "8MyrMp",
-    "body": "Informations de base sur Dijon (14)",
+    "id": "0zzx5B",
+    "body": "Informations de base sur Dijon",
     "indent": 0,
     "image": "",
-    "isFlashcardHeader": true
+    "isFlashcardHeader": true,
+    "flashcardTotalCount": 14
   },
   {
-    "id": "F69MQ9",
+    "id": "6GHYMa",
     "body": "1. quel sculpteur médiéval a réalisé le célèbre « Puits de Moïse » ",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "WvV2FE",
+    "id": "AEXeQb",
     "body": "[pee-de-moh-ee-yah]",
     "indent": 2,
     "image": "",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "F69MQ9"
+    "flashcardQuestionId": "6GHYMa",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "SdGlFf",
+    "id": "tmWe4P",
     "body": "La chartreuse de Champmol",
     "indent": 2,
     "image": "",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "F69MQ9"
+    "flashcardQuestionId": "6GHYMa",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "g0zW3x",
+    "id": "GCpL0n",
     "body": "[Claus Sluter](https://fr.wikipedia.org/wiki/Claus_Sluter)",
     "indent": 2,
     "image": "sluterart33.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "F69MQ9"
+    "flashcardQuestionId": "6GHYMa",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "lkY0XV",
+    "id": "IbH0qZ",
     "body": "2. quel architecte du roi a conçu la place Royale ",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "1KWmTl",
+    "id": "ZLpnxA",
     "body": "[Jules Hardouin-Mansart](https://fr.wikipedia.org/wiki/Jules_Hardouin-Mansart)",
     "indent": 2,
     "image": "juleshardouin.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "lkY0XV"
+    "flashcardQuestionId": "IbH0qZ",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "IBCgV5",
+    "id": "FaRbS1",
     "body": "3. en quelle année s'est déroulé le célèbre siège de Dijon ",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "2xQIg0",
+    "id": "N54Pk6",
     "body": "[1513](https://fr.wikipedia.org/wiki/Si%C3%A8ge_de_Dijon)",
     "indent": 2,
     "image": "",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "IBCgV5"
+    "flashcardQuestionId": "FaRbS1",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "xeTbjI",
+    "id": "m6KXi6",
     "body": "[Louis II de La Trémoille](https://fr.wikipedia.org/wiki/Louis_II_de_La_Tr%C3%A9moille) a négocié avec succès la levée du siège mené par les Suisses",
     "indent": 2,
     "image": "",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "IBCgV5"
+    "flashcardQuestionId": "FaRbS1",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "DaoMj0",
+    "id": "YkMAMF",
     "body": "4. quel cours d'eau principal, aujourd'hui en grande partie canalisé ou couvert dans la traversée du centre urbain, arrose Dijon ?",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "zhKTvd",
+    "id": "3XpdKS",
     "body": "[l'Ouche](https://fr.wikipedia.org/wiki/Ouche_(C%C3%B4te-d%27Or))",
     "indent": 2,
     "image": "louchehigh.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "DaoMj0"
+    "flashcardQuestionId": "YkMAMF",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "dkqEbq",
+    "id": "IuKgfh",
     "body": "5. quel chanoine et maire de Dijon a popularisé le blanc-cassis en lui donnant son nom officiel au milieu du XXe siècle ?",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "82W9HT",
+    "id": "ibkGUv",
     "body": "[Kir](https://en.wikipedia.org/wiki/Kir_(cocktail))",
     "indent": 2,
     "image": "",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "dkqEbq"
+    "flashcardQuestionId": "IuKgfh",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "CX1Lda",
+    "id": "snbPZz",
     "body": "[Félix Kir](https://fr.wikipedia.org/wiki/F%C3%A9lix_Kir) Maire de Dijon 1945-1968",
     "indent": 2,
     "image": "felixkir.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "dkqEbq"
+    "flashcardQuestionId": "IuKgfh",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "UVGmM7",
+    "id": "W4idpL",
     "body": "6. quel était le nom de l'agglomération fortifiée gallo-romaine établie à l'emplacement actuel de Dijon dès le IIIe siècle",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "QpCUpP",
+    "id": "NbmudO",
     "body": "Divio",
     "indent": 2,
     "image": "divio.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "UVGmM7"
+    "flashcardQuestionId": "W4idpL",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "9giCFp",
+    "id": "P2wqQc",
     "body": "7. quel architecte célèbre est né à Dijon ?",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "CUkJe3",
+    "id": "Y7gQvv",
     "body": "[Gustave Eiffel](https://fr.wikipedia.org/wiki/Gustave_Eiffel)",
     "indent": 2,
     "image": "gustaveeff.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "9giCFp"
+    "flashcardQuestionId": "P2wqQc",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "2BNZGR",
+    "id": "wSrMo8",
     "body": "8. quel ingénieur né à Dijon au XIXe siècle a laissé son nom à une célèbre loi régissant l'écoulement des fluides dans les milieux poreux ",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "tqfzxv",
+    "id": "Seenro",
     "body": "[Henry Darcy](https://fr.wikipedia.org/wiki/Henry_Darcy)",
     "indent": 2,
     "image": "henrydarcy.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "2BNZGR"
+    "flashcardQuestionId": "wSrMo8",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "DSfB2d",
+    "id": "5V7Nej",
     "body": "Jardin Darcy",
     "indent": 2,
     "image": "darcymap.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "2BNZGR"
+    "flashcardQuestionId": "wSrMo8",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "3gPI3b",
+    "id": "Rdjtkf",
     "body": "9. quel vaste pôle culturel inauguré en 2022 sur le site de l'ancien hôpital général valorise le repas gastronomique des Français et les climats du vignoble de Bourgogne",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "oOfBNi",
+    "id": "061fLS",
     "body": "[La Cité internationale de la gastronomie et du vin de Dijon ](https://www.citedelagastronomie-dijon.fr/)",
     "indent": 2,
     "image": "gastronomie.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "3gPI3b"
+    "flashcardQuestionId": "Rdjtkf",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "MaODQK",
+    "id": "QMugX7",
     "body": "10. quel cours d'eau, affluent de l'Ouche en grande partie canalisé et souterrain sous la traversée du centre urbain, a historiquement modelé la topographie du nord dijonnais ",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "ea51sz",
+    "id": "t4C5SX",
     "body": "[Suzon](https://fr.wikipedia.org/wiki/Suzon_(rivi%C3%A8re))",
     "indent": 2,
     "image": "suzon.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "MaODQK"
+    "flashcardQuestionId": "QMugX7",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "RAwLlm",
+    "id": "dkcfOZ",
     "body": "11. le quartier de Dijon qui est intéressant si tu souhaites découvrir une zone résidentielle relativement aisée",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "PI0vZ2",
+    "id": "aa6a1N",
     "body": "Montchapet",
     "indent": 2,
     "image": "montchapet222.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "RAwLlm"
+    "flashcardQuestionId": "dkcfOZ",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "WbDO1G",
+    "id": "XFqDfp",
     "body": "également relié à la zone \"Quartier de la Gare\"",
     "indent": 2,
     "image": "montcha222.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "RAwLlm"
+    "flashcardQuestionId": "dkcfOZ",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "5hBDyK",
+    "id": "UJpUvM",
     "body": "12. un quartier de la ville pour avoir un aperçu intéressant d'une facette plus jeune et étudiante de Dijon",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "0ggeDK",
+    "id": "d4DGXQ",
     "body": "[Quartier Université-Montmuzard](https://fr.wikipedia.org/wiki/Quartier_Universit%C3%A9-Montmuzard)",
     "indent": 2,
     "image": "montmuzarduni.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "5hBDyK"
+    "flashcardQuestionId": "UJpUvM",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "umyCow",
+    "id": "ShPQm2",
     "body": "13. un quartier particulièrement intéressant à Dijon, car on peut y combiner promenade, canal, quartiers résidentiels et course à pied",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "7FAWFD",
+    "id": "zhpcxs",
     "body": "[Port du Canal / Bourroches](https://patrimoine.dijon.fr/le-patrimoine-dijonnais-en-ligne/123-quartiers/quartier-bourroches-valendons-port-du-canal-montagne-sainte-anne/)",
     "indent": 2,
     "image": "bourrouchescanal.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "umyCow"
+    "flashcardQuestionId": "ShPQm2",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "rPshwV",
+    "id": "kjyAQ4",
     "body": "14. un quartier intéressant à Dijon pour comprendre une autre facette de Dijon : urbanisme des années 1960-70, grands ensembles, espaces verts et lac",
     "indent": 1,
     "image": "",
-    "isFlashcardQuestion": true
+    "isFlashcardQuestion": true,
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "L99XdI",
+    "id": "HvYXaQ",
     "body": "[Fontaine d'Ouche / lac Kir](https://fr.wikipedia.org/wiki/Lac_Kir)",
     "indent": 2,
     "image": "fontaindoudud.png",
     "isFlashcardAnswer": true,
-    "flashcardQuestionId": "rPshwV"
+    "flashcardQuestionId": "kjyAQ4",
+    "flashcardHeaderId": "0zzx5B"
   },
   {
-    "id": "nRfVfZ",
+    "id": "J7rSyj",
     "body": "info todo",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "xZ26aS",
+    "id": "I3Akfz",
     "body": "Nathalie Koenders",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "YMttJd",
+    "id": "QkA5DO",
     "body": "areas of town",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "AJQo6V",
+    "id": "D2Hez1",
     "body": "ten people in dijon most known\t",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "7SqtbP",
+    "id": "3xYAUS",
     "body": "les questions pour Rodolphe",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "QIGZrl",
+    "id": "QxlReM",
     "body": "quels diriez-vous être les principaux quartiers de la ville, et à quoi ressemblent-ils",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "CRAWQ2",
+    "id": "RxQlnn",
     "body": "Centre-ville",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "n6puRQ",
+    "id": "BD2WOi",
     "body": "Le cœur historique",
     "indent": 4,
     "image": ""
   },
   {
-    "id": "zZQujL",
+    "id": "pMEXy3",
     "body": "Montchapet",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "r4ZVT1",
+    "id": "uv8rrq",
     "body": "Le Quartier de la Gare",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "x0r7pK",
+    "id": "z9QG40",
     "body": "Les Bourroches",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "QB36hr",
+    "id": "bvmdhj",
     "body": "Fontaine-d'Ouche",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "9KYVBF",
+    "id": "mkN7ny",
     "body": "Montmuzard",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "LggQfB",
+    "id": "1qcanI",
     "body": "Université",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "sR6Af7",
+    "id": "s75k6t",
     "body": "Les Grésilles",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "SEOTw0",
+    "id": "X9UVUP",
     "body": "La Maladière",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "YTlvqv",
+    "id": "YxITAK",
     "body": "Clos de Pouilly",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "bdkuXK",
+    "id": "iu3n2n",
     "body": "La Toison d'Or",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "dHgFVR",
+    "id": "xDCO5t",
     "body": "Port du Canal",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "2Moqfn",
+    "id": "mQsN6v",
     "body": "Valendons",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "IxUN9y",
+    "id": "w3KY1E",
     "body": "Faubourg Saint-Michel, Champmaillot, Hyacinthe Vincent, Mansart, Montmuzard et Université",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "zzgZSG",
+    "id": "Plt8Hg",
     "body": "Poussots",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "gjiPcL",
+    "id": "VaiTas",
     "body": "Le parc de la Colombière",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "S6u1rd",
+    "id": "2P7lQl",
     "body": "Chenôve",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "WuanJk",
+    "id": "1X9ceo",
     "body": "Plombières-lès-Dijon",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "CWnkGm",
+    "id": "zjxwpR",
     "body": "Talant",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "DyzicI",
+    "id": "PPDQlB",
     "body": "Daix",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "BhJ0CV",
+    "id": "f2h1KO",
     "body": "Fontaine-lès-Dijon",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "0GuGJE",
+    "id": "mZK4uo",
     "body": "Saint-Apollinaire",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "x3iMjJ",
+    "id": "p7E0J5",
     "body": "Quetigny",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "gldXTa",
+    "id": "cnHbPw",
     "body": "Longvic",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "TzP8G1",
+    "id": "vqZZDU",
     "body": "Marsannay-la-Côte",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "H0Qptt",
+    "id": "ls4fMl",
     "body": "Couchey",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "egZBio",
+    "id": "9a8sCk",
     "body": "",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "mCmJ4r",
+    "id": "345f07",
     "body": "vélo, tram, à pied",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "lVSjf6",
+    "id": "8Nu2PN",
     "body": "des choses intéressantes à voir qui sont désormais très connues",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "VE29JR",
+    "id": "PA7O4Y",
     "body": "todo",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "DJRJNO",
+    "id": "BboyyP",
     "body": "make room on phone",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "sTp27W",
+    "id": "e2qUrr",
     "body": "la maison de Rhenanie Palatinat",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "UFQudm",
+    "id": "jCgnNN",
     "body": "passwords",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "lJAHsT",
+    "id": "403ssM",
     "body": "preplys",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "x4JcdK",
+    "id": "4hSRBS",
     "body": "edward@tanguay.info login howto",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "tVOnlj",
+    "id": "cUKlRG",
     "body": "komoot trails: https://www.komoot.com/de-de/guide/1353475/randonnees-autour-de-fontaine-les-dijon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "4oCpMM",
+    "id": "TxoiyK",
     "body": "in Dijon",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "B5KPlE",
+    "id": "4C4WcV",
     "body": "cinema: Eldorado Cinema",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "XqbS4c",
+    "id": "oq3rVd",
     "body": "marathon",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "fhIZpW",
+    "id": "LYjjPP",
     "body": "https://www.marathondesgrandscrus.com",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "s66Y0l",
+    "id": "mnrs1Z",
     "body": "[Marathon des grands crus 17/10/2021 à Dijon](https://www.youtube.com/watch?v=qQCA4KLtdog)",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "WSicER",
+    "id": "LuqnAy",
     "body": "course à pied",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "KU1xda",
+    "id": "9VgQIV",
     "body": "https://www.openrunner.com/route-details/23448723",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "99bYyj",
+    "id": "j4wxt1",
     "body": "quoi emporter",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "8NyNXU",
+    "id": "EDOzuG",
     "body": "maillot de marathon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "ybh9Eh",
+    "id": "B1W22Q",
     "body": "tous mes livres",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "fTiunv",
+    "id": "Q2XeXu",
     "body": "tous les vêtements de course",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Jq7pkx",
+    "id": "R02saa",
     "body": "les gels",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "OfTS8h",
+    "id": "hrario",
     "body": "tous les mots de passe",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Dovy6F",
+    "id": "2T88DB",
     "body": "cettes notes et l'application en ligne",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "lBuSam",
+    "id": "f2Fi6H",
     "body": "Assurer que les cours VHS fonctionnent sur mobile",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Tw2vjl",
+    "id": "jtif7z",
     "body": "les défis",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "rDu7yX",
+    "id": "433ZkH",
     "body": ",, dijon.ffcam.fr, mardi et jeudi, groupes de randonées",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "KhQ9pH",
+    "id": "YUDv3o",
     "body": ",,  CIEF sur l'université",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "oB90Ak",
+    "id": "VJciUA",
     "body": "write to: https://preply.com/fr/tuteur/6636783",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "YaScaq",
+    "id": "xuhNNU",
     "body": "liste de tâches à accomplir",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "jv9dGC",
+    "id": "zcebSB",
     "body": "cadeau pour Laurent",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "s3QrYQ",
+    "id": "QVU7u4",
     "body": "T-shirt Grands Crus",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "1ah7cV",
+    "id": "Is0Uvi",
     "body": "livres: CLE International",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "K6O5JM",
+    "id": "tU6xb0",
     "body": "ISBN 3125301017",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "8QoYx0",
+    "id": "1zcima",
     "body": "Grammaire progressive du français etc.",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "KtWHDV",
+    "id": "ER1sNq",
     "body": "chatgpt: groupes similaires de polyglot café",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "RkiMy1",
+    "id": "PVBiow",
     "body": "est-ce qu'il y a un VHS en france ?",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Bocr50",
+    "id": "WR380B",
     "body": "Quels sont les quartiers de Dijon, par exemple Quartier République",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "8CR8vd",
+    "id": "VFtm85",
     "body": "professeur en ligne de Dijon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "crBJvu",
+    "id": "fsHZhF",
     "body": "demander ia pour meetups",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "hD2KwJ",
+    "id": "pKaX7m",
     "body": "lancer les défis dès maintenant : 3 appels par jour, avec journal de bord",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Or766O",
+    "id": "RYYbXY",
     "body": "enregistrer tous les événements Airbnb",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "HvJ7jg",
+    "id": "acCAnL",
     "body": "écrirer à 20 club de randonnées",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "DlOYv8",
+    "id": "CHqPZk",
     "body": "https://www.ffrandonnee.fr/nos-clubs/trouver-un-club/10697/afd21?department=21&postalCode=21000&activity=55&page=1",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "4EQ3QN",
+    "id": "HF70Ag",
     "body": "réserver un appartement Airbnb pour la semaine",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "X68pFd",
+    "id": "bHEfka",
     "body": "lire les deux Topo Guides",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "uanz9d",
+    "id": "SxdsC9",
     "body": "écrire à Diva Mobilités",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "V4Q7c7",
+    "id": "VBZULe",
     "body": "vélo",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "27S8E9",
+    "id": "vqzPZj",
     "body": "bus/tramway",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "gdJuOo",
+    "id": "uWRe2Z",
     "body": "tutors at https://preply.com",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Ic5V0g",
+    "id": "IYBybs",
     "body": "trouver des théâtres, des pièces et des conférences, comme Urania.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "8OaVwR",
+    "id": "mwZQ8M",
     "body": "un pass hebdomadaire pour tous les transports",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "I2Frpa",
+    "id": "rlWaHb",
     "body": "commander des gels sur Amazon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "jqQt9t",
+    "id": "ckcXPo",
     "body": "développer l'application de manière à ce",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "SBR9nr",
+    "id": "92X6aa",
     "body": "que les éléments essentiels soient immédiatement accessibles",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "K1I2bN",
+    "id": "2e1gnO",
     "body": "que vous puissiez la modifier, par exemple pour tenir un journal",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "JMNcQo",
+    "id": "iH1YLi",
     "body": "planifier toutes vos courses de la semaine",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "EKXKWw",
+    "id": "JNyy2g",
     "body": "acheter un livre sur Dijon en allemand ?",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "8B0RrX",
+    "id": "xSNt6H",
     "body": "découvrez où et comment louer un vélo pour une journée ou quelques jours",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "injvY2",
+    "id": "jyzfAI",
     "body": "rechercher des groupes qui se réunissent, comme des rencontres linguistiques",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "tLukMi",
+    "id": "SX4b5b",
     "body": "écrire à tous les clubs de randonnée",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "DM3vHm",
+    "id": "wz34n4",
     "body": "inscrire-toi à tous les cours de français",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "suVp4m",
+    "id": "wBaXnG",
     "body": "acheter des billets de train",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "IJ2l8N",
+    "id": "7Tewyi",
     "body": "chercher les meilleurs endroits pour le petit-déjeuner, etc.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "LxpLYz",
+    "id": "xejcLJ",
     "body": "lire tous tes livres",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "MBDRWn",
+    "id": "RIYKdR",
     "body": "Topo Guides Dijon métropole 37",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "Ms1Q7U",
+    "id": "pgnlFw",
     "body": "enregistrer chaque promenade dans Google Earth",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "gdiCMU",
+    "id": "CRjQJj",
     "body": "Topo Guides Le Grand Dijon 34",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "doPdno",
+    "id": "v1w5r9",
     "body": "enregistrer chaque promenade dans Google Earth",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "e7W7Xl",
+    "id": "xo4qnx",
     "body": "Histoire de Dijon",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "xu1PHm",
+    "id": "ZHTUSJ",
     "body": "lire-le rapidement, noter les lieux et les noms",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "Uhj6te",
+    "id": "drvzep",
     "body": "Dijon - Guide de Voyage ",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "4OgNYI",
+    "id": "JcfIQO",
     "body": "lire-le rapidement, noter les lieux et les noms",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "ow9eo9",
+    "id": "qsL4Pm",
     "body": "idées de cadeaux",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "Wf9yXI",
+    "id": "vMyitO",
     "body": "Ours Blanc",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "rConth",
+    "id": "kUg2tl",
     "body": "les dix quartiers les plus populaires de Dijon",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "PzDAdP",
+    "id": "O4nCHZ",
     "body": "**Centre-ville** - les Halles, le palais des Ducs, la rue de la Liberté",
     "indent": 1,
     "image": "centreville.png"
   },
   {
-    "id": "OU269o",
+    "id": "olGWLR",
     "body": "**République** - autour de la place de la République ; important pour se repérer au nord-est du centre",
     "indent": 1,
     "image": "republicquarter.png"
   },
   {
-    "id": "ts7v8G",
+    "id": "1A6TaD",
     "body": "[Montchapet](https://fr.wikipedia.org/wiki/Quartier_Montchapet) - des quartiers les plus aisés de la ville",
     "indent": 1,
     "image": "montchapet.png"
   },
   {
-    "id": "TzzipF",
+    "id": "XT1RdP",
     "body": "**Victor Hugo** - au nord-ouest, entre Montchapet et la gare.",
     "indent": 1,
     "image": "quartiervictorhugo.png"
   },
   {
-    "id": "tdDJuC",
+    "id": "cBELW5",
     "body": "**Gare** - autour de la gare SNCF",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "HkZa4P",
+    "id": "5vvUbT",
     "body": "[Faubourg Raines](https://fr.wikipedia.org/wiki/Quartier_Fontaine_d%27Ouche-Faubourg_Raines-Larrey-Motte_Giron) - caractérisé par son relief et la présence de très grands espaces naturels dont certains ont été réaménagés et mis en valeur par la ville pour une meilleure utilisation des promeneurs",
     "indent": 1,
     "image": "fountaineraines.png"
   },
   {
-    "id": "JFZkWy",
+    "id": "W1ZmuB",
     "body": "**Fontaine d’Ouche** - à l’ouest, près du lac Kir",
     "indent": 1,
     "image": "fontainedouche.png"
   },
   {
-    "id": "Zm7Agn",
+    "id": "E4DYol",
     "body": "**Wilson** - au sud du centre, autour de la place Wilson, est plutôt un quartier résidentiel et vivant, mais il n'a pas le caractère historique du centre de Dijon. Tu y trouveras davantage la vie quotidienne des habitants : commerces, cafés, restaurants, immeubles et maisons.",
     "indent": 1,
     "image": "quartierwilson.png"
   },
   {
-    "id": "xQTFKy",
+    "id": "Zt7zD9",
     "body": "[Port du Canal](https://fr.wikipedia.org/wiki/Port_du_canal_de_Dijon) - au sud-ouest, autour du canal de Bourgogne",
     "indent": 1,
     "image": "portducanalqua.png"
   },
   {
-    "id": "WTeR1x",
+    "id": "onuBm8",
     "body": "**Toison d’Or** - au nord, autour du centre commercial et du parc",
     "indent": 1,
     "image": "toisondor.png"
   },
   {
-    "id": "H8kv51",
+    "id": "k7QBhN",
     "body": "**Universités** - à l’est, autour du campus universitaire (1722)",
     "indent": 1,
     "image": "theunivquart.png"
   },
   {
-    "id": "3Xiccp",
+    "id": "NOUCs9",
     "body": "cartes memoires",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "NvBLdh",
+    "id": "wwQPX9",
     "body": "où trouve-t-on une crypte sous une église; Saint-Bénigne",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "bzwSjf",
+    "id": "Q5b5m7",
     "body": "où se trouvent l'adresse et le bar du Café Polyglott; « L’Alhambra », 3 rue Marceau (comme Marcel Marceau)",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "AqJxgd",
+    "id": "I7SGol",
     "body": "the parc that we will run through; Parc de Columbière, crée en 1672, ce parc à l'origine privé est créé au bord de l'Ouche ",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "ZLTPfZ",
+    "id": "t5B5Sa",
     "body": "toutes les rues sur lesquelles nous courrons pendant le marathon;nnn",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "pJS0Tl",
+    "id": "tU8qSi",
     "body": "les endroits",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "ZhtTPH",
+    "id": "rLc1em",
     "body": "Lac Kir",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "zZzxHS",
+    "id": "QVlPAy",
     "body": "activités",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "Bk0rcr",
+    "id": "respNN",
     "body": "n'importe quel jour",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "tyE4g6",
+    "id": "iScsnq",
     "body": "1d / Besançon / 7:00-20:00",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "ZAq8tb",
+    "id": "prCq7y",
     "body": "3h / FNAC / lun.–ven. 10:00–19:00, dim. 14:00–19:00",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "EU0rbe",
+    "id": "GK5Zh2",
     "body": "livres en français pour apprendre d'autres langues, notamment des histoires bilingues et des livres de grammaire",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "VpyvsA",
+    "id": "rrNhfv",
     "body": "2h / Cité Internationale de la Gastronomie et du Vin / tous les jours 9:30-23:00",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "Ek0bmM",
+    "id": "A7kKxI",
     "body": "2h / Dijon chasse au trésor / ",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "OTWi3f",
+    "id": "OCju0h",
     "body": "https://www.booking.com/attractions/fr/prvbnyusozwk-dijon-scavenger-hunt-and-highlights-self-guided-tour.de.html?aid=2439976&label=product-attractions-NyWk8b5X57OM7eAmxgIY%2AQS754813487218%3Apl%3Ata%3Ap1%3Ap2%3Aac%3Aap%3Aneg%3Afi%3Atikwd-366792913629%3Alp9198313%3Ali%3Adec%3Adm%3Acid22520704034%3Aagid180616178353&source=searchresults-product-card&ufi=-1423981&date=2026-10-12&timeslot=ATS-PRvbNYusoZWk-202610120000-nullnull&ticket_type=OFzmZX51xY5L",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "Gry4kH",
+    "id": "a1NT8y",
     "body": "presque tous les jours",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "EvaxQZ",
+    "id": "AnIiCj",
     "body": "2h / Musée de la Vie Bourguignonne / sauf le mardi 9:00-12:30, 13:30–18:00",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "f6RLcA",
+    "id": "pbcge8",
     "body": "1h / Dégustation de vins de Bourgogne / chaque jour 10-16 ",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "cGU8o9",
+    "id": "Emu2jC",
     "body": "https://www.airbnb.de/rp/edwardt3930?checkin=2026-10-08&checkout=2026-10-17&location=dijon&currentTab=experience_tab&federatedSearchId=4e461e99-6930-45d1-806e-69cf12b4fd7a&searchId=0fa5a47f-e3eb-414d-80b0-589074cacf07&sectionId=baf245f9-7592-4273-b287-48b0ce057101&p=recommendations&product=experience&listing_id=6406846&s=67&unique_share_id=c1d360ed-4111-462f-8994-66ffdfc7ecb0",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "Z6TmbO",
+    "id": "taZniS",
     "body": "n'importe quand",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "hsaMHL",
+    "id": "iU3str",
     "body": "30m / Jardin botanique de l'Arquebuse",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "dkziHE",
+    "id": "duuk15",
     "body": "30m / La Source des Vins - dégustation de vins de Bourgogne (blog)",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "fP98M6",
+    "id": "FwG9h2",
     "body": "seulement certains jours",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "H9XbwF",
+    "id": "9gFHmg",
     "body": "https://caveaumarsannay.com/actualites.php?type=evenement",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "uLYqGU",
+    "id": "5q1P3T",
     "body": "plus un randonée",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "Ibs7gl",
+    "id": "IkIMOZ",
     "body": "théâtres",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "fzV8Qp",
+    "id": "Isql8I",
     "body": "https://www.darcycomedie.com/",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "meHhKr",
+    "id": "vTRCUT",
     "body": "façons de décrire le vin",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "URsMHP",
+    "id": "PSZR2G",
     "body": "Ce vin est très aromatique, avec des notes de fruits rouges.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "qh36Vb",
+    "id": "kxEbpK",
     "body": "Il a un nez assez expressif, avec des arômes de fruits mûrs.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "vfAq3f",
+    "id": "qZ8tLT",
     "body": "Je trouve qu’il est très frais et agréable en bouche.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "6xyNDJ",
+    "id": "e7GDYV",
     "body": "Il est assez rond et équilibré.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "iIF6gx",
+    "id": "8ZqQzg",
     "body": "On sent une belle acidité, qui lui donne beaucoup de fraîcheur.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "9pTsBe",
+    "id": "miGp66",
     "body": "Les tanins sont présents, mais ils restent assez souples.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "MOFWWw",
+    "id": "okrP70",
     "body": "Il a une belle longueur en bouche.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "OWtxT1",
+    "id": "mwvL8M",
     "body": "Je trouve qu’il est assez complexe : les arômes évoluent au fur et à mesure qu’on le déguste.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "K74rdr",
+    "id": "Z1hKpS",
     "body": "C’est un vin assez élégant, avec une belle harmonie entre le fruit, l’acidité et les tanins.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "rM5hr0",
+    "id": "QS6ubQ",
     "body": "La finale est assez longue, avec une légère note épicée.",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "tmVQgX",
+    "id": "qvJGqT",
     "body": "routes",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "FWWppe",
+    "id": "jP6RwF",
     "body": "A1-10K-Hauteville-lès-Dijon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "aW9zXA",
+    "id": "tsh71O",
     "body": "A2-7K-Daix",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "whWw7n",
+    "id": "NprtZZ",
     "body": "A3-5K-Ahuy",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "XcYQwX",
+    "id": "phxoAZ",
     "body": "A4-7K-Fontaine-lès-Dijon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "sclIjG",
+    "id": "MlkqXG",
     "body": "A5-4K-Ahuy",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "hoBShs",
+    "id": "EtQ3bx",
     "body": "A6-8K-Toison d'Or",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "7dFcRN",
+    "id": "2tiGzD",
     "body": "Airbnb",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "KrH3KN",
+    "id": "5TiVRy",
     "body": "moins de 330 euros pour 9 nuits",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "7EApIl",
+    "id": "ZOURgr",
     "body": "",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "glqtiw",
+    "id": "cRfOyx",
     "body": "Danke für den Kaffee und das Gebäck jeden Morgen. ",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "UYGN00",
+    "id": "P8vuDD",
     "body": "Je suis totalement disposée à accueillir mes voyageurs de façon chaleureuse dans un esprit de partage et d'échange.",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "xLkrn6",
+    "id": "lMGfGa",
     "body": "The lady is only can speak french",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "A4rv7q",
+    "id": "153JYI",
     "body": "She is a very  nice lady and even invited me to have lunch with her",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "EeLa4o",
+    "id": "ZCR3w4",
     "body": "Meine Arbeit: A la retraite",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "bR84eJ",
+    "id": "x52L8A",
     "body": "Spricht Französisch",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "Ge7Cht",
+    "id": "3hLPam",
     "body": "5éme étage avec ascenseur",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "2IAzgu",
+    "id": "wTcSUU",
     "body": "Également ne pas manger dans la chambre",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "g1c8kH",
+    "id": "mgOU7j",
     "body": "Pour les voyageurs qui viennent chez moi, mettez au moins une photo de vôtre tête s'il vous plais",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "Q2mQDC",
+    "id": "oQKlta",
     "body": "Accès à la cuisine et sdb. Bémol : ascenseur capricieux. Liliane aime qu'on lui tienne compagnie et n'a pas la langue dans sa poche, mais reste néanmoins serviable.",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "5Xgzke",
+    "id": "Zu6lga",
     "body": "videos about Dijon",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "iq1qdS",
+    "id": "w6nOfI",
     "body": "[Histoire et gastronomie](https://www.youtube.com/watch?v=jMpkd1bWFyw) - 12:10",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "ciM7Rh",
+    "id": "WJyQaE",
     "body": "lieux à visiter",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "qleUck",
+    "id": "AtCdwr",
     "body": "Musée des Beaux-Arts",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "D3LNLh",
+    "id": "QbNQXu",
     "body": "Palais des Ducs",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "kqJahD",
+    "id": "DiczKb",
     "body": "Tour Philippe le Bon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "rss8zs",
+    "id": "h02Jw1",
     "body": "montez les 316 marches pour une vue panoramique exceptionnelle sur les toits colorés de Dijon, la ville et les vignobles alentour",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "C7f8qz",
+    "id": "f75QEm",
     "body": "Église Notre-Dame",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "K8W4SS",
+    "id": "j2fYZn",
     "body": "chef-d'oeuvre gothique bourguignon avec ses gargouilles et son célèbre horloge Jacquemart",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "ZT0xR2",
+    "id": "fmdGc5",
     "body": "Cathédrale Saint-Bénigne",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "U5DaZn",
+    "id": "atqHcG",
     "body": "avec sa crypte romane du XIe siècle",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "YDleRH",
+    "id": "wfiEq1",
     "body": "Les Halles centrales",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "oOwWde",
+    "id": "tCU672",
     "body": "Marché couvert",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "gWdyyO",
+    "id": "5cHz5u",
     "body": "Musée archéologique de Dijon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "U4bKid",
+    "id": "Dgtpbx",
     "body": "il présente des objets archéologiques qui permettent de découvrir l’histoire de la Bourgogne, de la Préhistoire au Moyen Âge",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "sDNOK6",
+    "id": "vj4Pm2",
     "body": "Le 1204",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "DgqWUY",
+    "id": "bJ7P8T",
     "body": "explique l’histoire, l’architecture et le développement de Dijon à travers les siècles",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "GWz1Qg",
+    "id": "TUX51g",
     "body": "Musée de la Vie Bourguignonne",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "nAS75p",
+    "id": "U2szaE",
     "body": "immersif et gratuit, sur la vie quotidienne d’autrefois",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "xEluwk",
+    "id": "cbYc5R",
     "body": "il présente la vie en Bourgogne (surtout aux 18e, 19e et début 20e siècles)",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "1vIEzP",
+    "id": "UgZxgk",
     "body": "Musée Magnin",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "RqyqYV",
+    "id": "GnjR4Q",
     "body": "il présente une importante collection de peintures et de meubles dans un élégant hôtel particulier du XVIIᵉ siècle",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "kdgFYL",
+    "id": "taapF3",
     "body": "les rues médiévales",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "F4fXIa",
+    "id": "RfaBwS",
     "body": "rue de la Chouette",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Gjbrat",
+    "id": "Q6koCg",
     "body": "",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "unwmwN",
+    "id": "wyuW9m",
     "body": "appli",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "QpDyGs",
+    "id": "tInHgB",
     "body": "créer des quiz",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "jONxHC",
+    "id": "6suzYn",
     "body": "géographie",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "UEfiBD",
+    "id": "6wVHzd",
     "body": "aliments",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "oQnRfK",
+    "id": "pAQlPL",
     "body": "pain d’épices",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "ZS7TEN",
+    "id": "FKjiFu",
     "body": "club de randonnée",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "tuXM7X",
+    "id": "sTfbDH",
     "body": "https://www.ffrandonnee.fr",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "r0O3RI",
+    "id": "FwwC3h",
     "body": "Dijon clubs: https://www.ffrandonnee.fr/nos-clubs/trouver-un-club?department=21&postalCode=21000&activity=55&page=1",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "AvXIue",
+    "id": "5oEG0U",
     "body": "calendrier",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "54AHdy",
+    "id": "YaBhW7",
     "body": "mercredi 7 octobre",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Yi7Elw",
+    "id": "kueCBy",
     "body": "préparer tout pour le voyage",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "pKJPf8",
+    "id": "NjYanL",
     "body": "all passwords",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "9OjScc",
+    "id": "bMs5QE",
     "body": "airbnb",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "DQ4aoG",
+    "id": "xT9EKc",
     "body": "paypal",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "TcufoQ",
+    "id": "7b0tZX",
     "body": "assurez d'avoir suffisamment d'argent pour payer votre compte Google ce mois-ci",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "VD0ohi",
+    "id": "HUTHgj",
     "body": "jeudi 8 octobre",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "ihNL1A",
+    "id": "MNcPy5",
     "body": "06:43-13:48 Berlin Hbf - Basel",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "qAItdY",
+    "id": "fWZnlV",
     "body": "14:34-15:58 Basel - Dijon",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "nvlRrm",
+    "id": "nhEm5F",
     "body": "l’Agence DiviaMobilités",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "aQWWgL",
+    "id": "LnoRPa",
     "body": "prendre un pass hebdomadaire pour tous les transports",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "jT08zN",
+    "id": "7qn5P8",
     "body": "tu peux aussi utiliser directement ta carte bancaire sans contact dans les bus et les tramways ",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "sGhvnr",
+    "id": "Kn9uVK",
     "body": "le voyage coûte 2 € et permet des trajets illimités pendant 1 heure",
     "indent": 4,
     "image": ""
   },
   {
-    "id": "FoghkE",
+    "id": "CSPJ7C",
     "body": "il existe aussi DiviaVélo, qui est différent : c'est une vraie location de vélo, que tu gardes avec toi. Une location de 7 jours est disponible",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "wHfeut",
+    "id": "Sdd2e0",
     "body": "vendredi 9 octobre",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "x1lnDs",
+    "id": "KVsYee",
     "body": "acheter le billet de train pour Berlin",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "60ZiKI",
+    "id": "F9ZnZz",
     "body": "sortir dîner pour un anniversaire",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "S3SqFs",
+    "id": "TOKdBH",
     "body": "samedi 10 octobre",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "GtBRzt",
+    "id": "zFifK9",
     "body": "19:30 Un Singe en Hiver Meeting",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "KwmpAG",
+    "id": "KLbxb2",
     "body": "chat in different languages, and connect with new people",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "UfonTA",
+    "id": "uZqKOx",
     "body": "https://www.meetup.com/papotagedijon/events/316243303/",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "pnFP5y",
+    "id": "P8jk5U",
     "body": "dimanche 11 octobre ",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "KOrNnt",
+    "id": "FJM7VN",
     "body": "lundi 12 octobre",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "6NnccG",
+    "id": "6zLRuU",
     "body": "Laurent? 0630773248",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "SfrPrS",
+    "id": "iR7qaA",
     "body": "mardi 13 octobre",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "eR7h9E",
+    "id": "vggasK",
     "body": "Laurent? 0630773248",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "D05jF2",
+    "id": "RRgF4g",
     "body": "18:00 Café Polyglotte de Dijon",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "3kkAP5",
+    "id": "u64qDa",
     "body": "mercredi 14 octobre",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "GmTQB3",
+    "id": "2ohuKU",
     "body": "18:00 Café Polyglotte de Dijon",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "JON6OG",
+    "id": "wfba22",
     "body": "jeudi 15 octobre",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "G2nzhB",
+    "id": "TE1Cn4",
     "body": "vendredi 16 octobre",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "H2x9MJ",
+    "id": "Mw1Rfe",
     "body": ",, Dijon-Straßburg-Berlin",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "URiWqy",
+    "id": "BsG1vA",
     "body": "10:07-12:24 Straßburg",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "bF67pq",
+    "id": "aT5JIz",
     "body": "14:52-15:22 Offenburg",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "C0ysbu",
+    "id": "fI52qC",
     "body": "15:27-21:17 Berlin",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "8S15ed",
+    "id": "gdMN1j",
     "body": ",, Dijon-Basel-Berlin",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "6ak7zF",
+    "id": "glE6N6",
     "body": "12:01-13:23 Dijon-Basel",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "LZjGq7",
+    "id": "QcR3QG",
     "body": "14:16-21:17 Basel-Berlin",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "tYIftU",
+    "id": "j1jUXl",
     "body": "transports en commun",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "eMPpl6",
+    "id": "AvD7Sl",
     "body": "chercher comment se rendre quelque part",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "VPdQne",
+    "id": "4txuJd",
     "body": "https://www.divia.fr",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "Dwxw8T",
+    "id": "IAfgVf",
     "body": "les billets",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "K3Y5kV",
+    "id": "vC5mUI",
     "body": "l’Agence DiviaMobilités, 16 place Darcy, du lundi au samedi de 9 h à 19 h",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "ydudnZ",
+    "id": "kocIZ5",
     "body": "il y a deux lignes de tramway",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "dfNLii",
+    "id": "4VJMvq",
     "body": "T1: Dijon Gare ↔ Quetigny Centre",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "F4k0m0",
+    "id": "qqLnXj",
     "body": "T2: Chenôve Centre ↔ Dijon Valmy",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "rJnCPJ",
+    "id": "zFWMel",
     "body": "elles circulent approximativement de 5 h à 1 h",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "UhqcIN",
+    "id": "dHoyac",
     "body": "avec une fréquence pouvant atteindre 4 minutes aux heures de pointe",
     "indent": 2,
     "image": "dijontram.jpg"
   },
   {
-    "id": "d1ws1U",
+    "id": "j1hGUv",
     "body": "Les bus",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "mgYKAH",
+    "id": "v5Pu7l",
     "body": "lianes L3 à L9 sont les lignes principales",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "66jOgh",
+    "id": "8MF9LR",
     "body": "L3: https://transitapp.com/fr/region/dijon/divia/bus-l3",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "ZimmJc",
+    "id": "KnuS2J",
     "body": "L9: https://transitapp.com/fr/region/dijon/divia/bus-l9",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "qRbLtt",
+    "id": "S6H34O",
     "body": "Le vélo",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "tINOnO",
+    "id": "azQGaS",
     "body": "Louez un vélo pour 24h, 48h ou 7 jours et roulez en toute liberté",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "gtCx7V",
+    "id": "o4C9Dm",
     "body": "https://information.divia.fr/sinformer/velo/diviavelo/",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "RWbVJp",
+    "id": "4gnopb",
     "body": "7 jours = 9 https://information.divia.fr/sinformer/velo/diviavelo/louer-un-vtc-courte-duree",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "fpro70",
+    "id": "JMMu1d",
     "body": "VTT = vélo tout terrain → vélo conçu pour les chemins, les sentiers, les terrains accidentés, etc. En anglais : mountain bike.",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "lJMkhv",
+    "id": "V3s0XC",
     "body": "VTC = vélo tout chemin → vélo polyvalent, adapté aux routes, pistes cyclables et chemins relativement faciles. En anglais : hybrid bike ou trekking bike.",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "SbBohI",
+    "id": "2ueXuB",
     "body": "activités linguistiques",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "bKKKWb",
+    "id": "phDimd",
     "body": "visite guidée",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "XOJVM9",
+    "id": "OdGhVz",
     "body": "https://www.withlocals.com/de/s/france/dijon/tours/walking/",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "GJ5F7J",
+    "id": "AtW6JU",
     "body": "tous les musées et lieux d'intérêt",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "VwDd7G",
+    "id": "S2c5Z6",
     "body": "Café Polyglotte de Dijon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "tfX6XN",
+    "id": "QOEc9N",
     "body": "les rencontres ont lieu le mardi et le mercredi, de 18 h à 20 h 30",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "8U75ck",
+    "id": "U2KW0o",
     "body": "à l'Alhambra, 3 rue Marceau",
     "indent": 2,
     "image": "cafelalhambra.png"
   },
   {
-    "id": "g5gvMS",
+    "id": "F4bM4C",
     "body": "https://cafe-polyglotte-dijon.fr",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "yCyXhl",
+    "id": "XAgbp5",
     "body": "tous les jours",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "lqbRry",
+    "id": "hR4e7Y",
     "body": "10 défis oratoires",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "rGdiYy",
+    "id": "tLOc6N",
     "body": "objectifs",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "NCk1k8",
+    "id": "7XOJsx",
     "body": "je pèse 78 kilos",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "apQqpp",
+    "id": "PV3CFf",
     "body": "j'ai un niveau B2 en français",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "USAmVo",
+    "id": "Qll41h",
     "body": "j'ai rencontré dix personnes avec qui je suis resté en contact",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "wNzL9G",
+    "id": "7bhhdL",
     "body": "j'ai atteint un niveau de maîtrise minimal en italien, en espagnol et en néerlandais",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "yuauwF",
+    "id": "ehObQY",
     "body": "villes",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "aIOhlZ",
+    "id": "0zvlrB",
     "body": "Ahuy [ah-EE]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "kb9QSk",
+    "id": "k54K2Y",
     "body": "Bressey-sur-Tille [tee]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "iovJcB",
+    "id": "w3qVOn",
     "body": "Bretenière [bruh]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "qmEiAK",
+    "id": "kZIiuH",
     "body": "Chenôve [shuh-NOHV]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "fszDXT",
+    "id": "fwAPZl",
     "body": "Chevigny-Saint-Sauveur [nee]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "AibRWE",
+    "id": "Aa4yTf",
     "body": "Crimolois",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "N99tnb",
+    "id": "5sWi8k",
     "body": "Daix [deh]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "FJ7xrw",
+    "id": "z8Z0qR",
     "body": "Fénay [fee]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "jhlyZB",
+    "id": "gs3ctf",
     "body": "Fontaine-lès-Dijon [f(on)-ten-ah]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "GwVjIM",
+    "id": "uYmmiB",
     "body": "Hauteville-lès-Dijon [oh-tuh-vee-luh-lay]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "nAssss",
+    "id": "DFMJ9c",
     "body": "Longvic [l(on)-veek]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "GgLDyH",
+    "id": "As8vRL",
     "body": "Magny-sur-Tille [mah-nee, tee]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "IRGg0h",
+    "id": "ReRMNM",
     "body": "Marsannay-la-Côte",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "pgEfTh",
+    "id": "R3d8Jg",
     "body": "Neuilly-lès-Dijon [noo-ee-lay]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "5CNZcr",
+    "id": "aYFCMe",
     "body": "Ouges [oozh]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "A872Yr",
+    "id": "sv2kWl",
     "body": "Perrigny-lès-Dijon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "dhecEl",
+    "id": "jvAa7K",
     "body": "Plombières-lès-Dijon [bee-air]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "s3R0pt",
+    "id": "b5J0P3",
     "body": "Quetigny [kuh-tee-nee]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "xb68oR",
+    "id": "bW5F92",
     "body": "Saint-Apollinaire",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "7YYdCR",
+    "id": "fqBCPj",
     "body": "Sennecey-lès-Dijon [sen-eh-say]",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "lxYlLi",
+    "id": "hsjdBa",
     "body": "Talant [tah-l(an)]",
     "indent": 1,
     "image": "dijontowns.png"
   },
   {
-    "id": "YOz7yF",
+    "id": "pZ27JR",
     "body": "personnalités importantes de Dijon",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "TNu9Ve",
+    "id": "zbSgOy",
     "body": "1404 Philippe II de Bourgogne (Philippe le Hardi)",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Qd0VkH",
+    "id": "02kDex",
     "body": "il a fondé la puissance de la maison de Bourgogne et a été le premier duc de Bourgogne de la dynastie des Valois",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "NpJXo8",
+    "id": "L4ofqJ",
     "body": "1419 Jean sans Peur",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "l92kzk",
+    "id": "IFVWeJ",
     "body": "il a renforcé la puissance de la Bourgogne et joué un rôle majeur dans la guerre civile entre les Armagnacs et les Bourguignons au début du XVe siècle",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "4H4B6F",
+    "id": "bbgwf5",
     "body": "1467 Philippe le Bon",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "AA5jM7",
+    "id": "hqu22D",
     "body": "il a considérablement agrandi et renforcé l’État bourguignon au XVe siècle",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "5e18CC",
+    "id": "ZZxFSa",
     "body": "concepts",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "f4rzIW",
+    "id": "4ZQIVb",
     "body": "Grands Crus",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "zRDqph",
+    "id": "DE1Zmi",
     "body": "une célèbre route des vins située en Bourgogne",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "Ts4Cpl",
+    "id": "WPN6AD",
     "body": "traverse plusieurs villages viticoles réputés, notamment entre Dijon et Santenay",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "hfdE3a",
+    "id": "4tps5I",
     "body": "on y trouve des vignobles produisant certains des vins les plus prestigieux de Bourgogne",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "2mKzU6",
+    "id": "YxMUFt",
     "body": "le terme « grand cru » désigne ici les vignobles bénéficiant de l’appellation la plus prestigieuse de la classification bourguignonne",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "gAHKjx",
+    "id": "fNP7vC",
     "body": "la Route des Grands Crus est aussi une destination touristique très appréciée pour ses paysages, ses villages et ses domaines viticoles",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "8slmh2",
+    "id": "EfijF8",
     "body": "un cru est, dans le domaine du vin, un vignoble ou un terroir particulier reconnu pour la qualité de ses vins",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "gdfCRA",
+    "id": "zqDk1S",
     "body": "le mot vient du verbe croître : un cru est littéralement quelque chose qui a « poussé », notamment ce qui est produit par une terre",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "Ev9tEP",
+    "id": "Zcwi25",
     "body": "par exemple, Chambertin est un cru très célèbre en Bourgogne",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "pGxZI4",
+    "id": "4LmXB9",
     "body": "challenges",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "bPevTN",
+    "id": "NbGjpB",
     "body": "challengeCreationTodos",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "Rz1t6I",
+    "id": "iiHKbh",
     "body": "+33 (0)3 80 44 11 44 et essayer toutes les choix de recording",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "NjVQni",
+    "id": "tDJEv7",
     "body": "",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "WpZGxd",
+    "id": "RczM10",
     "body": "write to Suzi https://www.firedupinfrance.fr/",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "tieBAm",
+    "id": "xfJNyJ",
     "body": "infos",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "7Qr8FJ",
+    "id": "9NxOZd",
     "body": "intros",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "hfUtjd",
+    "id": "merBLz",
     "body": "Bonjour, Edward Tanguay à l’appareil. Je vous appelle au sujet de…",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "uXW7qF",
+    "id": "GUTUAF",
     "body": "Bonjour, je m’appelle Edward Tanguay. Je vous appelle parce que j’aurais une question concernant…",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "gZFZMD",
+    "id": "1D7JqP",
     "body": "liens",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "5ymwmp",
+    "id": "PrhYd8",
     "body": "vidéos pour apprendre à parler au téléphone",
     "indent": 3,
     "image": ""
   },
   {
-    "id": "hbxJaq",
+    "id": "rJVVCS",
     "body": "défis d'écriture avant le voyage",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "0qbzJs",
+    "id": "ov9uWb",
     "body": "à faire",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "EK6Z67",
+    "id": "PgVwnB",
     "body": "",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "7xjbrs",
+    "id": "Qhzplj",
     "body": "appeler l'office de tourisme et demander des visites guidées",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "EEH2es",
+    "id": "4tJ2U3",
     "body": "https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "mVsdsr",
+    "id": "HRRq43",
     "body": "https://www.cotedor-randonnee.com/associations-randonnee-cotedor/",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "dqP7q3",
+    "id": "CwwLdK",
     "body": "https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours/",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "pjdVqW",
+    "id": "52oIkc",
     "body": "https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "uWsDat",
+    "id": "jz1QwR",
     "body": "défis oratoires avant le voyage",
     "indent": 0,
     "image": ""
   },
   {
-    "id": "Uoo7Az",
+    "id": "BCRlCu",
     "body": "à faire",
     "indent": 1,
     "image": ""
   },
   {
-    "id": "zMfYo8",
+    "id": "XdFMhS",
     "body": "Appeler l'office de tourisme et demander des visites guidées",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "sej9fe",
+    "id": "cBu49T",
     "body": "https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "hsJ9CS",
+    "id": "3n5fzX",
     "body": "https://www.cotedor-randonnee.com/associations-randonnee-cotedor/",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "QGYyc9",
+    "id": "USI7WF",
     "body": "https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "zn2ws1",
+    "id": "xUJ9j4",
     "body": "https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com",
     "indent": 2,
     "image": ""
   },
   {
-    "id": "Om2VuB",
+    "id": "fhKp4Q",
     "body": "accompli",
     "indent": 1,
     "image": ""

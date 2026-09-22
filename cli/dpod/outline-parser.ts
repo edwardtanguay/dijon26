@@ -10,9 +10,11 @@ export interface OutlineItem {
 	indent: number;
 	image: string;
 	isFlashcardHeader?: boolean;
+	flashcardTotalCount?: number;
 	isFlashcardQuestion?: boolean;
 	isFlashcardAnswer?: boolean;
 	flashcardQuestionId?: string;
+	flashcardHeaderId?: string;
 }
 
 export class OutlineParser {
@@ -36,13 +38,14 @@ export class OutlineParser {
 
 		let ignoredIndent: number | null = null;
 		let currentFlashcardHeaderIndent: number | null = null;
+		let currentHeaderId: string | null = null;
 		let currentQuestionId: string | null = null;
 		let currentHeaderItem: OutlineItem | null = null;
 		let currentSectionFlashcardCount = 0;
 
 		const finalizeCurrentFlashcardHeader = () => {
 			if (currentHeaderItem) {
-				currentHeaderItem.body = `${currentHeaderItem.body} (${currentSectionFlashcardCount})`;
+				currentHeaderItem.flashcardTotalCount = currentSectionFlashcardCount;
 				currentHeaderItem = null;
 			}
 			currentSectionFlashcardCount = 0;
@@ -87,6 +90,7 @@ export class OutlineParser {
 			if (currentFlashcardHeaderIndent !== null && indent <= currentFlashcardHeaderIndent) {
 				finalizeCurrentFlashcardHeader();
 				currentFlashcardHeaderIndent = null;
+				currentHeaderId = null;
 				currentQuestionId = null;
 			}
 
@@ -151,6 +155,9 @@ export class OutlineParser {
 			}
 
 			const id = qstr.generateSuuid();
+			if (isFlashcardHeader) {
+				currentHeaderId = id;
+			}
 			if (isFlashcardQuestion) {
 				currentQuestionId = id;
 			}
@@ -167,10 +174,14 @@ export class OutlineParser {
 				currentHeaderItem = item;
 				currentSectionFlashcardCount = 0;
 			}
-			if (isFlashcardQuestion) item.isFlashcardQuestion = true;
+			if (isFlashcardQuestion) {
+				item.isFlashcardQuestion = true;
+				if (currentHeaderId) item.flashcardHeaderId = currentHeaderId;
+			}
 			if (isFlashcardAnswer) {
 				item.isFlashcardAnswer = true;
 				if (flashcardQuestionId) item.flashcardQuestionId = flashcardQuestionId;
+				if (currentHeaderId) item.flashcardHeaderId = currentHeaderId;
 			}
 
 			items.push(item);
