@@ -1,10 +1,15 @@
 - Informations de base sur Dijon%%flashcards
-	- Quel sculpteur médiéval a réalisé le célèbre « Puits de Moïse » 
+	- quel sculpteur médiéval a réalisé le célèbre « Puits de Moïse » 
 		- [pee-de-moh-ee-yah]
 		- La chartreuse de Champmol
 		- [Claus Sluter](https://fr.wikipedia.org/wiki/Claus_Sluter)##sluterart33
-	- Quel architecte du roi a conçu la place Royale 
+	- quel architecte du roi a conçu la place Royale 
 		- [Jules Hardouin-Mansart](https://fr.wikipedia.org/wiki/Jules_Hardouin-Mansart)##juleshardouin
+	- en quelle année s'est déroulé le célèbre siège de Dijon 
+		- [1513](https://fr.wikipedia.org/wiki/Si%C3%A8ge_de_Dijon)
+		- [Louis II de La Trémoille](https://fr.wikipedia.org/wiki/Louis_II_de_La_Tr%C3%A9moille) a négocié avec succès la levée du siège mené par les Suisses
+	- quel cours d'eau principal, aujourd'hui en grande partie canalisé ou couvert dans la traversée du centre urbain, arrose Dijon ?
+		- [l'Ouche](nnn)##louche
 - todo
 	- make room on phone
 	- la maison de Rhenanie Palatinat
