@@ -22,16 +22,64 @@
 		- Jardin Darcy##darcymap
 	- quel vaste pôle culturel inauguré en 2022 sur le site de l'ancien hôpital général valorise le repas gastronomique des Français et les climats du vignoble de Bourgogne
 		- [La Cité internationale de la gastronomie et du vin de Dijon ](https://www.citedelagastronomie-dijon.fr/)##gastronomie
+	- quel cours d'eau, affluent de l'Ouche en grande partie canalisé et souterrain sous la traversée du centre urbain, a historiquement modelé la topographie du nord dijonnais 
+		- [Suzon](https://fr.wikipedia.org/wiki/Suzon_(rivi%C3%A8re))##suzon
+	- le quartier de Dijon qui est intéressant si tu souhaites découvrir une zone résidentielle relativement aisée
+		- Montchapet##montchapet222
+		- également relié à la zone "Quartier de la Gare"##montcha222
+	- un quartier de la ville pour avoir un aperçu intéressant d'une facette plus jeune et étudiante de Dijon
+		- [Quartier Université-Montmuzard](https://fr.wikipedia.org/wiki/Quartier_Universit%C3%A9-Montmuzard)##montmuzarduni
+	- un quartier particulièrement intéressant à Dijon, car on peut y combiner promenade, canal, quartiers résidentiels et course à pied
+		- [Port du Canal / Bourroches](https://patrimoine.dijon.fr/le-patrimoine-dijonnais-en-ligne/123-quartiers/quartier-bourroches-valendons-port-du-canal-montagne-sainte-anne/)##bourrouchescanal
+	- un quartier intéressant à Dijon pour comprendre une autre facette de Dijon : urbanisme des années 1960-70, grands ensembles, espaces verts et lac
+		- [Fontaine d'Ouche / lac Kir](https://fr.wikipedia.org/wiki/Lac_Kir)##fontaindoudud
 - info todo
 	- Nathalie Koenders
 	- areas of town
 	- ten people in dijon most known	
+	- les questions pour Rodolphe
+		- quels diriez-vous être les principaux quartiers de la ville, et à quoi ressemblent-ils
+			- Centre-ville
+				- Le cœur historique
+			- Montchapet
+			- Le Quartier de la Gare
+			- Les Bourroches
+			- Fontaine-d'Ouche
+			- Montmuzard
+			- Université
+			- Les Grésilles
+			- La Maladière
+			- Clos de Pouilly
+			- La Toison d'Or
+			- Port du Canal
+			- Valendons
+			- Faubourg Saint-Michel, Champmaillot, Hyacinthe Vincent, Mansart, Montmuzard et Université
+			- Poussots
+			- Le parc de la Colombière
+			- Chenôve
+			- Plombières-lès-Dijon
+			- Talant
+			- Daix
+			- Fontaine-lès-Dijon
+			- Saint-Apollinaire
+			- Quetigny
+			- Longvic
+			- Marsannay-la-Côte
+			- Couchey
+			- 
+		- vélo, tram, à pied
+
+
+		- des choses intéressantes à voir qui sont désormais très connues
 - todo
 	- make room on phone
 	- la maison de Rhenanie Palatinat
 	- passwords
 		- preplys
 	- edward@tanguay.info login howto
+	- komoot trails: https://www.komoot.com/de-de/guide/1353475/randonnees-autour-de-fontaine-les-dijon
+- in Dijon
+	- cinema: Eldorado Cinema
 - marathon
 	- https://www.marathondesgrandscrus.com
 	- [Marathon des grands crus 17/10/2021 à Dijon](https://www.youtube.com/watch?v=qQCA4KLtdog)
