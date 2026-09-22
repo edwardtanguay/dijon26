@@ -13,7 +13,14 @@
           <div class="inline-flex flex-wrap items-center gap-2.5">
             <span class="font-semibold text-gray-900 dark:text-white">
               <span v-html="renderFormattedContent(item.body)" />
-              <span class="text-sm font-medium text-gray-500 dark:text-gray-400 ml-1.5">
+              <span
+                class="text-sm font-medium ml-1.5"
+                :class="[
+                  getSectionStats(item.id).allLearned
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-amber-500 dark:text-amber-400'
+                ]"
+              >
                 ({{ getSectionStats(item.id).learned }} sur {{ getSectionStats(item.id).total }})
               </span>
             </span>
@@ -40,13 +47,13 @@
         <!-- Flashcard Question Line -->
         <div
           v-else-if="item.isFlashcardQuestion"
-          class="inline-flex items-start gap-1.5 cursor-pointer font-medium transition-all duration-150 select-none group"
+          class="inline-flex items-start gap-1.5 cursor-pointer font-medium transition-all duration-150 group select-text"
           :class="[
             expandedQuestionIds.has(item.id)
               ? 'bg-amber-100/70 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-100 rounded-md px-2.5 py-1 shadow-xs'
               : 'hover:text-indigo-600 dark:hover:text-indigo-400 py-0.5'
           ]"
-          @click="toggleQuestion(item.id)"
+          @click="handleQuestionClick(item.id)"
         >
           <svg
             class="w-3.5 h-3.5 mt-1 inline-block transition-transform duration-200 shrink-0"
@@ -140,6 +147,14 @@ const expandedQuestionIds = ref<Set<string>>(new Set())
 const learnedQuestionIds = ref<Set<string>>(new Set())
 
 onMounted(() => {
+  // Préchargement de toutes les images pour affichage instantané dès le clic
+  for (const item of notes) {
+    if (item.image && !item.image.startsWith('NOT_FOUND:')) {
+      const img = new Image()
+      img.src = `/images/outline/${item.image}`
+    }
+  }
+
   try {
     const savedExpanded = localStorage.getItem(STORAGE_KEY_EXPANDED)
     if (savedExpanded) {
@@ -190,6 +205,15 @@ const resetSectionFlashcards = (headerId: string) => {
   learnedQuestionIds.value = new Set(learnedQuestionIds.value)
   expandedQuestionIds.value = new Set(expandedQuestionIds.value)
   saveState()
+}
+
+const handleQuestionClick = (questionId: string) => {
+  const selection = window.getSelection()
+  if (selection && selection.toString().trim().length > 0) {
+    // Si l'utilisateur est en train de sélectionner du texte, on ne bascule pas l'état
+    return
+  }
+  toggleQuestion(questionId)
 }
 
 const toggleQuestion = (questionId: string) => {
