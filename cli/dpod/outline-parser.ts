@@ -9,6 +9,10 @@ export interface OutlineItem {
 	body: string;
 	indent: number;
 	image: string;
+	isFlashcardHeader?: boolean;
+	isFlashcardQuestion?: boolean;
+	isFlashcardAnswer?: boolean;
+	flashcardQuestionId?: string;
 }
 
 export class OutlineParser {
@@ -30,6 +34,10 @@ export class OutlineParser {
 		const lines = qfil.getLinesFromFile(inputPath);
 		const items: OutlineItem[] = [];
 
+		let ignoredIndent: number | null = null;
+		let currentFlashcardHeaderIndent: number | null = null;
+		let currentQuestionId: string | null = null;
+
 		for (const line of lines) {
 			if (qstr.isEmpty(line)) {
 				continue;
@@ -49,6 +57,46 @@ export class OutlineParser {
 				content = content.substring(2);
 			} else if (content.startsWith("-")) {
 				content = content.substring(1);
+			}
+
+			// Check ignore logic for "nnn" and all its children
+			if (ignoredIndent !== null) {
+				if (indent > ignoredIndent) {
+					continue;
+				} else {
+					ignoredIndent = null;
+				}
+			}
+
+			if (content.trim() === "nnn") {
+				ignoredIndent = indent;
+				continue;
+			}
+
+			// Check flashcard scope
+			if (currentFlashcardHeaderIndent !== null && indent <= currentFlashcardHeaderIndent) {
+				currentFlashcardHeaderIndent = null;
+				currentQuestionId = null;
+			}
+
+			let isFlashcardHeader = false;
+			let isFlashcardQuestion = false;
+			let isFlashcardAnswer = false;
+			let flashcardQuestionId: string | undefined = undefined;
+
+			// Check if line ends with %%flashcards
+			if (/%%flashcards\s*$/.test(content)) {
+				content = content.replace(/%%flashcards\s*$/, "").trimEnd();
+				isFlashcardHeader = true;
+				currentFlashcardHeaderIndent = indent;
+				currentQuestionId = null;
+			} else if (currentFlashcardHeaderIndent !== null) {
+				if (indent === currentFlashcardHeaderIndent + 1) {
+					isFlashcardQuestion = true;
+				} else if (indent > currentFlashcardHeaderIndent + 1) {
+					isFlashcardAnswer = true;
+					flashcardQuestionId = currentQuestionId || undefined;
+				}
 			}
 
 			let image = "";
@@ -84,12 +132,25 @@ export class OutlineParser {
 			}
 
 			const id = qstr.generateSuuid();
-			items.push({
+			if (isFlashcardQuestion) {
+				currentQuestionId = id;
+			}
+
+			const item: OutlineItem = {
 				id,
 				body: content,
 				indent,
 				image
-			});
+			};
+
+			if (isFlashcardHeader) item.isFlashcardHeader = true;
+			if (isFlashcardQuestion) item.isFlashcardQuestion = true;
+			if (isFlashcardAnswer) {
+				item.isFlashcardAnswer = true;
+				if (flashcardQuestionId) item.flashcardQuestionId = flashcardQuestionId;
+			}
+
+			items.push(item);
 		}
 
 		if (!qfil.directoryExists(outputDir)) {
