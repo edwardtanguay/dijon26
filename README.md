@@ -6,4 +6,6 @@ This site is an info site for my trip to Dijon in October 2026
 
 - save screenshot in appropriate folder (CTRL+SHIFT+ALT+3)
 	- C:\edward\projects\apps\dijon26\public\images\outline
+- save screenshot in appropriate folder - HIGHER RESOLUTION (CTRL+SHIFT+ALT+4)
+	- C:\edward\projects\apps\dijon26\public\images\outline
 - add "##cafelalhambra" at the end of the line
