@@ -33,8 +33,8 @@
 		- [Port du Canal / Bourroches](https://patrimoine.dijon.fr/le-patrimoine-dijonnais-en-ligne/123-quartiers/quartier-bourroches-valendons-port-du-canal-montagne-sainte-anne/)##bourrouchescanal
 	- un quartier intéressant à Dijon pour comprendre une autre facette de Dijon : urbanisme des années 1960-70, grands ensembles, espaces verts et lac
 		- [Fontaine d'Ouche / lac Kir](https://fr.wikipedia.org/wiki/Lac_Kir)##fontaindoudud
-	- nnn
-		- [République / Drapeau / Clémenceau](nnn)##nnn
+	- au nord-est du centre. Mélange d'immeubles résidentiels, commerces, équipements culturels et grands axes, plus « ville moderne » que le centre historique
+		- [République / Drapeau / Clémenceau](https://fr.wikipedia.org/wiki/Place_de_la_R%C3%A9publique_(Dijon))##repdrapclem
 	- nnn
 		- [Chevreul-Parc](nnn)##nnn
 	- nnn
