@@ -26,23 +26,26 @@
 		- [Suzon](https://fr.wikipedia.org/wiki/Suzon_(rivi%C3%A8re))##suzon
 	- le quartier de Dijon qui est intéressant si tu souhaites découvrir une zone résidentielle relativement aisée
 		- Montchapet##montchapet222
+		- Marmuzot##marmuzot
 		- également relié à la zone "Quartier de la Gare"##montcha222
 	- un quartier de la ville pour avoir un aperçu intéressant d'une facette plus jeune et étudiante de Dijon
 		- [Quartier Université-Montmuzard](https://fr.wikipedia.org/wiki/Quartier_Universit%C3%A9-Montmuzard)##montmuzarduni
 	- un quartier particulièrement intéressant à Dijon, car on peut y combiner promenade, canal, quartiers résidentiels et course à pied
-		- [Port du Canal / Bourroches](https://patrimoine.dijon.fr/le-patrimoine-dijonnais-en-ligne/123-quartiers/quartier-bourroches-valendons-port-du-canal-montagne-sainte-anne/)##bourrouchescanal
+		- [Port du Canal / Bourroches / Valendons](https://patrimoine.dijon.fr/le-patrimoine-dijonnais-en-ligne/123-quartiers/quartier-bourroches-valendons-port-du-canal-montagne-sainte-anne/)##bourrouchescanal
 	- un quartier intéressant à Dijon pour comprendre une autre facette de Dijon : urbanisme des années 1960-70, grands ensembles, espaces verts et lac
 		- [Fontaine d'Ouche / lac Kir](https://fr.wikipedia.org/wiki/Lac_Kir)##fontaindoudud
-	- au nord-est du centre. Mélange d'immeubles résidentiels, commerces, équipements culturels et grands axes, plus « ville moderne » que le centre historique
+	- au nord-est du centre, mélange d'immeubles résidentiels, commerces, équipements culturels et grands axes, plus « ville moderne » que le centre historique
 		- [République / Drapeau / Clémenceau](https://fr.wikipedia.org/wiki/Place_de_la_R%C3%A9publique_(Dijon))##repdrapclem
-	- nnn
-		- [Chevreul-Parc](nnn)##nnn
-	- nnn
-		- [Grésilles](nnn)##nnn
-	- nnn
-		- [Varennes / Toison d’Or](nnn)##nnn
-	- nnn
-		- [nnn](nnn)##nnn
+	- au sud-est, surtout résidentiel, avec des maisons, des immeubles et des espaces verts, plus calme que le centre
+		- [Chevreul-Parc](https://fr.wikipedia.org/wiki/Quartier_Chevreul-Parc)##parcchevreul
+	- au nord-est, quartier principalement résidentiel, marqué par les grands ensembles construits après la Seconde Guerre mondiale
+		- [Grésilles](https://www.dijonlhebdo.fr/2024/04/25/les-gresilles-un-quartier-en-devenir/)##gresilles
+		- après des années marquées par les trafics de drogue et la violence qui en découle, la tranquilité semble de retour
+	- au nord, secteur plus récent, avec beaucoup de logements modernes, commerces et grands espaces, aussi un important pôle commercial
+		- [Varennes / Toison d’Or / Clos de Pouilly](https://fr.wikipedia.org/wiki/Toison_d%27or_(centre_commercial))##varennesetc
+	- quartier résidentiel au nord-est du centre-ville, autour du boulevard de la Marne et de l’avenue de Langres; immeubles d’habitation, mais aussi des maisons, des commerces et services de proximité, 
+		- le stade Gaston-Gérard
+		- [Maladière-Drapeau-Clemenceau](https://fr.wikipedia.org/wiki/Quartier_Maladi%C3%A8re-Drapeau-Clemenceau)##maladieresdf
 	- nnn
 		- [nnn](nnn)##nnn
 	- nnn
@@ -50,6 +53,11 @@
 	- nnn
 		- [nnn](nnn)##nnn
 - info todo
+	- make video links
+	- comprehension
+		- listen to 100 videos like this: https://www.youtube.com/watch?v=MM4VKphdiDE
+	- find the rest of this book and make links
+		- https://www.calameo.com/read/001170936af97d53e9e8a?view=book&page=12
 	- Nathalie Koenders
 	- areas of town
 	- ten people in dijon most known	
@@ -61,14 +69,13 @@
 			- Le Quartier de la Gare
 			- Les Bourroches
 			- Fontaine-d'Ouche
-			- Montmuzard
-			- Université
+			- Montmuzard/Université
 			- Les Grésilles
 			- La Maladière
 			- Clos de Pouilly
 			- La Toison d'Or
 			- Port du Canal
-			- Valendons
+			- 
 			- Faubourg Saint-Michel, Champmaillot, Hyacinthe Vincent, Mansart, Montmuzard et Université
 			- Poussots
 			- Le parc de la Colombière
