@@ -1,3 +1,14 @@
+- Informations de base sur Dijon%%flashcards
+	- Quel sculpteur médiéval a réalisé le célèbre « Puits de Moïse » 
+		- [pee-de-moh-ee-yah]
+		- La chartreuse de Champmol 
+		- [Claus Sluter](https://fr.wikipedia.org/wiki/Claus_Sluter)##sluterart33
+- todo
+	- make room on phone
+	- la maison de Rhenanie Palatinat
+	- passwords
+		- preplys
+	- edward@tanguay.info login howto
 - marathon
 	- https://www.marathondesgrandscrus.com
 	- [Marathon des grands crus 17/10/2021 à Dijon](https://www.youtube.com/watch?v=qQCA4KLtdog)
@@ -9,31 +20,25 @@
 	- tous les vêtements de course
 	- les gels
 	- tous les mots de passe
-- objectif
-- défis d'écriture avant le voyage
-	- à faire
-		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes
-		- appeler l'office de tourisme et demander des visites guidées
-		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
-		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
-		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours/
-		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
-	- en attente d'une réponse
-		- 2026-08-13 19:54:05 j'ai écrit Laurent		
-- défis oratoires avant le voyage
-	- à faire
-		- Appeler l'office de tourisme et demander des visites guidées
-		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
-		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
-		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours
-		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
-	- accompli
+	- cettes notes et l'application en ligne
+	- Assurer que les cours VHS fonctionnent sur mobile
+- les défis
+	- ,, dijon.ffcam.fr, mardi et jeudi, groupes de randonées
+	- ,,  CIEF sur l'université
+	- write to: https://preply.com/fr/tuteur/6636783
 - liste de tâches à accomplir
+	- cadeau pour Laurent
+	- T-shirt Grands Crus
+	- livres: CLE International
+		- ISBN 3125301017
+		- Grammaire progressive du français etc.
+	- chatgpt: groupes similaires de polyglot café
+	- est-ce qu'il y a un VHS en france ?
+	- Quels sont les quartiers de Dijon, par exemple Quartier République
+	- professeur en ligne de Dijon
 	- demander ia pour meetups
 	- lancer les défis dès maintenant : 3 appels par jour, avec journal de bord
 	- enregistrer tous les événements Airbnb
-	- écrire à http://cafe-polyglotte-dijon.fr/
-		- existe-t-il d'autres groupes de ce genre pour pratiquer le français ?
 	- écrirer à 20 club de randonnées
 		- https://www.ffrandonnee.fr/nos-clubs/trouver-un-club/10697/afd21?department=21&postalCode=21000&activity=55&page=1
 	- réserver un appartement Airbnb pour la semaine
@@ -41,6 +46,8 @@
 	- écrire à Diva Mobilités
 		- vélo
 		- bus/tramway
+	- tutors at https://preply.com
+	- trouver des théâtres, des pièces et des conférences, comme Urania.
 	- un pass hebdomadaire pour tous les transports
 	- commander des gels sur Amazon
 	- développer l'application de manière à ce
@@ -63,6 +70,27 @@
 			- lire-le rapidement, noter les lieux et les noms
 		- Dijon - Guide de Voyage 
 			- lire-le rapidement, noter les lieux et les noms
+- idées de cadeaux
+	- Ours Blanc
+- les dix quartiers les plus populaires de Dijon
+	- **Centre-ville** - les Halles, le palais des Ducs, la rue de la Liberté##centreville
+	- **République** - autour de la place de la République ; important pour se repérer au nord-est du centre##republicquarter
+	- [Montchapet](https://fr.wikipedia.org/wiki/Quartier_Montchapet) - des quartiers les plus aisés de la ville##montchapet
+	- **Victor Hugo** - au nord-ouest, entre Montchapet et la gare.##quartiervictorhugo
+	- **Gare** - autour de la gare SNCF
+	- [Faubourg Raines](https://fr.wikipedia.org/wiki/Quartier_Fontaine_d%27Ouche-Faubourg_Raines-Larrey-Motte_Giron) - caractérisé par son relief et la présence de très grands espaces naturels dont certains ont été réaménagés et mis en valeur par la ville pour une meilleure utilisation des promeneurs##fountaineraines
+	- **Fontaine d’Ouche** - à l’ouest, près du lac Kir##fontainedouche
+	- **Wilson** - au sud du centre, autour de la place Wilson, est plutôt un quartier résidentiel et vivant, mais il n'a pas le caractère historique du centre de Dijon. Tu y trouveras davantage la vie quotidienne des habitants : commerces, cafés, restaurants, immeubles et maisons.##quartierwilson
+	- [Port du Canal](https://fr.wikipedia.org/wiki/Port_du_canal_de_Dijon) - au sud-ouest, autour du canal de Bourgogne##portducanalqua
+	- **Toison d’Or** - au nord, autour du centre commercial et du parc##toisondor
+	- **Universités** - à l’est, autour du campus universitaire (1722)##theunivquart
+- cartes memoires
+	- où trouve-t-on une crypte sous une église; Saint-Bénigne
+	- où se trouvent l'adresse et le bar du Café Polyglott; « L’Alhambra », 3 rue Marceau (comme Marcel Marceau)
+	- the parc that we will run through; Parc de Columbière, crée en 1672, ce parc à l'origine privé est créé au bord de l'Ouche 
+	- toutes les rues sur lesquelles nous courrons pendant le marathon;nnn
+- les endroits
+	- Lac Kir
 - activités
 	- n'importe quel jour
 		- 1d / Besançon / 7:00-20:00
@@ -79,6 +107,11 @@
 	- n'importe quand
 		- 30m / Jardin botanique de l'Arquebuse
 		- 30m / La Source des Vins - dégustation de vins de Bourgogne (blog)
+	- seulement certains jours
+		- https://caveaumarsannay.com/actualites.php?type=evenement
+			- plus un randonée
+	- théâtres
+		- https://www.darcycomedie.com/
 - façons de décrire le vin
 	- Ce vin est très aromatique, avec des notes de fruits rouges.
 	- Il a un nez assez expressif, avec des arômes de fruits mûrs.
@@ -99,6 +132,17 @@
 	- A6-8K-Toison d'Or
 - Airbnb
 	- moins de 330 euros pour 9 nuits
+	- 
+		- Danke für den Kaffee und das Gebäck jeden Morgen. 
+		- Je suis totalement disposée à accueillir mes voyageurs de façon chaleureuse dans un esprit de partage et d'échange.
+		- The lady is only can speak french
+		- She is a very  nice lady and even invited me to have lunch with her
+		- Meine Arbeit: A la retraite
+		- Spricht Französisch
+		- 5éme étage avec ascenseur
+		- Également ne pas manger dans la chambre
+		- Pour les voyageurs qui viennent chez moi, mettez au moins une photo de vôtre tête s'il vous plais
+		- Accès à la cuisine et sdb. Bémol : ascenseur capricieux. Liliane aime qu'on lui tienne compagnie et n'a pas la langue dans sa poche, mais reste néanmoins serviable.
 - videos about Dijon
 	- [Histoire et gastronomie](https://www.youtube.com/watch?v=jMpkd1bWFyw) - 12:10
 - lieux à visiter
@@ -135,26 +179,43 @@
 - calendrier
 	- mercredi 7 octobre
 		- préparer tout pour le voyage
+		- all passwords
+			- airbnb
+			- paypal
 		- assurez d'avoir suffisamment d'argent pour payer votre compte Google ce mois-ci
 	- jeudi 8 octobre
-		- voyager en train de Berlin à Dijon
+		- 06:43-13:48 Berlin Hbf - Basel
+		- 14:34-15:58 Basel - Dijon
 		- l’Agence DiviaMobilités
 			- prendre un pass hebdomadaire pour tous les transports
 			- tu peux aussi utiliser directement ta carte bancaire sans contact dans les bus et les tramways 
 				- le voyage coûte 2 € et permet des trajets illimités pendant 1 heure
 			- il existe aussi DiviaVélo, qui est différent : c'est une vraie location de vélo, que tu gardes avec toi. Une location de 7 jours est disponible
 	- vendredi 9 octobre
+		- acheter le billet de train pour Berlin
+		- sortir dîner pour un anniversaire
 	- samedi 10 octobre
+		- 19:30 Un Singe en Hiver Meeting
+			- chat in different languages, and connect with new people
+			- https://www.meetup.com/papotagedijon/events/316243303/
 	- dimanche 11 octobre 
 	- lundi 12 octobre
+		- Laurent? 0630773248
 	- mardi 13 octobre
+		- Laurent? 0630773248
 		- 18:00 Café Polyglotte de Dijon
 	- mercredi 14 octobre
 		- 18:00 Café Polyglotte de Dijon
 	- jeudi 15 octobre
 	- vendredi 16 octobre
-	- samedi 17 octobre
-		- voyager en train de Dijon à Berlin
+		- ,, Dijon-Straßburg-Berlin
+			- 10:07-12:24 Straßburg
+			- 14:52-15:22 Offenburg
+			- 15:27-21:17 Berlin
+		- ,, Dijon-Basel-Berlin
+			- 12:01-13:23 Dijon-Basel
+			- 14:16-21:17 Basel-Berlin
+
 - transports en commun
 	- chercher comment se rendre quelque part
 		- https://www.divia.fr
@@ -230,4 +291,35 @@
 		- un cru est, dans le domaine du vin, un vignoble ou un terroir particulier reconnu pour la qualité de ses vins
 			- le mot vient du verbe croître : un cru est littéralement quelque chose qui a « poussé », notamment ce qui est produit par une terre
 			- par exemple, Chambertin est un cru très célèbre en Bourgogne
+- challenges
+	- challengeCreationTodos
+		- +33 (0)3 80 44 11 44 et essayer toutes les choix de recording
+		- 
+	- write to Suzi https://www.firedupinfrance.fr/
+	- infos
+		- intros
+			- Bonjour, Edward Tanguay à l’appareil. Je vous appelle au sujet de…
+			- Bonjour, je m’appelle Edward Tanguay. Je vous appelle parce que j’aurais une question concernant…
+		- liens
+			- vidéos pour apprendre à parler au téléphone
+			
+		
+- défis d'écriture avant le voyage
+	- à faire
+		- 
+		- appeler l'office de tourisme et demander des visites guidées
+		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
+		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
+		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours/
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
+		
+- défis oratoires avant le voyage
+	- à faire
+		- Appeler l'office de tourisme et demander des visites guidées
+		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
+		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
+		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours
+		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
+	- accompli
 
+	

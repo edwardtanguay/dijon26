@@ -25,9 +25,9 @@ const toggleColorMode = () => {
 }
 
 const navItems = [
-  { name: 'Accueil', path: '/', icon: 'i-heroicons-home' },
   { name: 'Notes', path: '/notes', icon: 'i-heroicons-list-bullet' },
-  { name: 'Turso', path: '/turso', icon: 'i-heroicons-circle-stack' },
+  { name: 'Défis', path: '/challenges', icon: 'i-heroicons-sparkles' },
+  { name: 'Général', path: '/', icon: 'i-heroicons-home' },
   { name: 'À propos', path: '/about', icon: 'i-heroicons-document-text' },
 ]
 </script>
@@ -40,8 +40,8 @@ const navItems = [
         <!-- Logo / Brand -->
         <NuxtLink to="/" @click="mobileMenuOpen = false" class="group block">
           <div class="flex flex-row items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shrink-0 text-base shadow-sm group-hover:bg-indigo-500 transition-colors">
-              D
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+              <img src="/images/outline/dijonLogo.png" alt="Dijon 26 Logo" class="w-full h-full object-contain" />
             </div>
             <span class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors whitespace-nowrap">
               Dijon 26
@@ -54,8 +54,8 @@ const navItems = [
           <NuxtLink v-for="item in navItems"
                     :key="item.path"
                     :to="item.path"
-                    class="flex items-center space-x-2 !text-gray-600 hover:!text-black transition-colors font-medium dark:!text-gray-300 dark:hover:!text-white"
-                    active-class="!text-black dark:!text-white font-semibold">
+                    class="flex items-center space-x-2 text-gray-600! hover:text-black! transition-colors font-medium dark:text-gray-300! dark:hover:text-white!"
+                    active-class="text-black! dark:text-white! font-semibold">
             <UIcon :name="item.icon" class="h-5 w-5" />
             <span>{{ item.name }}</span>
           </NuxtLink>
@@ -103,8 +103,8 @@ const navItems = [
                     :key="item.path"
                     :to="item.path"
                     @click="mobileMenuOpen = false"
-                    class="flex items-center space-x-3 px-4 py-3 rounded-lg !text-gray-600 hover:bg-gray-100 hover:!text-black transition-colors font-medium dark:!text-gray-300 dark:hover:bg-gray-800 dark:hover:!text-white"
-                    active-class="bg-gray-100 !text-black dark:bg-gray-800 dark:!text-white">
+                    class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600! hover:bg-gray-100 hover:text-black! transition-colors font-medium dark:text-gray-300! dark:hover:bg-gray-800 dark:hover:text-white!"
+                    active-class="bg-gray-100 text-black! dark:bg-gray-800 dark:text-white!">
             <UIcon :name="item.icon" class="h-5 w-5" />
             <span>{{ item.name }}</span>
           </NuxtLink>

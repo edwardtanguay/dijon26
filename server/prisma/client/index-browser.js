@@ -117,17 +117,35 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.DbTestScalarFieldEnum = {
+exports.Prisma.ContactScalarFieldEnum = {
   id: 'id',
-  status: 'status',
+  name: 'name',
+  email: 'email',
+  telephone: 'telephone',
+  description: 'description',
+  mapUrl: 'mapUrl',
+  url: 'url',
+  createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.TaskScalarFieldEnum = {
+exports.Prisma.ChallengeScalarFieldEnum = {
   id: 'id',
-  title: 'title',
-  completed: 'completed',
-  createdAt: 'createdAt'
+  contactId: 'contactId',
+  challengeText: 'challengeText',
+  type: 'type',
+  rank: 'rank',
+  completedAt: 'completedAt',
+  selectedForDate: 'selectedForDate',
+  afterChallengeNotes: 'afterChallengeNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AppSettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -135,10 +153,16 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 
 exports.Prisma.ModelName = {
-  DbTest: 'DbTest',
-  Task: 'Task'
+  Contact: 'Contact',
+  Challenge: 'Challenge',
+  AppSetting: 'AppSetting'
 };
 
 /**

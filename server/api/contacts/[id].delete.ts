@@ -1,26 +1,30 @@
 import { prisma } from '../../utils/prisma'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
   try {
     const id = getRouterParam(event, 'id')
+
     if (!id) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Task ID is required'
+        statusMessage: 'ID de contact manquant.',
       })
     }
-    return await prisma.task.delete({
-      where: {
-        id: id
-      }
+
+    await prisma.contact.delete({
+      where: { id },
     })
+
+    return {
+      success: true,
+      data: { id },
+    }
   } catch (error: any) {
-    console.error('Error deleting task:', error)
     if (error.statusCode) throw error
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to delete task'
+      statusMessage: 'Erreur lors de la suppression du contact',
+      data: error,
     })
   }
 })

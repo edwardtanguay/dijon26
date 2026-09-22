@@ -8,15 +8,35 @@ generator client {
   output          = "../server/prisma/client"
 }
 
-model DbTest {
-  id        Int      @id @default(1)
-  status    String   @default("off")
-  updatedAt DateTime @updatedAt
+model Contact {
+  id          String      @id @default(uuid())
+  name        String
+  email       String?
+  telephone   String?
+  description String?
+  mapUrl      String?
+  url         String?
+  challenges  Challenge[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
-model Task {
-  id        String   @id @default(uuid())
-  title     String
-  completed Boolean  @default(false)
-  createdAt DateTime @default(now())
+model Challenge {
+  id                  String    @id @default(uuid())
+  contactId           String
+  contact             Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  challengeText       String
+  type                String // "written" | "spoken"
+  rank                Float     @default(2.5)
+  completedAt         DateTime?
+  selectedForDate     String?
+  afterChallengeNotes String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
 }
