@@ -20,6 +20,8 @@
 	- quel ingénieur né à Dijon au XIXe siècle a laissé son nom à une célèbre loi régissant l'écoulement des fluides dans les milieux poreux 
 		- [Henry Darcy](https://fr.wikipedia.org/wiki/Henry_Darcy)##henrydarcy
 		- Jardin Darcy##darcymap
+	- quel vaste pôle culturel inauguré en 2022 sur le site de l'ancien hôpital général valorise le repas gastronomique des Français et les climats du vignoble de Bourgogne
+		- [La Cité internationale de la gastronomie et du vin de Dijon ](https://www.citedelagastronomie-dijon.fr/)##gastronomie
 - info todo
 	- Nathalie Koenders
 	- areas of town
