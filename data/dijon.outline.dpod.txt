@@ -1,3 +1,5 @@
+- infos
+	- "De Dijon jusqu'aux prestigieux villages viticoles de la Côte de Nuits"##granddenuits
 - Informations de base sur Dijon%%flashcards
 	- quel sculpteur médiéval a réalisé le célèbre « Puits de Moïse » 
 		- [pee-de-moh-ee-yah]
@@ -56,13 +58,16 @@
 	- le quartier se distingue par son cadre résidentiel et ses équipements de proximité, les habitants profitent d’une atmosphère conviviale, renforcée par la présence d’écoles et de commerces
 		- sa bonne desserte contribue à son attractivité
 		- [Poussots](https://www.stadiumtraveller.com/stade-des-poussots-dijon-france-football)##poussots
-	- aménagé vers 1670 par Antoine de Maerle, élève du fameux jardinier de Louis XIV, André le Nôtre, le parc de la Colombière est le plus vaste jardin public de Dijon.
+	- aménagé vers 1670 par Antoine de Maerle, élève du fameux jardinier de Louis XIV, André le Nôtre
+		- le plus vaste jardin public de Dijon
 		- [Le parc de la Colombière](https://patrimoine.dijon.fr/lieu-remarquable/le-parc-de-la-colombiere/)##parccolombiere
 	- jusqu'en 1955, c'était un village viticole de petite taille, avant d'être intégré à l'agglomération dijonnaise
 		- c'est aujourd'hui la banlieue la plus peuplée de Dijon
 		- [Chenôve](https://fr.wikipedia.org/wiki/Chen%C3%B4ve)##chenove
+		- [shuh-nohv]
 	- une grande rivière, non loin de Dijon à l'est
 		- [Saône](https://fr.wikipedia.org/wiki/Sa%C3%B4ne)##saone
+		- [soh-neh]
 	- une petite commune située à l’ouest de Dijon, entourée de collines et de verdure, ce qui lui donne une ambiance assez paisible
 		- [Plombières-lès-Dijon](https://fr.wikipedia.org/wiki/Plombi%C3%A8res-l%C3%A8s-Dijon)##plombieres
 	- nnn
@@ -85,12 +90,20 @@
 		- [nnn](nnn)##nnn
 	- nnn
 		- [nnn](nnn)##nnn
+		
+		
 - info todo
+	- prepare
+		- notes: https://github.com/edwardtanguay/langlearn/blob/version-082/dev/topic-presentations/dijon-history.md
+	- before
+		- make run map entry for posting
 	- make video links
 	- comprehension
 		- listen to 100 videos like this: https://www.youtube.com/watch?v=MM4VKphdiDE
 	- find the rest of this book and make links
 		- https://www.calameo.com/read/001170936af97d53e9e8a?view=book&page=12
+	- bookstore
+		- French/Spanish dual language books		
 	- Nathalie Koenders
 	- areas of town
 	- ten people in dijon most known	

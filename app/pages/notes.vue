@@ -1,6 +1,76 @@
 <template>
   <div class="max-w-4xl mx-auto px-4 pt-2 pb-2 sm:py-4">
-    <TransitionGroup tag="ul" name="fade" class="space-y-0.5 list-disc text-gray-800 dark:text-gray-200 pl-5">
+    <!-- Barre de recherche -->
+    <div class="mb-4">
+      <div class="relative flex items-center">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Rechercher dans les notes (min. 3 caractères)..."
+          class="w-full pl-9 pr-24 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition"
+        />
+        <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-2">
+          <span
+            v-if="isSearchActive"
+            class="text-xs font-medium text-gray-500 dark:text-gray-400"
+          >
+            {{ searchResults.length }} {{ searchResults.length <= 1 ? 'résultat' : 'résultats' }}
+          </span>
+          <button
+            v-if="searchQuery"
+            type="button"
+            @click="clearSearch"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded transition cursor-pointer"
+            title="Effacer la recherche"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode recherche : liste plate, flashcards non fonctionnelles, surlignage, images et liens -->
+    <div v-if="isSearchActive" class="space-y-2">
+      <div v-if="searchResults.length === 0" class="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+        Aucun résultat trouvé pour « <span class="font-semibold">{{ searchQuery.trim() }}</span> »
+      </div>
+      <ul v-else class="space-y-1.5 list-none pl-0">
+        <li
+          v-for="item in searchResults"
+          :key="item.id"
+          class="py-1 px-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/40 text-gray-800 dark:text-gray-200 leading-snug break-words transition-colors"
+        >
+          <div
+            class="inline"
+            v-html="highlightMatches(renderFormattedContent(item.body), searchQuery)"
+          />
+          <div v-if="item.image" class="mt-1 w-full">
+            <div
+              v-if="item.image.startsWith('NOT_FOUND:')"
+              class="bg-black text-yellow-400 font-mono text-base font-semibold w-[300px] h-[200px] flex flex-col items-center justify-center text-center rounded p-4 shadow-md my-2"
+            >
+              no image "{{ item.image.replace('NOT_FOUND:', '') }}" found
+            </div>
+            <img
+              v-else
+              :src="`/images/outline/${item.image}`"
+              :alt="item.image"
+              class="max-w-full h-auto rounded shadow-sm my-1 block"
+            />
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Mode normal : Outline avec Flashcards interactives -->
+    <TransitionGroup v-else tag="ul" name="fade" class="space-y-0.5 list-disc text-gray-800 dark:text-gray-200 pl-5">
       <li
         v-for="item in visibleNotes"
         :key="item.id"
@@ -47,7 +117,7 @@
         <!-- Flashcard Question Line -->
         <div
           v-else-if="item.isFlashcardQuestion"
-          class="inline-flex items-start gap-1.5 cursor-pointer font-medium transition-all duration-150 group select-text"
+          class="inline-flex items-start gap-1.5 cursor-pointer font-medium transition-all duration-75 group select-text"
           :class="[
             expandedQuestionIds.has(item.id)
               ? 'bg-amber-100/70 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-100 rounded-md px-2.5 py-1 shadow-xs'
@@ -56,7 +126,7 @@
           @click="handleQuestionClick(item.id)"
         >
           <svg
-            class="w-3.5 h-3.5 mt-1 inline-block transition-transform duration-200 shrink-0"
+            class="w-3.5 h-3.5 mt-1 inline-block transition-transform duration-75 shrink-0"
             :class="[
               expandedQuestionIds.has(item.id)
                 ? 'rotate-90 text-amber-600 dark:text-amber-400'
@@ -116,7 +186,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import notesData from '~~/data-parsed/dijon.json'
-import { renderFormattedContent } from '~/utils/outline-format'
+import { renderFormattedContent, highlightMatches } from '~/utils/outline-format'
 
 interface OutlineItem {
   id: string
@@ -281,7 +351,18 @@ const isItemVisible = (item: OutlineItem): boolean => {
 
 const visibleNotes = computed(() => notes.filter(isItemVisible))
 
+const searchQuery = ref('')
+const isSearchActive = computed(() => searchQuery.value.trim().length >= 3)
 
+const searchResults = computed(() => {
+  if (!isSearchActive.value) return []
+  const q = searchQuery.value.trim().toLowerCase()
+  return notes.filter(item => item.body.toLowerCase().includes(q))
+})
+
+const clearSearch = () => {
+  searchQuery.value = ''
+}
 </script>
 
 <style scoped>
@@ -306,11 +387,11 @@ const visibleNotes = computed(() => notes.filter(isItemVisible))
 /* Smooth fade for flashcards transition */
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.2s ease-out;
+  transition: all 80ms ease-out;
 }
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateY(-4px);
+  transform: translateY(-2px);
 }
 </style>

@@ -48,7 +48,7 @@ export const MARKDOWN_LINK_REGEX = /\[([^\]]+)\]\(((?:[^()\s]+|\([^()\s]*\))+)\)
  * Expression régulière pour les URLs brutes supportant les parenthèses équilibrées dans l'URL.
  * Ex: https://en.wikipedia.org/wiki/Kir_(cocktail)
  */
-export const BARE_URL_REGEX = /(^|[\s(])(https?:\/\/[^\s<)]+(?:\([^\s<)]*\)[^\s<)]*)*)/g
+export const BARE_URL_REGEX = /(^|[\s(])(https?:\/\/(?:[^\s<()]|\([^\s<()]*\))+)/g
 
 export const renderFormattedContent = (text: string): string => {
   if (!text) return ''
@@ -101,3 +101,32 @@ export const cleanSingleLineText = (text: string | null | undefined): string => 
     .replace(MARKDOWN_LINK_REGEX, '$1')
     .trim()
 }
+
+export const escapeRegExp = (str: string): string => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
+ * Surligner les correspondances du terme recherché dans une chaîne HTML
+ * en ciblant uniquement le texte hors balises HTML.
+ */
+export const highlightMatches = (html: string, query: string): string => {
+  const trimmed = query.trim()
+  if (!trimmed || !html) return html
+
+  const regex = new RegExp(`(${escapeRegExp(escapeHtml(trimmed))})`, 'gi')
+  return html
+    .split(/(<[^>]+>)/g)
+    .map((part, i) => {
+      // Indices pairs : contenu textuel hors balises
+      if (i % 2 === 0) {
+        return part.replace(
+          regex,
+          '<mark class="bg-amber-200 dark:bg-amber-900/60 text-inherit px-0.5 rounded-xs font-semibold">$1</mark>'
+        )
+      }
+      return part
+    })
+    .join('')
+}
+
