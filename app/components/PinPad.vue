@@ -10,7 +10,7 @@ const props = withDefaults(
   {
     pin: '515',
     title: 'Notes protégées',
-    subtitle: 'Entre ton code PIN à 3 chiffres pour déverrouiller l\'accès.'
+    subtitle: 'Entre ton code PIN pour déverrouiller l\'accès.'
   }
 )
 
@@ -19,45 +19,31 @@ const emit = defineEmits<{
 }>()
 
 const enteredDigits = ref('')
-const isError = ref(false)
 const isSuccess = ref(false)
-const errorMessage = ref('')
 
 const addDigit = (digit: string) => {
-  if (isError.value || isSuccess.value || enteredDigits.value.length >= 3) return
+  if (isSuccess.value) return
 
-  enteredDigits.value += digit
+  enteredDigits.value = (enteredDigits.value + digit).slice(-20)
 
-  if (enteredDigits.value.length === 3) {
-    if (enteredDigits.value === props.pin) {
-      isSuccess.value = true
-      errorMessage.value = ''
-      setTimeout(() => {
-        emit('success')
-      }, 250)
-    } else {
-      isError.value = true
-      errorMessage.value = 'Code PIN incorrect'
-      setTimeout(() => {
-        enteredDigits.value = ''
-        isError.value = false
-        errorMessage.value = ''
-      }, 800)
-    }
+  if (enteredDigits.value.endsWith(props.pin)) {
+    isSuccess.value = true
+    setTimeout(() => {
+      emit('success')
+    }, 250)
   }
 }
 
 const removeDigit = () => {
-  if (isError.value || isSuccess.value) return
+  if (isSuccess.value) return
   if (enteredDigits.value.length > 0) {
     enteredDigits.value = enteredDigits.value.slice(0, -1)
   }
 }
 
 const clearDigits = () => {
-  if (isError.value || isSuccess.value) return
+  if (isSuccess.value) return
   enteredDigits.value = ''
-  errorMessage.value = ''
 }
 
 const handleKeyDown = (e: KeyboardEvent) => {
@@ -94,9 +80,9 @@ onUnmounted(() => {
       <div
         class="w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-colors duration-200"
         :class="[
-          isSuccess ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400' :
-          isError ? 'bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400' :
-          'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400'
+          isSuccess
+            ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400'
+            : 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400'
         ]"
       >
         <!-- Cadenas ouvert lors du succès -->
@@ -112,40 +98,9 @@ onUnmounted(() => {
       <h2 class="text-xl font-bold text-gray-900 dark:text-white text-center">
         {{ title }}
       </h2>
-      <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center mt-1 mb-5">
+      <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center mt-1 mb-6">
         {{ subtitle }}
       </p>
-
-      <!-- Pastilles indicatrices du PIN (3 chiffres) -->
-      <div
-        class="flex items-center gap-3.5 mb-6 transition-transform"
-        :class="{ 'animate-shake': isError }"
-      >
-        <div
-          v-for="index in 3"
-          :key="index"
-          class="w-4 h-4 rounded-full transition-all duration-200 border"
-          :class="[
-            isError
-              ? 'bg-red-500 border-red-500 shadow-sm shadow-red-500/50'
-              : isSuccess
-                ? 'bg-emerald-500 border-emerald-500 shadow-sm shadow-emerald-500/50'
-                : enteredDigits.length >= index
-                  ? 'bg-indigo-600 border-indigo-600 dark:bg-indigo-500 dark:border-indigo-500 scale-110 shadow-sm shadow-indigo-500/40'
-                  : 'bg-gray-100 border-gray-300 dark:bg-gray-700 dark:border-gray-600'
-          ]"
-        />
-      </div>
-
-      <!-- Message d'erreur -->
-      <div class="h-5 mb-2 flex items-center justify-center">
-        <span
-          v-if="errorMessage"
-          class="text-xs font-medium text-red-500 dark:text-red-400 transition-opacity"
-        >
-          {{ errorMessage }}
-        </span>
-      </div>
 
       <!-- Clavier numérique 3x4 -->
       <div class="grid grid-cols-3 gap-3 w-full">
@@ -155,7 +110,7 @@ onUnmounted(() => {
           :key="num"
           type="button"
           @click="addDigit(num)"
-          class="h-13 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 dark:bg-gray-750 dark:hover:bg-gray-700 dark:active:bg-gray-650 text-gray-900 dark:text-white font-semibold text-xl transition-all duration-150 flex items-center justify-center shadow-xs select-none active:scale-95 cursor-pointer"
+          class="h-13 rounded-xl bg-gray-100 hover:bg-gray-200 active:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white font-semibold text-xl transition-all duration-150 flex items-center justify-center shadow-xs select-none active:scale-95 cursor-pointer"
         >
           {{ num }}
         </button>
@@ -164,7 +119,7 @@ onUnmounted(() => {
         <button
           type="button"
           @click="clearDigits"
-          class="h-13 rounded-xl text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-650 font-medium text-sm transition-all duration-150 flex items-center justify-center select-none active:scale-95 cursor-pointer"
+          class="h-13 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:active:bg-gray-600 border border-gray-200 dark:border-gray-700 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white font-semibold text-sm transition-all duration-150 flex items-center justify-center select-none active:scale-95 cursor-pointer"
           title="Tout effacer (Échap)"
         >
           C
@@ -174,7 +129,7 @@ onUnmounted(() => {
         <button
           type="button"
           @click="addDigit('0')"
-          class="h-13 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 dark:bg-gray-750 dark:hover:bg-gray-700 dark:active:bg-gray-650 text-gray-900 dark:text-white font-semibold text-xl transition-all duration-150 flex items-center justify-center shadow-xs select-none active:scale-95 cursor-pointer"
+          class="h-13 rounded-xl bg-gray-100 hover:bg-gray-200 active:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white font-semibold text-xl transition-all duration-150 flex items-center justify-center shadow-xs select-none active:scale-95 cursor-pointer"
         >
           0
         </button>
@@ -183,7 +138,7 @@ onUnmounted(() => {
         <button
           type="button"
           @click="removeDigit"
-          class="h-13 rounded-xl text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-650 transition-all duration-150 flex items-center justify-center select-none active:scale-95 cursor-pointer"
+          class="h-13 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:active:bg-gray-650 border border-gray-200 dark:border-gray-700 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-all duration-150 flex items-center justify-center select-none active:scale-95 cursor-pointer"
           title="Effacer le dernier chiffre (Retour arrière)"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -195,21 +150,3 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-@keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  20%, 60% {
-    transform: translateX(-6px);
-  }
-  40%, 80% {
-    transform: translateX(6px);
-  }
-}
-
-.animate-shake {
-  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-</style>
