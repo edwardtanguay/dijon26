@@ -122,7 +122,7 @@ export const highlightMatches = (html: string, query: string): string => {
       if (i % 2 === 0) {
         return part.replace(
           regex,
-          '<mark class="bg-amber-200 dark:bg-amber-900/60 text-inherit px-0.5 rounded-xs font-semibold">$1</mark>'
+          '<mark class="bg-amber-200 dark:bg-amber-900/60 text-inherit font-semibold">$1</mark>'
         )
       }
       return part

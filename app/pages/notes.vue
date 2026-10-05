@@ -51,25 +51,38 @@
         <li
           v-for="item in searchResults"
           :key="item.id"
-          class="py-1 px-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/40 text-gray-800 dark:text-gray-200 leading-snug break-words transition-colors"
+          class="flex items-start gap-1.5 py-1 px-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/40 text-gray-800 dark:text-gray-200 leading-snug break-words transition-colors"
         >
-          <div
-            class="inline"
-            v-html="highlightMatches(renderFormattedContent(item.body), searchQuery)"
-          />
-          <div v-if="item.image" class="mt-1 w-full">
+          <button
+            type="button"
+            @click="goToNote(item.id)"
+            class="mt-0.5 p-1 shrink-0 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded transition-colors cursor-pointer"
+            title="Aller à cette ligne"
+            aria-label="Aller à cette ligne"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </button>
+          <div class="flex-1 min-w-0">
             <div
-              v-if="item.image.startsWith('NOT_FOUND:')"
-              class="bg-black text-yellow-400 font-mono text-base font-semibold w-[300px] h-[200px] flex flex-col items-center justify-center text-center rounded p-4 shadow-md my-2"
-            >
-              no image "{{ item.image.replace('NOT_FOUND:', '') }}" found
-            </div>
-            <img
-              v-else
-              :src="`/images/outline/${item.image}`"
-              :alt="item.image"
-              class="max-w-full h-auto rounded shadow-sm my-1 block"
+              class="inline"
+              v-html="highlightMatches(renderFormattedContent(item.body), searchQuery)"
             />
+            <div v-if="item.image" class="mt-1 w-full">
+              <div
+                v-if="item.image.startsWith('NOT_FOUND:')"
+                class="bg-black text-yellow-400 font-mono text-base font-semibold w-[300px] h-[200px] flex flex-col items-center justify-center text-center rounded p-4 shadow-md my-2"
+              >
+                no image "{{ item.image.replace('NOT_FOUND:', '') }}" found
+              </div>
+              <img
+                v-else
+                :src="`/images/outline/${item.image}`"
+                :alt="item.image"
+                class="max-w-full h-auto rounded shadow-sm my-1 block"
+              />
+            </div>
           </div>
         </li>
       </ul>
@@ -80,8 +93,12 @@
       <li
         v-for="item in visibleNotes"
         :key="item.id"
-        class="py-0.5 leading-snug break-words"
-        :class="[item.isFlashcardQuestion ? 'list-none -ml-4 sm:-ml-5' : 'outline-item-li']"
+        :id="`note-item-${item.id}`"
+        class="py-0.5 leading-snug break-words transition-colors duration-500 rounded-sm"
+        :class="[
+          item.isFlashcardQuestion ? 'list-none -ml-4 sm:-ml-5' : 'outline-item-li',
+          highlightedNoteId === item.id ? 'note-highlight' : ''
+        ]"
         :style="{ marginLeft: item.isFlashcardQuestion ? `calc(${item.indent * 1.5}rem - 1.25rem)` : `${item.indent * 1.5}rem` }"
       >
         <!-- Flashcard Header Line -->
@@ -211,7 +228,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { config } from '~/config'
 import notesData from '~~/data-parsed/dijon.json'
 import { renderFormattedContent, highlightMatches } from '~/utils/outline-format'
@@ -402,6 +419,76 @@ const searchResults = computed(() => {
 const clearSearch = () => {
   searchQuery.value = ''
 }
+
+const highlightedNoteId = ref<string | null>(null)
+let highlightTimeout: ReturnType<typeof setTimeout> | null = null
+
+onUnmounted(() => {
+  if (highlightTimeout) {
+    clearTimeout(highlightTimeout)
+  }
+})
+
+const goToNote = async (targetId: string) => {
+  const targetItem = notes.find(n => n.id === targetId)
+  if (!targetItem) return
+
+  // Si c'est une question de flashcard marquée comme apprise, la réafficher
+  if (targetItem.isFlashcardQuestion) {
+    if (learnedQuestionIds.value.has(targetItem.id)) {
+      learnedQuestionIds.value.delete(targetItem.id)
+      learnedQuestionIds.value = new Set(learnedQuestionIds.value)
+      saveState()
+    }
+  }
+
+  // Si c'est une réponse de flashcard
+  if (targetItem.isFlashcardAnswer && targetItem.flashcardQuestionId) {
+    const qId = targetItem.flashcardQuestionId
+    // Réafficher la question parente si elle était apprise
+    if (learnedQuestionIds.value.has(qId)) {
+      learnedQuestionIds.value.delete(qId)
+      learnedQuestionIds.value = new Set(learnedQuestionIds.value)
+    }
+    // Déplier la question parente pour rendre la réponse visible
+    expandedQuestionIds.value.clear()
+    expandedQuestionIds.value.add(qId)
+    expandedQuestionIds.value = new Set(expandedQuestionIds.value)
+    saveState()
+  }
+
+  // Annuler la recherche pour revenir à la vue outline complète
+  searchQuery.value = ''
+
+  await nextTick()
+  await new Promise(resolve => setTimeout(resolve, 60))
+
+  const currentIndex = visibleNotes.value.findIndex(n => n.id === targetId)
+  if (currentIndex !== -1) {
+    const scrollTargetIndex = Math.max(0, currentIndex - 3)
+    const scrollTargetItem = visibleNotes.value[scrollTargetIndex]
+    const el = document.getElementById(`note-item-${scrollTargetItem.id}`)
+    if (el) {
+      const navHeight = 64
+      const rect = el.getBoundingClientRect()
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      const targetScrollY = rect.top + scrollTop - navHeight - 12
+      window.scrollTo({
+        top: Math.max(0, targetScrollY),
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  // Déclencher l'effet de surbrillance temporaire
+  highlightedNoteId.value = targetId
+  if (highlightTimeout) {
+    clearTimeout(highlightTimeout)
+  }
+  highlightTimeout = setTimeout(() => {
+    highlightedNoteId.value = null
+  }, 2000)
+}
 </script>
 
 <style scoped>
@@ -432,5 +519,40 @@ const clearSearch = () => {
 .fade-leave-to {
   opacity: 0;
   transform: translateY(-2px);
+}
+
+/* Animation de surbrillance pour la ligne ciblée */
+.note-highlight {
+  animation: highlight-pulse 2s ease-out forwards;
+  border-radius: 0.25rem;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    background-color: rgba(251, 191, 36, 0.45);
+  }
+  60% {
+    background-color: rgba(251, 191, 36, 0.3);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+:root.dark .note-highlight,
+.dark .note-highlight {
+  animation: highlight-pulse-dark 2s ease-out forwards;
+}
+
+@keyframes highlight-pulse-dark {
+  0% {
+    background-color: rgba(180, 83, 9, 0.55);
+  }
+  60% {
+    background-color: rgba(180, 83, 9, 0.35);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
 </style>
