@@ -19,6 +19,8 @@
 	- l'endroit départ##thestartmara
 	- carte de retrait de dossard [PDF](https://front-api.njuko.com/document/6925827895587b531032dfc9/6925828395587b531032fda8/fr_FR/6a41a52ce039792f17e9aac9/MOP77264875)
 	- informations pour récupérer le dossard##theqrpickup
+- les quiz
+	- [Dijon](https://dijon26-three.vercel.app/dijon)
 - calendrier
 	- avant de partir
 		- 100 cartes mémoire
