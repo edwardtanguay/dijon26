@@ -15,10 +15,16 @@
             </svg>
           </div>
           <input
-            v-model="searchQuery"
-            type="text"
+            :value="searchQuery"
+            @input="onSearchInput"
+            type="search"
+            enterkeyhint="search"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
             placeholder="Rechercher dans les notes (min. 3 caractères)..."
-            class="w-full pl-9 pr-24 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition"
+            class="w-full pl-9 pr-24 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition [&::-webkit-search-cancel-button]:appearance-none"
           />
           <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-2">
             <span
@@ -408,6 +414,13 @@ const searchResults = computed(() => {
 
 const clearSearch = () => {
   searchQuery.value = ''
+}
+
+const onSearchInput = (event: Event) => {
+  const target = event.target as HTMLInputElement | null
+  if (target) {
+    searchQuery.value = target.value
+  }
 }
 
 const highlightedNoteId = ref<string | null>(null)
