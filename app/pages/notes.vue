@@ -51,20 +51,10 @@
         <li
           v-for="item in searchResults"
           :key="item.id"
-          class="flex items-start gap-1.5 py-1 px-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/40 text-gray-800 dark:text-gray-200 leading-snug break-words transition-colors"
+          @click="handleSearchResultClick(item.id, $event)"
+          class="py-1 px-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/40 text-gray-800 dark:text-gray-200 leading-snug break-words transition-colors cursor-pointer select-text"
         >
-          <button
-            type="button"
-            @click="goToNote(item.id)"
-            class="mt-0.5 p-1 shrink-0 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded transition-colors cursor-pointer"
-            title="Aller à cette ligne"
-            aria-label="Aller à cette ligne"
-          >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </button>
-          <div class="flex-1 min-w-0">
+          <div class="min-w-0">
             <div
               class="inline"
               v-html="highlightMatches(renderFormattedContent(item.body), searchQuery)"
@@ -94,7 +84,7 @@
         v-for="item in visibleNotes"
         :key="item.id"
         :id="`note-item-${item.id}`"
-        class="py-0.5 leading-snug break-words transition-colors duration-500 rounded-sm"
+        class="py-0.5 leading-snug break-words transition-all duration-700 rounded-sm"
         :class="[
           item.isFlashcardQuestion ? 'list-none -ml-4 sm:-ml-5' : 'outline-item-li',
           highlightedNoteId === item.id ? 'note-highlight' : ''
@@ -429,6 +419,18 @@ onUnmounted(() => {
   }
 })
 
+const handleSearchResultClick = (targetId: string, event: MouseEvent) => {
+  const selection = window.getSelection()
+  if (selection && selection.toString().trim().length > 0) {
+    return
+  }
+  const target = event.target as HTMLElement | null
+  if (target?.closest('a')) {
+    return
+  }
+  goToNote(targetId)
+}
+
 const goToNote = async (targetId: string) => {
   const targetItem = notes.find(n => n.id === targetId)
   if (!targetItem) return
@@ -467,16 +469,18 @@ const goToNote = async (targetId: string) => {
   if (currentIndex !== -1) {
     const scrollTargetIndex = Math.max(0, currentIndex - 3)
     const scrollTargetItem = visibleNotes.value[scrollTargetIndex]
-    const el = document.getElementById(`note-item-${scrollTargetItem.id}`)
-    if (el) {
-      const navHeight = 64
-      const rect = el.getBoundingClientRect()
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-      const targetScrollY = rect.top + scrollTop - navHeight - 12
-      window.scrollTo({
-        top: Math.max(0, targetScrollY),
-        behavior: 'smooth'
-      })
+    if (scrollTargetItem) {
+      const el = document.getElementById(`note-item-${scrollTargetItem.id}`)
+      if (el) {
+        const navHeight = 64
+        const rect = el.getBoundingClientRect()
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+        const targetScrollY = rect.top + scrollTop - navHeight - 12
+        window.scrollTo({
+          top: Math.max(0, targetScrollY),
+          behavior: 'smooth'
+        })
+      }
     }
   }
 
@@ -487,7 +491,7 @@ const goToNote = async (targetId: string) => {
   }
   highlightTimeout = setTimeout(() => {
     highlightedNoteId.value = null
-  }, 2000)
+  }, 1000)
 }
 </script>
 
@@ -521,38 +525,23 @@ const goToNote = async (targetId: string) => {
   transform: translateY(-2px);
 }
 
-/* Animation de surbrillance pour la ligne ciblée */
+/* Surbrillance pleine de la ligne ciblée (même jaune #EBD74E que la recherche) */
 .note-highlight {
-  animation: highlight-pulse 2s ease-out forwards;
+  background-color: #EBD74E !important;
+  color: #000000 !important;
   border-radius: 0.25rem;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+  box-shadow: 0 0 0 1px #EBD74E;
 }
 
-@keyframes highlight-pulse {
-  0% {
-    background-color: rgba(251, 191, 36, 0.45);
-  }
-  60% {
-    background-color: rgba(251, 191, 36, 0.3);
-  }
-  100% {
-    background-color: transparent;
-  }
+.note-highlight,
+.note-highlight :is(div, span, strong, em, a, p, svg) {
+  color: #000000 !important;
 }
 
-:root.dark .note-highlight,
-.dark .note-highlight {
-  animation: highlight-pulse-dark 2s ease-out forwards;
-}
-
-@keyframes highlight-pulse-dark {
-  0% {
-    background-color: rgba(180, 83, 9, 0.55);
-  }
-  60% {
-    background-color: rgba(180, 83, 9, 0.35);
-  }
-  100% {
-    background-color: transparent;
-  }
+.note-highlight div {
+  background-color: transparent !important;
+  border-color: transparent !important;
 }
 </style>

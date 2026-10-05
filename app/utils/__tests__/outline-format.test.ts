@@ -96,15 +96,15 @@ describe('outline-format', () => {
     it('highlights matching text case-insensitively without breaking HTML tags or attributes', () => {
       const html = 'Voici un <a href="https://example.com/dijon">Dijon lien</a> vers dijon.'
       const output = highlightMatches(html, 'dijon')
-      expect(output).toContain('<mark class="bg-amber-200 dark:bg-amber-900/60 text-inherit font-semibold">Dijon</mark>')
-      expect(output).toContain('<mark class="bg-amber-200 dark:bg-amber-900/60 text-inherit font-semibold">dijon</mark>')
+      expect(output).toContain('<mark class="bg-[#EBD74E] text-black font-semibold">Dijon</mark>')
+      expect(output).toContain('<mark class="bg-[#EBD74E] text-black font-semibold">dijon</mark>')
       expect(output).toContain('href="https://example.com/dijon"')
     })
 
     it('handles regex special characters safely', () => {
       const html = 'Texte avec (parenthèse) et [crochet].'
       const output = highlightMatches(html, '(parenthèse)')
-      expect(output).toContain('<mark class="bg-amber-200 dark:bg-amber-900/60 text-inherit font-semibold">(parenthèse)</mark>')
+      expect(output).toContain('<mark class="bg-[#EBD74E] text-black font-semibold">(parenthèse)</mark>')
     })
   })
 })
