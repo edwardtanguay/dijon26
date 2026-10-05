@@ -1,10 +1,87 @@
-- todos
+- choses à faire
 	- before
-		- get money 400 euro
 		- quick through all Dijon books
-- infos
+		22 étapes
+		- Les mardis, jeudis, vendredis et surtout le samedi matin
+		- restaurant marocans
+			- poulet marrocains
+			- viand marrocains avecs les l'aine
+			- bastila
+		- Dijon
+			- Le Palmier
+			- Le Marrakech
+			- Restaurant le méditerranéen
+			- Chez Ali
+- marathon
+	- https://www.marathondesgrandscrus.com
+	- [info doc](https://www.canva.com/design/DAHSpb79Whc/n7accRkHR4CAn6AbyvE8qQ/edit)
+	- menu##menumarathon
+	- l'endroit départ##thestartmara
+	- carte de retrait de dossard [PDF](https://front-api.njuko.com/document/6925827895587b531032dfc9/6925828395587b531032fda8/fr_FR/6a41a52ce039792f17e9aac9/MOP77264875)
+	- informations pour récupérer le dossard##theqrpickup
+- calendrier
+	- avant de partir
+		- 100 cartes mémoire
+		- 10 quiz en ligne
+			- Les dix personnalités les plus célèbres de Dijon
+	- n'importe quel jour
+		- finac
+			- 10:00 to 19:00
+			- Livres bilingues français-espagnol
+		- Consortium Museum
+		- Eldora Cinema
+		- theatre
+		- film 
+	- dimanche 4
+		- .. projet « préparer Dijon 
+			- .. retirer les dossards
+			- .. convertir les anciennes notes en nouvelles notes
+			- créer un site final de base
+				- kmz facilement actualisable
+			- écrire Geneviève
+		- créer une entrée runmap pour la publication
+		- lire le livre jusqu'au chapitre 3
+		- rapidement à travers tous les livres
+		- mots de passe et howtos
+			- preply		
+			- edward@tanguay.info
+		- francais
+			- écrire Joseph 
+	- lundi 5
+		- lire le livre jusqu'au chapitre 4
+		- déjeuner
+			- retirer 400 euros à la banque
+			- Google AI Karte
+	- mardi 6
+	- mercredi 7
+		- dernière vérification
+			- mots de passe
+			- mon pilulier
+			- passeport
+	- jeudi 8
+		- Office de Tourisme: 
+			- un magazine répertoriant tous les événements à Dijon
+	- vendredi 9
+	- samedi 10
+	- dimanche 11
+		- 8:30 départ du marathon
+	- mardi 13
+		- Café Polyglotte
+			- La Salle Eugène Bouret, 40 rue Léonard de Vinci
+	- mercredi 14
+		
+- objectifs de la semaine
+	- définir l'objectif à 10 ans 
+		- j'ai atteint un niveau de conversation B1 dans dix langues
+		- chaque jour, ma concentration sur le travail diminuait et celle sur ma vie personnelle augmentait.
+		- l'allemand et le français sont devenus mes langues C1 naturelles
+		- le réflexe des médias sociaux s'est déplacé vers langlearn
+- cartes
 	- "De Dijon jusqu'aux prestigieux villages viticoles de la Côte de Nuits"##granddenuits
-- Informations de base sur Dijon%%flashcards
+- histoire de Dijon
+	- [L'histoire en 10 sections](https://github.com/edwardtanguay/langlearn/blob/version-082/dev/topic-presentations/dijon-history.md)
+	
+- informations de base sur Dijon%%flashcards
 	- quel sculpteur médiéval a réalisé le célèbre « Puits de Moïse » 
 		- [pee-de-moh-ee-yah]
 		- La chartreuse de Champmol
@@ -74,389 +151,36 @@
 		- [soh-neh]
 	- une petite commune située à l’ouest de Dijon, entourée de collines et de verdure, ce qui lui donne une ambiance assez paisible
 		- [Plombières-lès-Dijon](https://fr.wikipedia.org/wiki/Plombi%C3%A8res-l%C3%A8s-Dijon)##plombieres
-	- nnn
-		- [Talant](nnn)##nnn
-	- nnn
-		- [Daix](nnn)##nnn
-	- nnn
-		- [Fontaine-lès-Dijon](nnn)##nnn
-	- nnn
-		- [Saint-Apollinaire](nnn)##nnn
-	- nnn
-		- [Quetigny](nnn)##nnn
-	- nnn
-		- [Longvic](nnn)##nnn
-	- nnn
-		- [Marsannay-la-Côte](nnn)##nnn
-	- nnn
-		- [Couchey](nnn)##nnn
-	- nnn
-		- [nnn](nnn)##nnn
-	- nnn
-		- [nnn](nnn)##nnn
-		
-		
-- info todo
-	- prepare
-		- notes: https://github.com/edwardtanguay/langlearn/blob/version-082/dev/topic-presentations/dijon-history.md
-	- before
-		- make run map entry for posting
-	- make video links
-	- comprehension
-		- listen to 100 videos like this: https://www.youtube.com/watch?v=MM4VKphdiDE
-	- find the rest of this book and make links
-		- https://www.calameo.com/read/001170936af97d53e9e8a?view=book&page=12
-	- bookstore
-		- French/Spanish dual language books		
-	- Nathalie Koenders
-	- areas of town
-	- ten people in dijon most known	
-	- les questions pour Rodolphe
-		- quels diriez-vous être les principaux quartiers de la ville, et à quoi ressemblent-ils
-			- Centre-ville
-				- Le cœur historique
-			- Montchapet
-			- Le Quartier de la Gare
-			- Les Bourroches
-			- Fontaine-d'Ouche
-			- Montmuzard/Université
-			- Les Grésilles
-			- La Maladière
-			- Clos de Pouilly
-			- La Toison d'Or
-			- Port du Canal
-			- Faubourg Saint-Michel
-			- Champmaillot
-			- Mansart
-			- Hyacinthe Vincent 
-			- Poussots
-			- Le parc de la Colombière
-			- Chenôve
-			- Plombières-lès-Dijon
-		- vélo, tram, à pied
-
-
-		- des choses intéressantes à voir qui sont désormais très connues
-- todo
-	- make room on phone
-	- la maison de Rhenanie Palatinat
-	- passwords
-		- preplys
-	- edward@tanguay.info login howto
-	- komoot trails: https://www.komoot.com/de-de/guide/1353475/randonnees-autour-de-fontaine-les-dijon
-- in Dijon
-	- cinema: Eldorado Cinema
-- marathon
-	- https://www.marathondesgrandscrus.com
-	- [Marathon des grands crus 17/10/2021 à Dijon](https://www.youtube.com/watch?v=qQCA4KLtdog)
-	- course à pied
-		- https://www.openrunner.com/route-details/23448723
-- quoi emporter
-	- maillot de marathon
-	- tous mes livres
-	- tous les vêtements de course
-	- les gels
-	- tous les mots de passe
-	- cettes notes et l'application en ligne
-	- Assurer que les cours VHS fonctionnent sur mobile
-- les défis
-	- ,, dijon.ffcam.fr, mardi et jeudi, groupes de randonées
-	- ,,  CIEF sur l'université
-	- write to: https://preply.com/fr/tuteur/6636783
-- liste de tâches à accomplir
-	- cadeau pour Laurent
-	- T-shirt Grands Crus
-	- livres: CLE International
-		- ISBN 3125301017
-		- Grammaire progressive du français etc.
-	- chatgpt: groupes similaires de polyglot café
-	- est-ce qu'il y a un VHS en france ?
-	- Quels sont les quartiers de Dijon, par exemple Quartier République
-	- professeur en ligne de Dijon
-	- demander ia pour meetups
-	- lancer les défis dès maintenant : 3 appels par jour, avec journal de bord
-	- enregistrer tous les événements Airbnb
-	- écrirer à 20 club de randonnées
-		- https://www.ffrandonnee.fr/nos-clubs/trouver-un-club/10697/afd21?department=21&postalCode=21000&activity=55&page=1
-	- réserver un appartement Airbnb pour la semaine
-	- lire les deux Topo Guides
-	- écrire à Diva Mobilités
-		- vélo
-		- bus/tramway
-	- tutors at https://preply.com
-	- trouver des théâtres, des pièces et des conférences, comme Urania.
-	- un pass hebdomadaire pour tous les transports
-	- commander des gels sur Amazon
-	- développer l'application de manière à ce
-		- que les éléments essentiels soient immédiatement accessibles
-		- que vous puissiez la modifier, par exemple pour tenir un journal
-	- planifier toutes vos courses de la semaine
-	- acheter un livre sur Dijon en allemand ?
-	- découvrez où et comment louer un vélo pour une journée ou quelques jours
-	- rechercher des groupes qui se réunissent, comme des rencontres linguistiques
-	- écrire à tous les clubs de randonnée
-	- inscrire-toi à tous les cours de français
-	- acheter des billets de train
-	- chercher les meilleurs endroits pour le petit-déjeuner, etc.
-	- lire tous tes livres
-		- Topo Guides Dijon métropole 37
-			- enregistrer chaque promenade dans Google Earth
-		- Topo Guides Le Grand Dijon 34
-			- enregistrer chaque promenade dans Google Earth
-		- Histoire de Dijon
-			- lire-le rapidement, noter les lieux et les noms
-		- Dijon - Guide de Voyage 
-			- lire-le rapidement, noter les lieux et les noms
-- idées de cadeaux
-	- Ours Blanc
-- les dix quartiers les plus populaires de Dijon
-	- **Centre-ville** - les Halles, le palais des Ducs, la rue de la Liberté##centreville
-	- **République** - autour de la place de la République ; important pour se repérer au nord-est du centre##republicquarter
-	- [Montchapet](https://fr.wikipedia.org/wiki/Quartier_Montchapet) - des quartiers les plus aisés de la ville##montchapet
-	- **Victor Hugo** - au nord-ouest, entre Montchapet et la gare.##quartiervictorhugo
-	- **Gare** - autour de la gare SNCF
-	- [Faubourg Raines](https://fr.wikipedia.org/wiki/Quartier_Fontaine_d%27Ouche-Faubourg_Raines-Larrey-Motte_Giron) - caractérisé par son relief et la présence de très grands espaces naturels dont certains ont été réaménagés et mis en valeur par la ville pour une meilleure utilisation des promeneurs##fountaineraines
-	- **Fontaine d’Ouche** - à l’ouest, près du lac Kir##fontainedouche
-	- **Wilson** - au sud du centre, autour de la place Wilson, est plutôt un quartier résidentiel et vivant, mais il n'a pas le caractère historique du centre de Dijon. Tu y trouveras davantage la vie quotidienne des habitants : commerces, cafés, restaurants, immeubles et maisons.##quartierwilson
-	- [Port du Canal](https://fr.wikipedia.org/wiki/Port_du_canal_de_Dijon) - au sud-ouest, autour du canal de Bourgogne##portducanalqua
-	- **Toison d’Or** - au nord, autour du centre commercial et du parc##toisondor
-	- **Universités** - à l’est, autour du campus universitaire (1722)##theunivquart
-- cartes memoires
-	- où trouve-t-on une crypte sous une église; Saint-Bénigne
-	- où se trouvent l'adresse et le bar du Café Polyglott; « L’Alhambra », 3 rue Marceau (comme Marcel Marceau)
-	- the parc that we will run through; Parc de Columbière, crée en 1672, ce parc à l'origine privé est créé au bord de l'Ouche 
-	- toutes les rues sur lesquelles nous courrons pendant le marathon;nnn
-- les endroits
-	- Lac Kir
-- activités
-	- n'importe quel jour
-		- 1d / Besançon / 7:00-20:00
-		- 3h / FNAC / lun.–ven. 10:00–19:00, dim. 14:00–19:00
-			- livres en français pour apprendre d'autres langues, notamment des histoires bilingues et des livres de grammaire
-		- 2h / Cité Internationale de la Gastronomie et du Vin / tous les jours 9:30-23:00
-		- 2h / Dijon chasse au trésor / 
-			- https://www.booking.com/attractions/fr/prvbnyusozwk-dijon-scavenger-hunt-and-highlights-self-guided-tour.de.html?aid=2439976&label=product-attractions-NyWk8b5X57OM7eAmxgIY%2AQS754813487218%3Apl%3Ata%3Ap1%3Ap2%3Aac%3Aap%3Aneg%3Afi%3Atikwd-366792913629%3Alp9198313%3Ali%3Adec%3Adm%3Acid22520704034%3Aagid180616178353&source=searchresults-product-card&ufi=-1423981&date=2026-10-12&timeslot=ATS-PRvbNYusoZWk-202610120000-nullnull&ticket_type=OFzmZX51xY5L
-	
-	- presque tous les jours
-		- 2h / Musée de la Vie Bourguignonne / sauf le mardi 9:00-12:30, 13:30–18:00
-		- 1h / Dégustation de vins de Bourgogne / chaque jour 10-16 
-			- https://www.airbnb.de/rp/edwardt3930?checkin=2026-10-08&checkout=2026-10-17&location=dijon&currentTab=experience_tab&federatedSearchId=4e461e99-6930-45d1-806e-69cf12b4fd7a&searchId=0fa5a47f-e3eb-414d-80b0-589074cacf07&sectionId=baf245f9-7592-4273-b287-48b0ce057101&p=recommendations&product=experience&listing_id=6406846&s=67&unique_share_id=c1d360ed-4111-462f-8994-66ffdfc7ecb0
-	- n'importe quand
-		- 30m / Jardin botanique de l'Arquebuse
-		- 30m / La Source des Vins - dégustation de vins de Bourgogne (blog)
-	- seulement certains jours
-		- https://caveaumarsannay.com/actualites.php?type=evenement
-			- plus un randonée
-	- théâtres
-		- https://www.darcycomedie.com/
-- façons de décrire le vin
-	- Ce vin est très aromatique, avec des notes de fruits rouges.
-	- Il a un nez assez expressif, avec des arômes de fruits mûrs.
-	- Je trouve qu’il est très frais et agréable en bouche.
-	- Il est assez rond et équilibré.
-	- On sent une belle acidité, qui lui donne beaucoup de fraîcheur.
-	- Les tanins sont présents, mais ils restent assez souples.
-	- Il a une belle longueur en bouche.
-	- Je trouve qu’il est assez complexe : les arômes évoluent au fur et à mesure qu’on le déguste.
-	- C’est un vin assez élégant, avec une belle harmonie entre le fruit, l’acidité et les tanins.
-	- La finale est assez longue, avec une légère note épicée.
-- routes
-	- A1-10K-Hauteville-lès-Dijon
-	- A2-7K-Daix
-	- A3-5K-Ahuy
-	- A4-7K-Fontaine-lès-Dijon
-	- A5-4K-Ahuy
-	- A6-8K-Toison d'Or
-- Airbnb
-	- moins de 330 euros pour 9 nuits
-	- 
-		- Danke für den Kaffee und das Gebäck jeden Morgen. 
-		- Je suis totalement disposée à accueillir mes voyageurs de façon chaleureuse dans un esprit de partage et d'échange.
-		- The lady is only can speak french
-		- She is a very  nice lady and even invited me to have lunch with her
-		- Meine Arbeit: A la retraite
-		- Spricht Französisch
-		- 5éme étage avec ascenseur
-		- Également ne pas manger dans la chambre
-		- Pour les voyageurs qui viennent chez moi, mettez au moins une photo de vôtre tête s'il vous plais
-		- Accès à la cuisine et sdb. Bémol : ascenseur capricieux. Liliane aime qu'on lui tienne compagnie et n'a pas la langue dans sa poche, mais reste néanmoins serviable.
-- videos about Dijon
-	- [Histoire et gastronomie](https://www.youtube.com/watch?v=jMpkd1bWFyw) - 12:10
-- lieux à visiter
-	- Musée des Beaux-Arts
-	- Palais des Ducs
-	- Tour Philippe le Bon
-		- montez les 316 marches pour une vue panoramique exceptionnelle sur les toits colorés de Dijon, la ville et les vignobles alentour
-	- Église Notre-Dame
-		- chef-d'oeuvre gothique bourguignon avec ses gargouilles et son célèbre horloge Jacquemart
-	- Cathédrale Saint-Bénigne
-		- avec sa crypte romane du XIe siècle
-	- Les Halles centrales
-		- Marché couvert
-	- Musée archéologique de Dijon
-		- il présente des objets archéologiques qui permettent de découvrir l’histoire de la Bourgogne, de la Préhistoire au Moyen Âge
-	- Le 1204
-		- explique l’histoire, l’architecture et le développement de Dijon à travers les siècles
-	- Musée de la Vie Bourguignonne
-		- immersif et gratuit, sur la vie quotidienne d’autrefois
-		- il présente la vie en Bourgogne (surtout aux 18e, 19e et début 20e siècles)
-	- Musée Magnin
-		- il présente une importante collection de peintures et de meubles dans un élégant hôtel particulier du XVIIᵉ siècle
-- les rues médiévales
-	- rue de la Chouette
-	- 
-- appli
-	- créer des quiz
-		- géographie
-- aliments
-	- pain d’épices
-- club de randonnée
-	- https://www.ffrandonnee.fr
-	- Dijon clubs: https://www.ffrandonnee.fr/nos-clubs/trouver-un-club?department=21&postalCode=21000&activity=55&page=1
-- calendrier
-	- mercredi 7 octobre
-		- préparer tout pour le voyage
-		- all passwords
-			- airbnb
-			- paypal
-		- assurez d'avoir suffisamment d'argent pour payer votre compte Google ce mois-ci
-	- jeudi 8 octobre
-		- 06:43-13:48 Berlin Hbf - Basel
-		- 14:34-15:58 Basel - Dijon
-		- l’Agence DiviaMobilités
-			- prendre un pass hebdomadaire pour tous les transports
-			- tu peux aussi utiliser directement ta carte bancaire sans contact dans les bus et les tramways 
-				- le voyage coûte 2 € et permet des trajets illimités pendant 1 heure
-			- il existe aussi DiviaVélo, qui est différent : c'est une vraie location de vélo, que tu gardes avec toi. Une location de 7 jours est disponible
-	- vendredi 9 octobre
-		- acheter le billet de train pour Berlin
-		- sortir dîner pour un anniversaire
-	- samedi 10 octobre
-		- 19:30 Un Singe en Hiver Meeting
-			- chat in different languages, and connect with new people
-			- https://www.meetup.com/papotagedijon/events/316243303/
-	- dimanche 11 octobre 
-	- lundi 12 octobre
-		- Laurent? 0630773248
-	- mardi 13 octobre
-		- Laurent? 0630773248
-		- 18:00 Café Polyglotte de Dijon
-	- mercredi 14 octobre
-		- 18:00 Café Polyglotte de Dijon
-	- jeudi 15 octobre
-	- vendredi 16 octobre
-		- ,, Dijon-Straßburg-Berlin
-			- 10:07-12:24 Straßburg
-			- 14:52-15:22 Offenburg
-			- 15:27-21:17 Berlin
-		- ,, Dijon-Basel-Berlin
-			- 12:01-13:23 Dijon-Basel
-			- 14:16-21:17 Basel-Berlin
-
-- transports en commun
-	- chercher comment se rendre quelque part
-		- https://www.divia.fr
-	- les billets
-		- l’Agence DiviaMobilités, 16 place Darcy, du lundi au samedi de 9 h à 19 h
-	- il y a deux lignes de tramway
-		- T1: Dijon Gare ↔ Quetigny Centre
-		- T2: Chenôve Centre ↔ Dijon Valmy
-		- elles circulent approximativement de 5 h à 1 h
-		- avec une fréquence pouvant atteindre 4 minutes aux heures de pointe##dijontram
-	- Les bus
-		- lianes L3 à L9 sont les lignes principales
-			- L3: https://transitapp.com/fr/region/dijon/divia/bus-l3
-			- L9: https://transitapp.com/fr/region/dijon/divia/bus-l9
-	- Le vélo
-		- Louez un vélo pour 24h, 48h ou 7 jours et roulez en toute liberté
-			- https://information.divia.fr/sinformer/velo/diviavelo/
-			- 7 jours = 9 https://information.divia.fr/sinformer/velo/diviavelo/louer-un-vtc-courte-duree
-		- VTT = vélo tout terrain → vélo conçu pour les chemins, les sentiers, les terrains accidentés, etc. En anglais : mountain bike.
-		- VTC = vélo tout chemin → vélo polyvalent, adapté aux routes, pistes cyclables et chemins relativement faciles. En anglais : hybrid bike ou trekking bike.
-
-- activités linguistiques
-	- visite guidée
-		- https://www.withlocals.com/de/s/france/dijon/tours/walking/
-		- tous les musées et lieux d'intérêt
-	- Café Polyglotte de Dijon
-		- les rencontres ont lieu le mardi et le mercredi, de 18 h à 20 h 30
-		- à l'Alhambra, 3 rue Marceau##cafelalhambra
-		- https://cafe-polyglotte-dijon.fr
-- tous les jours
-	- 10 défis oratoires
-- objectifs
-	- je pèse 78 kilos
-	- j'ai un niveau B2 en français
-	- j'ai rencontré dix personnes avec qui je suis resté en contact
-	- j'ai atteint un niveau de maîtrise minimal en italien, en espagnol et en néerlandais
-- villes
-	- Ahuy [ah-EE]
-	- Bressey-sur-Tille [tee]
-	- Bretenière [bruh]
-	- Chenôve [shuh-NOHV]
-	- Chevigny-Saint-Sauveur [nee]
-	- Crimolois
-	- Daix [deh]
-	- Fénay [fee]
-	- Fontaine-lès-Dijon [f(on)-ten-ah]
-	- Hauteville-lès-Dijon [oh-tuh-vee-luh-lay]
-	- Longvic [l(on)-veek]
-	- Magny-sur-Tille [mah-nee, tee]
-	- Marsannay-la-Côte
-	- Neuilly-lès-Dijon [noo-ee-lay]
-	- Ouges [oozh]
-	- Perrigny-lès-Dijon
-	- Plombières-lès-Dijon [bee-air]
-	- Quetigny [kuh-tee-nee]
+- Dijon cartes mémoire	
+	- Maire de Dijon
+		- Nathalie Koenders
+- TODO: Dijon cartes mémoire			
+	- Talant
+	- Daix
+	- Fontaine-lès-Dijon
 	- Saint-Apollinaire
-	- Sennecey-lès-Dijon [sen-eh-say]
-	- Talant [tah-l(an)]##dijontowns
-- personnalités importantes de Dijon
-	- 1404 Philippe II de Bourgogne (Philippe le Hardi)
-		- il a fondé la puissance de la maison de Bourgogne et a été le premier duc de Bourgogne de la dynastie des Valois
-	- 1419 Jean sans Peur
-		- il a renforcé la puissance de la Bourgogne et joué un rôle majeur dans la guerre civile entre les Armagnacs et les Bourguignons au début du XVe siècle
-	- 1467 Philippe le Bon
-		- il a considérablement agrandi et renforcé l’État bourguignon au XVe siècle
-- concepts
-	- Grands Crus
-		- une célèbre route des vins située en Bourgogne
-		- traverse plusieurs villages viticoles réputés, notamment entre Dijon et Santenay
-		- on y trouve des vignobles produisant certains des vins les plus prestigieux de Bourgogne
-		- le terme « grand cru » désigne ici les vignobles bénéficiant de l’appellation la plus prestigieuse de la classification bourguignonne
-		- la Route des Grands Crus est aussi une destination touristique très appréciée pour ses paysages, ses villages et ses domaines viticoles
-		- un cru est, dans le domaine du vin, un vignoble ou un terroir particulier reconnu pour la qualité de ses vins
-			- le mot vient du verbe croître : un cru est littéralement quelque chose qui a « poussé », notamment ce qui est produit par une terre
-			- par exemple, Chambertin est un cru très célèbre en Bourgogne
-- challenges
-	- challengeCreationTodos
-		- +33 (0)3 80 44 11 44 et essayer toutes les choix de recording
-		- 
-	- write to Suzi https://www.firedupinfrance.fr/
-	- infos
-		- intros
-			- Bonjour, Edward Tanguay à l’appareil. Je vous appelle au sujet de…
-			- Bonjour, je m’appelle Edward Tanguay. Je vous appelle parce que j’aurais une question concernant…
-		- liens
-			- vidéos pour apprendre à parler au téléphone
-			
-		
-- défis d'écriture avant le voyage
-	- à faire
-		- 
-		- appeler l'office de tourisme et demander des visites guidées
-		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
-		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
-		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours/
-		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
-		
-- défis oratoires avant le voyage
-	- à faire
-		- Appeler l'office de tourisme et demander des visites guidées
-		- https://en.destinationdijon.com/visits-and-tours/dijon-decouverte/
-		- https://www.cotedor-randonnee.com/associations-randonnee-cotedor/
-		- https://en.destinationdijon.com/leisures-and-activities/dijon-bike-tours-bourgogne-evasion-by-active-tours
-		- https://www.destinationdijon.com/visites/visite-flash-dijon-en-45-minutes/?utm_source=chatgpt.com
-	- accompli
-
-	
+	- Quetigny
+	- Longvic
+	- Marsannay-la-Côte
+	- Couchey		
+	- Centre-ville
+	- Montchapet
+	- Le Quartier de la Gare
+	- Les Bourroches
+	- Fontaine-d'Ouche
+	- Montmuzard/Université
+	- Les Grésilles
+	- La Maladière
+	- Clos de Pouilly
+	- La Toison d'Or
+	- Port du Canal
+	- Faubourg Saint-Michel
+	- Champmaillot
+	- Mansart
+	- Hyacinthe Vincent 
+	- Poussots
+	- Le parc de la Colombière
+	- Chenôve
+	- Plombières-lès-Dijon	
+- informations sur la randonnée
+	- komoot trails: https://www.komoot.com/de-de/guide/1353475/randonnees-autour-de-fontaine-les-dijon
