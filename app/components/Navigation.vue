@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+
+const { isUnlocked, initAuth } = useNotesAuth()
 
 const mobileMenuOpen = ref(false)
 const navRef = ref<HTMLElement | null>(null)
@@ -11,6 +13,7 @@ const handleClickOutside = (event: MouseEvent) => {
 }
 
 onMounted(() => {
+  initAuth()
   document.addEventListener('click', handleClickOutside)
 })
 
@@ -24,12 +27,17 @@ const toggleColorMode = () => {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 
-const navItems = [
-  { name: 'Notes', path: '/notes', icon: 'i-heroicons-list-bullet' },
-  { name: 'Défis', path: '/challenges', icon: 'i-heroicons-sparkles' },
-  { name: 'Général', path: '/', icon: 'i-heroicons-home' },
-  { name: 'À propos', path: '/about', icon: 'i-heroicons-document-text' },
-]
+const navItems = computed(() => {
+  const items = [
+    { name: 'Bienvenue', path: '/', icon: 'i-heroicons-home' },
+    { name: 'Notes', path: '/notes', icon: 'i-heroicons-list-bullet' }
+  ]
+  if (isUnlocked.value) {
+    items.push({ name: 'Défis', path: '/challenges', icon: 'i-heroicons-sparkles' })
+  }
+  items.push({ name: 'À propos', path: '/about', icon: 'i-heroicons-document-text' })
+  return items
+})
 </script>
 
 <template>

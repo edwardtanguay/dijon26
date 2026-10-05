@@ -15,9 +15,9 @@ export default defineNuxtConfig({
 	},
 	app: {
 		head: {
-			title: 'Dijon 26 - Discover Dijon, Burgundy & Region Maps',
+			title: 'Dijon 26 - Bienvenue à Dijon & en Bourgogne',
 			meta: [
-				{ name: 'description', content: 'Explore Dijon Wikipedia articles, historic landmarks, regional map downloads (KMZ), and high-resolution geography maps of Burgundy, France.' }
+				{ name: 'description', content: 'Explore les articles Wikipédia de Dijon, les monuments historiques et les cartes géographiques haute résolution de Bourgogne, France.' }
 			],
 			link: [
 				{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }

@@ -1,3 +1,6 @@
+- add current kmz file 
+- link to dijon page
+	- make more of these
 - pick up tickets
 - enter current thursday schedule
 - marathon map

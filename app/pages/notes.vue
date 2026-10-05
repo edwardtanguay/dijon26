@@ -240,39 +240,21 @@ useHead({
 
 const STORAGE_KEY_EXPANDED = 'dijon_expanded_flashcards'
 const STORAGE_KEY_LEARNED = 'dijon_learned_flashcards'
-const STORAGE_KEY_UNLOCKED = 'dijon_notes_unlocked'
 
-const isUnlocked = ref(false)
+const { isUnlocked, initAuth, unlock, lock } = useNotesAuth()
 const expandedQuestionIds = ref<Set<string>>(new Set())
 const learnedQuestionIds = ref<Set<string>>(new Set())
 
 const handleUnlock = () => {
-  isUnlocked.value = true
-  try {
-    localStorage.setItem(STORAGE_KEY_UNLOCKED, 'true')
-  } catch (e) {
-    console.error('Erreur lors de la sauvegarde du déverrouillage:', e)
-  }
+  unlock()
 }
 
 const lockNotes = () => {
-  isUnlocked.value = false
-  try {
-    localStorage.removeItem(STORAGE_KEY_UNLOCKED)
-  } catch (e) {
-    console.error('Erreur lors du verrouillage:', e)
-  }
+  lock()
 }
 
 onMounted(() => {
-  try {
-    const unlocked = localStorage.getItem(STORAGE_KEY_UNLOCKED)
-    if (unlocked === 'true') {
-      isUnlocked.value = true
-    }
-  } catch (e) {
-    console.error('Erreur lors du chargement de l\'état de déverrouillage:', e)
-  }
+  initAuth()
 
   // Préchargement de toutes les images pour affichage instantané dès le clic
   for (const item of notes) {

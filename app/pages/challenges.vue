@@ -2,6 +2,21 @@
 import { ref, computed, onMounted } from 'vue'
 import { cleanSingleLineText } from '~/utils/outline-format'
 
+definePageMeta({
+  middleware: [
+    () => {
+      if (import.meta.client) {
+        const unlocked = localStorage.getItem('dijon_notes_unlocked') === 'true'
+        if (!unlocked) {
+          return navigateTo('/notes')
+        }
+      }
+    }
+  ]
+})
+
+const { isUnlocked, initAuth } = useNotesAuth()
+
 useHead({
   title: 'Défis de communication réelle - Dijon 26',
   meta: [
@@ -262,6 +277,11 @@ const fetchData = async (showLoading = false) => {
 }
 
 onMounted(() => {
+  initAuth()
+  if (!isUnlocked.value) {
+    navigateTo('/notes')
+    return
+  }
   fetchData(true)
 })
 
@@ -1135,7 +1155,8 @@ const copyNotes = async (challenge: Challenge) => {
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto space-y-8 pb-16">
+  <ClientOnly>
+    <div v-if="isUnlocked" class="max-w-6xl mx-auto space-y-8 pb-16">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-6">
       <div class="space-y-1">
@@ -3522,4 +3543,10 @@ const copyNotes = async (challenge: Challenge) => {
       </template>
     </UModal>
   </div>
+  <template #fallback>
+    <div class="min-h-[60vh] flex items-center justify-center">
+      <div class="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  </template>
+  </ClientOnly>
 </template>

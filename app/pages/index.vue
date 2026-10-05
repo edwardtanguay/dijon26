@@ -2,9 +2,9 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 useHead({
-  title: 'Dijon 26 - Découvrir Dijon, la Bourgogne & les Cartes Régionales',
+  title: 'Dijon 26 - Bienvenue à Dijon & en Bourgogne',
   meta: [
-    { name: 'description', content: 'Explore les articles Wikipédia de Dijon, les monuments historiques, les cartes régionales à télécharger (KMZ) et les cartes géographiques haute résolution de Bourgogne, France.' }
+    { name: 'description', content: 'Explore les articles Wikipédia de Dijon, les monuments historiques et les cartes géographiques haute résolution de Bourgogne, France.' }
   ]
 })
 
@@ -258,32 +258,8 @@ onUnmounted(() => {
         Découvre Dijon
       </h1>
       <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-        Explore les articles Wikipédia essentiels, télécharge les données cartographiques et découvre les cartes géographiques de Dijon et de la Bourgogne.
+        Explore les articles Wikipédia essentiels et découvre les cartes géographiques de Dijon et de la Bourgogne.
       </p>
-    </div>
-
-    <!-- KMZ Download Callout Section with High-Contrast Slate Button -->
-    <div class="bg-linear-to-r from-indigo-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl border border-indigo-800/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-      <div class="space-y-2">
-        <div class="flex items-center space-x-2 text-indigo-300 font-semibold text-sm">
-          <UIcon name="i-heroicons-map-pin" class="w-5 h-5 shrink-0" />
-          <span>DONNÉES CARTOGRAPHIQUES</span>
-        </div>
-        <h2 class="text-2xl font-bold text-white">Fichier de Carte de Dijon (KMZ)</h2>
-        <p class="text-indigo-200 text-sm max-w-lg">
-          Télécharge ou visualise le fichier officiel de superposition de carte de Dijon (<code class="bg-indigo-950/80 px-2 py-0.5 rounded text-indigo-300">dijon-001.kmz</code>) pour Google Earth et logiciels SIG.
-        </p>
-      </div>
-      <a
-        href="/kmz/dijon-001.kmz"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-slate-950 hover:bg-black text-white! font-bold rounded-xl shadow-xl border border-slate-700/80 hover:border-slate-500 transition-all shrink-0 cursor-pointer text-sm"
-      >
-        <UIcon name="i-heroicons-arrow-down-tray" class="w-5 h-5 text-white! shrink-0" />
-        <span class="text-white! font-bold">Ouvre le fichier KMZ</span>
-        <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4 text-white! opacity-90 shrink-0" />
-      </a>
     </div>
 
     <!-- Wikipedia Articles Section -->
