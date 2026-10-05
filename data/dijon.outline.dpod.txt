@@ -58,6 +58,7 @@
 			- mots de passe
 			- mon pilulier
 			- passeport
+			- carte de marathon
 	- jeudi 8
 		- Office de Tourisme: 
 			- un magazine répertoriant tous les événements à Dijon
