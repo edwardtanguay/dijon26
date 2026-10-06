@@ -20,7 +20,9 @@
 	- carte de retrait de dossard [PDF](https://front-api.njuko.com/document/6925827895587b531032dfc9/6925828395587b531032fda8/fr_FR/6a41a52ce039792f17e9aac9/MOP77264875)
 	- informations pour récupérer le dossard##theqrpickup
 - les quiz
-	- [Dijon](https://dijon26-three.vercel.app/dijon)
+	- [20 Choses Incontournables de Dijon](https://dijon26-three.vercel.app/dijon)
+	- [20 Quartiers de Dijon](https://dijon26-three.vercel.app/dijon)
+	- [6 Grandes Ciudades de Colombia](https://dijon26-three.vercel.app/colombia)
 - calendrier
 	- avant de partir
 		- 100 cartes mémoire
@@ -62,7 +64,7 @@
 			- passeport
 			- carte de marathon
 	- jeudi 8
-		- 06:00 arrive Hbf
+		- 06:00 arrive Hbf  
 		- 06:43 Berlin Hbf - Gleis 3 (ICE 279)
 		- 13:48 Basel SBB (Schweizerische Bundesbahnen)
 		- 14:34 Basel (TGV 9222)
