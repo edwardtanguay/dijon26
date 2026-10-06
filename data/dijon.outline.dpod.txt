@@ -22,7 +22,11 @@
 - les quiz
 	- [20 Choses Incontournables de Dijon](https://dijon26-three.vercel.app/dijon)
 	- [20 Quartiers de Dijon](https://dijon26-three.vercel.app/dijon)
+	- [13 Régions de France](https://dijon26-three.vercel.app/france1)
+	- [10 Villes de Bourgogne](https://dijon26-three.vercel.app/france2)
 	- [6 Grandes Ciudades de Colombia](https://dijon26-three.vercel.app/colombia)
+	- rivers of France
+	- 
 - calendrier
 	- avant de partir
 		- 100 cartes mémoire
