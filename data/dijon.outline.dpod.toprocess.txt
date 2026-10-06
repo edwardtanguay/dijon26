@@ -2,7 +2,11 @@
 - make change and/or write hanner
 - goal: meet 10 people, linked 
 - link to dijon page
-	- make more of these
+	- make more of these with menu
+		- Areas of France
+		- Grammar topics
+- make skill with agent
+	- make more:
 - links to info sites /dijon and /dijon2 etc.
 - pick up tickets
 - enter current thursday schedule
