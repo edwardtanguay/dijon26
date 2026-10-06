@@ -62,12 +62,22 @@
 			- passeport
 			- carte de marathon
 	- jeudi 8
+		- 06:00 arrive Hbf
+		- 06:43 Berlin Hbf - Gleis 3 (ICE 279)
+		- 13:48 Basel SBB (Schweizerische Bundesbahnen)
+		- 14:34 Basel (TGV 9222)
+		- 15:58 Gare Dijon##garij
+		- Bureau de Divia
+			- Vous pouvez aussi obtenir plus d'informations au bureau de Divia à quelques pas de la gare où vous trouverez tous les prix et les systèmes existants.
 		- Office de Tourisme: 
 			- un magazine répertoriant tous les événements à Dijon
 	- vendredi 9
 	- samedi 10
 	- dimanche 11
 		- 8:30 départ du marathon
+	- lundi 12
+		- acheter billet à Berlin via Basel
+		- 18:00 Course, jusqu'à  chapitre 8
 	- mardi 13
 		- Café Polyglotte
 			- La Salle Eugène Bouret, 40 rue Léonard de Vinci
