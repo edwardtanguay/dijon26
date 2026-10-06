@@ -1,6 +1,4 @@
-- write Clarisse
-- make skill
-- post about skill made in 
+- calendar
 - add current kmz file 
 - make change and/or write hanner
 - goal: meet 10 people, linked 
