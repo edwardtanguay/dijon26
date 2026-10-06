@@ -3,6 +3,7 @@
 - goal: meet 10 people, linked 
 - link to dijon page
 	- make more of these
+- links to info sites /dijon and /dijon2 etc.
 - pick up tickets
 - enter current thursday schedule
 - marathon map

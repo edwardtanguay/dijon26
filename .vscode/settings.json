@@ -28,5 +28,6 @@
 		"activityBarTop.activeBorder": "#15202b",
 		"statusBar.inactiveBackground": "#999900"
 	},
-	"peacock.color": "#999900"
+	"peacock.color": "#999900",
+	"liveServer.settings.port": 5801
 }
