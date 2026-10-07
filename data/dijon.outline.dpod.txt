@@ -13,6 +13,7 @@
 	- new version: fix save pronuncation on basics
 	- add a point on map for all hikes from books
 	- make change and/or write hanner
+	- record time for work
 - marathon
 	- https://www.marathondesgrandscrus.com
 	- [info doc](https://www.canva.com/design/DAHSpb79Whc/n7accRkHR4CAn6AbyvE8qQ/edit)
@@ -26,6 +27,7 @@
 	- [13 Régions de France](https://dijon26-three.vercel.app/france1)
 	- [13 Régions de France (longer)](https://dijon26-three.vercel.app/france3)
 	- [10 Villes de Bourgogne](https://dijon26-three.vercel.app/france2)
+	- [Plus vs plus prononciation](https://dijon26-three.vercel.app/plus)
 	- [6 Grandes Ciudades de Colombia](https://dijon26-three.vercel.app/colombia)
 	- ..plus/plus pronunciations
 	- Les dix personnalités les plus célèbres de Dijon
