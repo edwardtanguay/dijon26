@@ -1,8 +1,7 @@
 - TODO
 	- ;; throughout day: download mp3s
-	- .. calendar
-		- .. go through again and add anything
-	- add current kmz file and text
+	- .. add current kmz file and text
+	- add maps
 	- kmz: starting point of all hikes
 	- passwords/howtos
 		- airbnb
@@ -14,6 +13,8 @@
 	- add a point on map for all hikes from books
 	- make change and/or write hanner
 	- record time for work
+- Google Earth
+	- [map](kmz/DIJON26-005.kmz)
 - marathon
 	- https://www.marathondesgrandscrus.com
 	- [info doc](https://www.canva.com/design/DAHSpb79Whc/n7accRkHR4CAn6AbyvE8qQ/edit)
@@ -29,7 +30,6 @@
 	- [10 Villes de Bourgogne](https://dijon26-three.vercel.app/france2)
 	- [Plus vs plus prononciation](https://dijon26-three.vercel.app/plus)
 	- [6 Grandes Ciudades de Colombia](https://dijon26-three.vercel.app/colombia)
-	- ..plus/plus pronunciations
 	- Les dix personnalités les plus célèbres de Dijon
 	- texts with "they/them" conjugation
 	- rivers of France
@@ -60,7 +60,7 @@
 			- CLE International, ISBN 3125301017, Grammaire progressive du français etc.
 		- Consortium Museum
 		- film 
-			- Eldora Cinema?
+			- Cinéma Eldorado
 		- theatre
 			- https://www.darcycomedie.com
 		- Cité Internationale de la Gastronomie et du Vin / tous les jours 9:30-23:00
@@ -95,6 +95,7 @@
 			- il existe aussi DiviaVélo, qui est différent : c'est une vraie location de vélo, que tu gardes avec toi. Une location de 7 jours est disponible
 		- Office de Tourisme: 
 			- un magazine répertoriant tous les événements à Dijon
+			- je veux faire des visites guidées
 		- aller à pied jusqu'à l'Airbnb
 		- Airbnb
 			- j'ai passé en revue mon itinéraire et j'ai eu de nouvelles idées
@@ -111,8 +112,9 @@
 		- 18:00 Course, jusqu'à chapitre 8
 			- [login](https://www.vhs.cloud/wws/9.php#/wws/105496.php)
 	- mardi 13
-		- Café Polyglotte
+		- 19:00 Café Polyglotte
 			- La Salle Eugène Bouret, 40 rue Léonard de Vinci
+			- 
 	- mercredi 14
 		- Laurent? 0630773248
 	- jeudi 15
