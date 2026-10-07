@@ -12,62 +12,45 @@
 	- [13 Régions de France (longer)](https://dijon26-three.vercel.app/france3)
 	- [10 Villes de Bourgogne](https://dijon26-three.vercel.app/france2)
 	- [6 Grandes Ciudades de Colombia](https://dijon26-three.vercel.app/colombia)
+	- plus/plus pronunciations
+	- Les dix personnalités les plus célèbres de Dijon
+	- texts with "they/them" conjugation
 	- rivers of France
-	- 
-- calendrier
-	- avant de partir
-		- 100 cartes mémoire
-		- 10 quiz en ligne
-			- Les dix personnalités les plus célèbres de Dijon
+	- more Spanish exercises?
+- calendrier	
 	- n'importe quel jour
 		- finac
 			- 10:00 to 19:00
-			- Livres bilingues français-espagnol
+			- Livres bilingues français-espagnol, et l'autres livres bilingues
 		- Consortium Museum
-		- Eldora Cinema
-		- theatre
 		- film 
-	- dimanche 4
-		- .. projet « préparer Dijon 
-			- .. retirer les dossards
-			- .. convertir les anciennes notes en nouvelles notes
-			- créer un site final de base
-				- kmz facilement actualisable
-			- écrire Geneviève
-		- créer une entrée runmap pour la publication
-		- lire le livre jusqu'au chapitre 3
-		- rapidement à travers tous les livres
-		- mots de passe et howtos
-			- preply		
-			- edward@tanguay.info
-		- francais
-			- écrire Joseph 
-	- lundi 5
-		- lire le livre jusqu'au chapitre 4
-		- déjeuner
-			- retirer 400 euros à la banque
-			- Google AI Karte
-	- mardi 6
-	- mercredi 7
-		- dernière vérification
-			- mots de passe
-			- mon pilulier
-			- passeport
-			- carte de marathon
+			- Eldora Cinema?
+		- theatre
 	- jeudi 8
 		- 06:00 arrive Hbf  
 		- 06:43 Berlin Hbf - Gleis 3 (ICE 279)
+			- French basics
+			- 5% Spanish
+			- memorize Dijon map/facts
 		- 13:48 Basel SBB (Schweizerische Bundesbahnen)
 		- 14:34 Basel (TGV 9222)
 		- 15:58 Gare Dijon##garij
-		- Bureau de Divia
-			- Vous pouvez aussi obtenir plus d'informations au bureau de Divia à quelques pas de la gare où vous trouverez tous les prix et les systèmes existants.
+		- Bureau de Divia (l’Agence DiviaMobilités)
+			- Vous pouvez aussi obtenir plus d'informations au bureau de Divia à quelques pas de la gare où vous trouverez tous les prix et les systèmes existants
+			- prendre un pass hebdomadaire pour tous les transports
+			- tu peux aussi utiliser directement ta carte bancaire sans contact dans les bus et les tramways 
+				- le voyage coûte 2 € et permet des trajets illimités pendant 1 heure
+			- il existe aussi DiviaVélo, qui est différent : c'est une vraie location de vélo, que tu gardes avec toi. Une location de 7 jours est disponible
 		- Office de Tourisme: 
 			- un magazine répertoriant tous les événements à Dijon
+		- aller à pied jusqu'à l'Airbnb
 	- vendredi 9
+		- je vais aller récupérer mon dossard
+		- je vais me faire couper les cheveux
 	- samedi 10
 	- dimanche 11
 		- 8:30 départ du marathon
+		- je vais changer ma photo de profil
 	- lundi 12
 		- acheter billet à Berlin via Basel
 		- 18:00 Course, jusqu'à  chapitre 8
@@ -75,7 +58,16 @@
 		- Café Polyglotte
 			- La Salle Eugène Bouret, 40 rue Léonard de Vinci
 	- mercredi 14
-		
+		- Laurent? 0630773248
+	- jeudi 15
+	- vendredi 16 octobre
+		- ,, Dijon-Straßburg-Berlin
+			- 10:07-12:24 Straßburg
+			- 14:52-15:22 Offenburg
+			- 15:27-21:17 Berlin
+		- ,, Dijon-Basel-Berlin
+			- 12:01-13:23 Dijon-Basel
+			- 14:16-21:17 Basel-Berlin
 - objectifs de la semaine
 	- définir l'objectif à 10 ans 
 		- j'ai atteint un niveau de conversation B1 dans dix langues

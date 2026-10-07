@@ -1,11 +1,46 @@
-- calendar
-- add current kmz file 
+- FIRST
+
+		- créer une entrée runmap pour la publication
+		- lire le livre jusqu'au chapitre 3
+		- rapidement à travers tous les livres
+		- mots de passe et howtos
+			- preply		
+			- edward@tanguay.info
+		- francais
+			- écrire Joseph 
+	- lundi 5
+		- lire le livre jusqu'au chapitre 4
+		- déjeuner
+			- retirer 400 euros à la banque
+			- Google AI Karte
+	- mardi 6
+	- mercredi 7
+		- dernière vérification
+			- mots de passe
+			- mon pilulier
+			- passeport
+			- carte de marathon
+			
+			
+			
+
+
+- .. through day: download mp3s
+- .. calendar
+- add current kmz file and text
+- add marathon to run maps
+- kmz: starting point of all hikes
+- passwords
+	- airbnb
+	- paypal
+- copy all mp3s to mp3 stick
+- add routes of all hikes from books
 - make change and/or write hanner
 - goal: meet 10 people, linked 
 - link to dijon page
 	- make more of these with menu
 		- Areas of France
-		- Grammar topics
+		- Grammar topicss
 - make skill with agent
 	- make more:
 - links to info sites /dijon and /dijon2 etc.
@@ -184,45 +219,6 @@
 - club de randonnée
 	- https://www.ffrandonnee.fr
 	- Dijon clubs: https://www.ffrandonnee.fr/nos-clubs/trouver-un-club?department=21&postalCode=21000&activity=55&page=1
-- calendrier
-	- mercredi 7 octobre
-		- préparer tout pour le voyage
-		- all passwords
-			- airbnb
-			- paypal
-		- assurez d'avoir suffisamment d'argent pour payer votre compte Google ce mois-ci
-	- jeudi 8 octobre
-		- 06:43-13:48 Berlin Hbf - Basel
-		- 14:34-15:58 Basel - Dijon
-		- l’Agence DiviaMobilités
-			- prendre un pass hebdomadaire pour tous les transports
-			- tu peux aussi utiliser directement ta carte bancaire sans contact dans les bus et les tramways 
-				- le voyage coûte 2 € et permet des trajets illimités pendant 1 heure
-			- il existe aussi DiviaVélo, qui est différent : c'est une vraie location de vélo, que tu gardes avec toi. Une location de 7 jours est disponible
-	- vendredi 9 octobre
-		- acheter le billet de train pour Berlin
-		- sortir dîner pour un anniversaire
-	- samedi 10 octobre
-		- 19:30 Un Singe en Hiver Meeting
-			- chat in different languages, and connect with new people
-			- https://www.meetup.com/papotagedijon/events/316243303/
-	- dimanche 11 octobre 
-	- lundi 12 octobre
-		- Laurent? 0630773248
-	- mardi 13 octobre
-		- Laurent? 0630773248
-		- 18:00 Café Polyglotte de Dijon
-	- mercredi 14 octobre
-		- 18:00 Café Polyglotte de Dijon
-	- jeudi 15 octobre
-	- vendredi 16 octobre
-		- ,, Dijon-Straßburg-Berlin
-			- 10:07-12:24 Straßburg
-			- 14:52-15:22 Offenburg
-			- 15:27-21:17 Berlin
-		- ,, Dijon-Basel-Berlin
-			- 12:01-13:23 Dijon-Basel
-			- 14:16-21:17 Basel-Berlin
 
 - transports en commun
 	- chercher comment se rendre quelque part
