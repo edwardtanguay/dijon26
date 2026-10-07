@@ -1,14 +1,9 @@
 - TODO
 	- ;; throughout day: download mp3s
-	- .. add current kmz file and text
-	- add maps
-	- kmz: starting point of all hikes
-	- passwords/howtos
-		- airbnb
-		- paypal
-		- vhscloud
-		- preply		
-		- edward@tanguay.info
+	- x add current kmz file and text
+	- x (later) kmz: starting point of all hikes
+	- .. add maps and fill kmz
+	- .. passwords/howtos	
 	- new version: fix save pronuncation on basics
 	- add a point on map for all hikes from books
 	- make change and/or write hanner
@@ -346,5 +341,16 @@
 - club de randonnée
 	- https://www.ffrandonnee.fr
 	- Dijon clubs: https://www.ffrandonnee.fr/nos-clubs/trouver-un-club?department=21&postalCode=21000&activity=55&page=1
-- pw
-	- vhcloud: edward.tanguay, Sport4481Legs$
+- ppp
+	- non:%<<(four..)
+	- vhc: https://www.vhs.cloud/wws/9.php#/wws/105496.php
+		- edward.tanguay, Sport4481Legs$
+	- pp: edwardtanguay@gmail.com, net%$pend481<<
+	- gl: edwardtanguay@gmail.com, net888481goog%
+	- preptut: edward@tanguay.info, Teach4814Reach%$
+	- eml: https://secureserver.titan.email/mail
+		- edward@tanguay.info, net77$%222okokok
+	- Divia: edwardtanguay@gmail.com, Walk4Sign$481Door
+	- bn: edwardtanguay@gmail.com, Train4Berlin481%$
+	- kom: edwardtanguay@gmail.com, Hike4%Tree$
+	- htz: edward@tanguay.info, theHet88%$%ok

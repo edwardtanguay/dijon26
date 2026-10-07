@@ -93,9 +93,11 @@
         class="py-0.5 leading-snug break-words transition-all duration-700 rounded-sm"
         :class="[
           item.isFlashcardQuestion ? 'list-none -ml-4 sm:-ml-5' : 'outline-item-li',
-          highlightedNoteId === item.id ? 'note-highlight' : ''
+          highlightedNoteId === item.id ? 'note-highlight' : '',
+          isPppHeader(item) ? 'select-none cursor-default' : ''
         ]"
         :style="{ marginLeft: item.isFlashcardQuestion ? `calc(${item.indent * 1.5}rem - 1.25rem)` : `${item.indent * 1.5}rem` }"
+        @click="isPppHeader(item) ? handlePppClick(item.id, $event) : undefined"
       >
         <!-- Flashcard Header Line -->
         <div v-if="item.isFlashcardHeader" class="space-y-1.5">
@@ -244,6 +246,81 @@ interface OutlineItem {
 
 const notes: OutlineItem[] = notesData
 
+// Gestion des blocs confidentiels "ppp" de premier niveau et de leurs enfants
+const pppHeaders = new Set<string>()
+const pppChildToHeaderMap = new Map<string, string>()
+
+let currentPppHeaderId: string | null = null
+for (const item of notes) {
+  if (item.indent === 0) {
+    if (item.body.trim() === 'ppp') {
+      currentPppHeaderId = item.id
+      pppHeaders.add(item.id)
+    } else {
+      currentPppHeaderId = null
+    }
+  } else if (currentPppHeaderId !== null) {
+    pppChildToHeaderMap.set(item.id, currentPppHeaderId)
+  }
+}
+
+const isPppHeader = (item: OutlineItem): boolean => pppHeaders.has(item.id)
+const openPppHeaderIds = ref<Set<string>>(new Set())
+const pppAutoCloseTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+
+let pppClickCount = 0
+let pppClickTimer: ReturnType<typeof setTimeout> | null = null
+
+const togglePpp = (headerId: string) => {
+  if (openPppHeaderIds.value.has(headerId)) {
+    openPppHeaderIds.value.delete(headerId)
+    openPppHeaderIds.value = new Set(openPppHeaderIds.value)
+    if (pppAutoCloseTimeouts.has(headerId)) {
+      clearTimeout(pppAutoCloseTimeouts.get(headerId)!)
+      pppAutoCloseTimeouts.delete(headerId)
+    }
+  } else {
+    openPppHeaderIds.value.add(headerId)
+    openPppHeaderIds.value = new Set(openPppHeaderIds.value)
+
+    if (pppAutoCloseTimeouts.has(headerId)) {
+      clearTimeout(pppAutoCloseTimeouts.get(headerId)!)
+    }
+    const timer = setTimeout(() => {
+      openPppHeaderIds.value.delete(headerId)
+      openPppHeaderIds.value = new Set(openPppHeaderIds.value)
+      pppAutoCloseTimeouts.delete(headerId)
+    }, 10000)
+    pppAutoCloseTimeouts.set(headerId, timer)
+  }
+}
+
+const handlePppClick = (headerId: string, event: MouseEvent) => {
+  if (window.getSelection) {
+    window.getSelection()?.removeAllRanges()
+  }
+
+  pppClickCount++
+  if (pppClickTimer) {
+    clearTimeout(pppClickTimer)
+  }
+  pppClickTimer = setTimeout(() => {
+    pppClickCount = 0
+  }, 700)
+
+  if (event.detail === 3 || pppClickCount >= 3) {
+    pppClickCount = 0
+    if (pppClickTimer) {
+      clearTimeout(pppClickTimer)
+      pppClickTimer = null
+    }
+    if (window.getSelection) {
+      window.getSelection()?.removeAllRanges()
+    }
+    togglePpp(headerId)
+  }
+}
+
 useHead({
   title: 'Notes - Dijon 26',
   meta: [
@@ -390,6 +467,12 @@ const getQuestionIdForLearnedButton = (item: OutlineItem): string | null => {
 }
 
 const isItemVisible = (item: OutlineItem): boolean => {
+  // Masquer les enfants d'un bloc PPP si le bloc n'est pas ouvert
+  const parentPppId = pppChildToHeaderMap.get(item.id)
+  if (parentPppId && !openPppHeaderIds.value.has(parentPppId)) {
+    return false
+  }
+
   if (item.isFlashcardQuestion) {
     return !learnedQuestionIds.value.has(item.id)
   }
@@ -409,7 +492,13 @@ const isSearchActive = computed(() => searchQuery.value.trim().length >= 3)
 const searchResults = computed(() => {
   if (!isSearchActive.value) return []
   const q = searchQuery.value.trim().toLowerCase()
-  return notes.filter(item => item.body.toLowerCase().includes(q))
+  return notes.filter(item => {
+    // Exclure la ligne ppp et tous ses enfants de la recherche
+    if (pppHeaders.has(item.id) || pppChildToHeaderMap.has(item.id)) {
+      return false
+    }
+    return item.body.toLowerCase().includes(q)
+  })
 })
 
 const clearSearch = () => {
@@ -430,6 +519,13 @@ onUnmounted(() => {
   if (highlightTimeout) {
     clearTimeout(highlightTimeout)
   }
+  if (pppClickTimer) {
+    clearTimeout(pppClickTimer)
+  }
+  for (const timer of pppAutoCloseTimeouts.values()) {
+    clearTimeout(timer)
+  }
+  pppAutoCloseTimeouts.clear()
 })
 
 const handleSearchResultClick = (targetId: string, event: MouseEvent) => {
